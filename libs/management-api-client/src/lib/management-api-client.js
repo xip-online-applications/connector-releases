@@ -50,15 +50,6 @@ class AbstractManagementApiClient {
     this.#auth0_orgIdentifier = process.env["AUTH0_ORG_IDENTIFIER"] ?? "";
     this.#tenantIdentifier = process.env["TENANT_IDENTIFIER"] ?? "";
     if (!this.#clientId || !this.#clientSecret || !this.#managementApiUrl || !this.#audience || !this.#identityProviderUrl || !this.#auth0_orgIdentifier || !this.#tenantIdentifier) {
-      console.log(
-        this.#clientId,
-        this.#clientSecret,
-        this.#managementApiUrl,
-        this.#audience,
-        this.#identityProviderUrl,
-        this.#auth0_orgIdentifier,
-        this.#tenantIdentifier
-      );
       throw new Error("Missing required environment variables");
     }
   }

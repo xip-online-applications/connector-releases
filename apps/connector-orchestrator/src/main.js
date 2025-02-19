@@ -274,7 +274,9 @@ async function startConnector() {
   );
   const logLevel = process.env.LOG_LEVEL || "info";
   if (!["error", "warn", "info", "debug", "trace"].includes(logLevel)) {
-    console.error(`Invalid log level: ${logLevel}`);
+    console.error(
+      `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'`
+    );
     process.exit(1);
   }
   const log = import_logger.Logger.getInstance(
@@ -317,6 +319,5 @@ async function main() {
   }
 }
 main().catch((error) => {
-  import_logger.Logger.getInstance().error(error);
   (0, import_handle_error.handleError)("Error while initializing the app", error);
 });

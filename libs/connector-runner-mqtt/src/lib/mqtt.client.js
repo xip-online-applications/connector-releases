@@ -50,16 +50,26 @@ class MqttClient {
       this.#logger.error("MQTT connection error:", err);
     });
     this.#client.on("message", async (topic, message) => {
+      const msg = message.toString();
       this.#logger.debug(
-        `Received message from MQTT broker with topic ${topic}:`,
-        message
+        `Received message from MQTT broker with topic ${topic}: ${msg}`
       );
-      const body = message;
+      let body;
+      try {
+        body = JSON.parse(msg);
+      } catch (error) {
+        this.#logger.error(`Error parsing message ${msg}:`, error);
+        body = {
+          body: msg
+        };
+      }
       const kafkaPayload = this.#buildKafkaPayload(topic, body);
-      await this.#kafkaService.send(
-        [kafkaPayload],
-        generateKafkaTopic(this.#baseConnectorConfig)
+      const kafkaTopic = generateKafkaTopic(this.#baseConnectorConfig);
+      this.#logger.debug(
+        `Sending message to Kafka with topic ${kafkaTopic}:`,
+        kafkaPayload
       );
+      await this.#kafkaService.send([kafkaPayload], kafkaTopic);
     });
   }
   #buildKafkaPayload = (topic, message) => {
