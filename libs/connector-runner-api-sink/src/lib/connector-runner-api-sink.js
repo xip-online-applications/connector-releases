@@ -31,10 +31,7 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_API_SINK_CONFIG";
     this.init = async () => {
       if (this.httpClientInstance === void 0) {
-        this.httpClientInstance = new import_http_client.HttpClient(
-          this.config.http,
-          this.config.debug ?? false
-        );
+        this.httpClientInstance = new import_http_client.HttpClient(this.config.http);
       }
       await this.httpClient.init();
       const jobCallbackFunction = (callbackFunction) => {
