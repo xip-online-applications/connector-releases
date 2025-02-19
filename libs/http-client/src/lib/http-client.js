@@ -31,33 +31,29 @@ __export(http_client_exports, {
 });
 module.exports = __toCommonJS(http_client_exports);
 var import_axios = __toESM(require("axios"));
+var import_logger = require("@transai/logger");
 class HttpClient {
-  constructor(config, debug = false) {
-    this.config = config;
-    this.debug = debug;
+  #config;
+  constructor(config) {
+    this.#config = config;
   }
   async init() {
-    console.log("Initializing http: ", this.config.host);
+    import_logger.Logger.getInstance().info("Initializing http: ", this.#config.host);
   }
   async post(destination, content) {
     try {
-      const url = `${this.config.host}${destination}`;
-      if (this.debug) {
-        console.log(`POSTing to ${url} with content: ${content}`);
-      }
-      const res = await import_axios.default.post(
-        url,
-        content,
-        {
-          headers: {
-            // Overwrite Axios's automatically set Content-Type
-            "Content-Type": this.config.contentType ?? "application/json"
-          }
+      const url = `${this.#config.host}${destination}`;
+      import_logger.Logger.getInstance().debug(`POSTing to ${url} with content: ${content}`);
+      const res = await import_axios.default.post(url, content, {
+        timeout: this.#config.timeout ?? 5e3,
+        headers: {
+          // Overwrite Axios's automatically set Content-Type
+          "Content-Type": this.#config.contentType ?? "application/json"
         }
+      });
+      import_logger.Logger.getInstance().debug(
+        `Response from ${url}: ${JSON.stringify(res.data)}`
       );
-      if (this.debug) {
-        console.log(`Response from ${url}: ${JSON.stringify(res.data)}`);
-      }
       return {
         success: res.status >= 200 && res.status < 300,
         status: res.status,

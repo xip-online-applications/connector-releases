@@ -40,7 +40,7 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["SAMBA_SOURCE"] = "samba-source";
   ConfiguredConnectorTypes2["SQL_SINK"] = "sql-sink";
   ConfiguredConnectorTypes2["SQL_SOURCE"] = "sql-source";
-  ConfiguredConnectorTypes2["MQTT_SOURCE"] = "mqtt-source";
+  ConfiguredConnectorTypes2["MQTT"] = "mqtt";
   ConfiguredConnectorTypes2["CUBE_QUERY_RUNNER"] = "cube-query-runner";
   return ConfiguredConnectorTypes2;
 })(ConfiguredConnectorTypes || {});

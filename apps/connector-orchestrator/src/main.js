@@ -39,7 +39,7 @@ var import_connector_runner_samba_source = require("@transai/connector-runner-sa
 var import_connector_runner_sql_source = require("@transai/connector-runner-sql-source");
 var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
-var import_connector_runner_mqtt_source = require("@transai/connector-runner-mqtt-source");
+var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_check_two_arrays = require("./check-two-arrays");
 const getConnectorType = (connectorConfig) => {
   switch (connectorConfig.connectorType) {
@@ -121,8 +121,8 @@ const getConnectorType = (connectorConfig) => {
         connectorConfig.config,
         connectorConfig.actions
       );
-    case import_types.ConfiguredConnectorTypes.MQTT_SOURCE:
-      return new import_connector_runner_mqtt_source.ConnectorRunnerMqttSource(
+    case import_types.ConfiguredConnectorTypes.MQTT:
+      return new import_connector_runner_mqtt.ConnectorRunnerMqtt(
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
@@ -147,6 +147,9 @@ async function startCluster() {
     }
   };
   const startProcess = (connector) => {
+    log.info(
+      `Starting process for connector ${connector.connectorType} - ${connector.identifier}`
+    );
     const newProcess = import_cluster.default.fork({
       CONNECTOR: JSON.stringify(connector)
     });
@@ -154,6 +157,9 @@ async function startCluster() {
       broadcastMessage(message);
     });
     newProcess.on("exit", (code, signal) => {
+      log.info(
+        `Connector ${connector.connectorType} - ${connector.identifier} process exited`
+      );
       const processStats = startedConnectorProcesses.find(
         (p) => p.pid === newProcess.process.pid
       );
@@ -242,6 +248,7 @@ async function startCluster() {
         log.error("Error while getting active connectors", error);
         return enabledConnectors;
       });
+      log.info(`received ${newEnabledConnectors.length} enabled connectors`);
       const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
         enabledConnectors,
         newEnabledConnectors
@@ -265,7 +272,15 @@ async function startConnector() {
   const connectorData = JSON.parse(
     process.env.CONNECTOR
   );
-  const log = import_logger.Logger.getInstance(connectorData.identifier);
+  const logLevel = process.env.LOG_LEVEL || "info";
+  if (!["error", "warn", "info", "debug", "trace"].includes(logLevel)) {
+    console.error(`Invalid log level: ${logLevel}`);
+    process.exit(1);
+  }
+  const log = import_logger.Logger.getInstance(
+    connectorData.identifier,
+    logLevel
+  );
   log.info(
     `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${process.pid} started`
   );
