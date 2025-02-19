@@ -317,5 +317,6 @@ async function main() {
   }
 }
 main().catch((error) => {
+  import_logger.Logger.getInstance().error(error);
   (0, import_handle_error.handleError)("Error while initializing the app", error);
 });
