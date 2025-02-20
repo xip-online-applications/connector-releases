@@ -70,7 +70,10 @@ class AbstractManagementApiClient {
           "Content-Type": "application/json"
         }
       }
-    );
+    ).catch((error) => {
+      import_logger.Logger.getInstance().error(error);
+      throw error;
+    });
     this.#currentAccessToken = tokenResponse.data.access_token;
   }
   async get(path, queryParams) {
@@ -94,6 +97,7 @@ class AbstractManagementApiClient {
           params: queryParams
         });
       }
+      import_logger.Logger.getInstance().error(error);
       throw error;
     });
     return response.data;
