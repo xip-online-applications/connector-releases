@@ -62,24 +62,24 @@ class AbstractKafkaService {
       }
     };
     this.exitProcess = async (type) => {
-      console.info(
-        `Got ${type}. Graceful shutdown Kafka start`,
+      const logger = import_logger.Logger.getInstance();
+      logger.info(
+        `Got ${type}. Graceful shutdown Kafka start. Disconnecting consumer and producer`,
         (/* @__PURE__ */ new Date()).toISOString()
       );
-      import_logger.Logger.getInstance().debug("Disconnecting consumer and producer");
       try {
         await this.consumer?.disconnect();
-        import_logger.Logger.getInstance().debug("Consumer disconnected");
+        logger.info("Consumer disconnected");
       } catch (error) {
-        import_logger.Logger.getInstance().error("Error while disconnecting consumer", error);
+        logger.error("Error while disconnecting consumer", error);
       }
       try {
         await this.producer?.disconnect();
-        import_logger.Logger.getInstance().debug("Producer disconnected");
+        logger.info("Producer disconnected");
       } catch (error) {
-        import_logger.Logger.getInstance().error("Error while disconnecting producer", error);
+        logger.error("Error while disconnecting producer", error);
       }
-      console.info("Graceful shutdown Kafka complete", (/* @__PURE__ */ new Date()).toISOString());
+      logger.info("Graceful shutdown Kafka complete", (/* @__PURE__ */ new Date()).toISOString());
       process.exit(0);
     };
     this.checkForNewTopics = async () => {

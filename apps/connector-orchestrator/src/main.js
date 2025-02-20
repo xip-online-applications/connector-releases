@@ -41,6 +41,7 @@ var import_connector_runner_cube_query = require("@transai/connector-runner-cube
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
 var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_check_two_arrays = require("./check-two-arrays");
+var import_node_process = __toESM(require("node:process"));
 const getConnectorType = (connectorConfig) => {
   switch (connectorConfig.connectorType) {
     case import_types.ConfiguredConnectorTypes.API_SINK:
@@ -148,7 +149,7 @@ async function startCluster() {
   };
   const startProcess = (connector) => {
     log.info(
-      `Starting process for connector ${connector.connectorType} - ${connector.identifier}`
+      `Starting process type: ${connector.connectorType}, Identifier: ${connector.identifier}`
     );
     const newProcess = import_cluster.default.fork({
       CONNECTOR: JSON.stringify(connector)
@@ -158,7 +159,7 @@ async function startCluster() {
     });
     newProcess.on("exit", (code, signal) => {
       log.info(
-        `Connector ${connector.connectorType} - ${connector.identifier} process exited`
+        `Connector ${connector.connectorType} - ${connector.identifier} - pid ${newProcess.process.pid} process exited`
       );
       const processStats = startedConnectorProcesses.find(
         (p) => p.pid === newProcess.process.pid
@@ -177,21 +178,37 @@ async function startCluster() {
         log.warn(
           `Worker ${newProcess.process.pid} died with code ${code} and signal ${signal}`
         );
+      } else {
+        log.debug(
+          `Worker ${newProcess.process.pid} exited with code ${code} and signal ${signal}`
+        );
       }
       const runtime = (/* @__PURE__ */ new Date()).getTime() - startedOn.getTime();
-      const timeoutTime = Math.max(0, 5e3 - runtime);
+      const timeoutTime = Math.max(100, 5e3 - runtime);
       log.debug(
         `Runtime of process ${runtime}, Restarting process for connector ${connector.identifier}, ${connector.connectorType} in ${timeoutTime} ms`
       );
       setTimeout(() => {
+        const isAlreadyStarted = startedConnectorProcesses.some(
+          (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
+        );
+        if (isAlreadyStarted) {
+          log.info(
+            `There is already a connector running with ${connector.identifier}, ${connector.connectorType}. Do not start this again.`
+          );
+          return;
+        }
         const connectorEnabled = enabledConnectors.some(
           (c) => c.connectorType === connector.connectorType && c.identifier === connector.identifier
         );
         if (!connectorEnabled) {
-          console.error(
+          log.info(
             `Could not find connector ${connector.identifier}, ${connector.connectorType}. Not enabled so not restarting.`
           );
         } else {
+          log.info(
+            `Restarting process FROM EXIT LOOP for connector ${connector.identifier}, ${connector.connectorType}, ${newProcess.process.pid}`
+          );
           startProcess(connector);
         }
       }, timeoutTime);
@@ -205,34 +222,29 @@ async function startCluster() {
     });
   };
   const stopProcess = (connector) => {
-    const process2 = startedConnectorProcesses.find(
-      (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
-    );
     log.info(
       `Stopping process for connector ${connector.identifier}, ${connector.connectorType}`
     );
+    const process2 = startedConnectorProcesses.find(
+      (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
+    );
     if (process2) {
       process2.worker.kill();
+      log.info(
+        `${connector.identifier} - ${connector.connectorType} Process killed`
+      );
     } else {
       log.error(`Could not find process for connector ${connector.identifier}`);
     }
   };
   const checkConnectors = async () => {
-    let test = 0;
-    for (const id in import_cluster.default.workers) {
-      if (import_cluster.default.workers[id]) {
-        test += 1;
-      }
-    }
+    const test = Object.entries(import_cluster.default.workers).length;
     log.trace(
       `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
     );
     if (test !== enabledConnectors.length) {
-      log.info(
+      log.error(
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
-      );
-      console.error(
-        "Number of workers is not equal to number of configured workers"
       );
     }
     const newLastUpdatedTimestamp = await managementApiClient.getLastUpdatedTimestamp().catch((error) => {
@@ -270,45 +282,49 @@ async function startCluster() {
 }
 async function startConnector() {
   const connectorData = JSON.parse(
-    process.env.CONNECTOR
+    import_node_process.default.env.CONNECTOR
   );
-  const logLevel = process.env.LOG_LEVEL || "info";
-  if (!["error", "warn", "info", "debug", "trace"].includes(logLevel)) {
-    console.error(
-      `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'`
-    );
-    process.exit(1);
+  let logLevel = import_node_process.default.env.LOG_LEVEL || import_logger.LogLevels.info;
+  const validLogLevels = Object.values(import_logger.LogLevels);
+  const faultyLogLevel = !validLogLevels.includes(logLevel);
+  if (faultyLogLevel) {
+    logLevel = import_logger.LogLevels.info;
   }
   const log = import_logger.Logger.getInstance(
-    connectorData.identifier,
+    `${connectorData.identifier} - ${import_node_process.default.pid}`,
     logLevel
   );
+  if (faultyLogLevel) {
+    log.error(
+      `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'. Using info as default.`
+    );
+  }
   log.info(
-    `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${process.pid} started`
+    `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} started`
   );
   const connector = getConnectorType(connectorData);
   await connector.start();
-  process.on("SIGINT", async () => {
+  import_node_process.default.on("SIGINT", async () => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${process.pid} received SIGINT`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGINT`
     );
     await connector.stop();
-    process.exit(0);
+    import_node_process.default.exit(0);
   });
-  process.on("SIGTERM", async () => {
+  import_node_process.default.on("SIGTERM", async () => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${process.pid} received SIGTERM`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGTERM`
     );
     await connector.stop();
-    process.exit(0);
+    import_node_process.default.exit(0);
   });
-  process.on("uncaughtException", async (error) => {
+  import_node_process.default.on("uncaughtException", async (error) => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${process.pid} received uncaughtException`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received uncaughtException`
     );
     (0, import_handle_error.handleError)("Uncaught exception in worker", error);
     await connector.stop();
-    process.exit(1);
+    import_node_process.default.exit(1);
   });
 }
 async function main() {
