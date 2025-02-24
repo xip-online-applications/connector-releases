@@ -45,27 +45,23 @@ class DatasourceExtractorService {
     this.initialized = false;
     this.processing = false;
     import_logger.Logger.getInstance().debug(
-      "Creating data sink service: ",
-      queryConfig.queryIdentifier
+      `Creating data sink service: ${queryConfig.queryIdentifier}`
     );
     this.handlebarsTemplate = import_handlebars.default.compile(queryConfig.query, {
       strict: true
     });
     this.validateTemplate();
     import_logger.Logger.getInstance().debug(
-      "Sink Service build. Go init now: ",
-      queryConfig.queryIdentifier
+      `Sink Service build. Go init now: ${queryConfig.queryIdentifier}`
     );
   }
   async init() {
     import_logger.Logger.getInstance().debug(
-      "Initializing data sink service: ",
-      this.queryConfig.queryIdentifier
+      `Initializing data sink service: ${this.queryConfig.queryIdentifier}`
     );
     this.datasource = new import_datasource.DatasourceService(this.config.database);
     import_logger.Logger.getInstance().debug(
-      "Connected!: ",
-      this.queryConfig.queryIdentifier
+      `Connected!: ${this.queryConfig.queryIdentifier}`
     );
     await this.datasource.initialize().catch((error) => {
       import_logger.Logger.getInstance().debug(error);
@@ -110,11 +106,13 @@ class DatasourceExtractorService {
     }
     if (this.processing) {
       import_logger.Logger.getInstance().debug(
-        "Data sink service is already processing: ",
-        this.queryConfig.queryIdentifier
+        `Data sink service is already processing: ${this.queryConfig.queryIdentifier}`
       );
       return;
     }
+    import_logger.Logger.getInstance().debug(
+      `Start query: ${this.queryConfig.queryIdentifier}`
+    );
     this.processing = true;
     try {
       await this.executeQuery().catch((error) => {
