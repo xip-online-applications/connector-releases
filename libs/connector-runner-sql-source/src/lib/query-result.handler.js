@@ -68,8 +68,7 @@ class QueryResultHandler {
     });
     try {
       import_logger.Logger.getInstance().debug(
-        queryConfig.queryIdentifier,
-        `Sending ${result.affected} records to Kafka using batch`
+        `${queryConfig.queryIdentifier} Sending ${result.affected} records to Kafka using batch`
       );
       const success = await this.kafkaService.sendBatch(
         preparedRecords,
@@ -81,8 +80,7 @@ class QueryResultHandler {
       }
     } catch (e) {
       import_logger.Logger.getInstance().debug(
-        queryConfig.queryIdentifier,
-        `Sending ${result.affected} records to Kafka using single record send`
+        `${queryConfig.queryIdentifier} Sending ${result.affected} records to Kafka using single record send`
       );
     }
   }

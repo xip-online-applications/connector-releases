@@ -55,15 +55,21 @@ class DatasourceExtractorService {
       `Sink Service build. Go init now: ${queryConfig.queryIdentifier}`
     );
   }
+  get datasource() {
+    if (!this.datasourceInstance) {
+      throw new Error("Datasource service is not initialized");
+    }
+    return this.datasourceInstance;
+  }
   async init() {
     import_logger.Logger.getInstance().debug(
       `Initializing data sink service: ${this.queryConfig.queryIdentifier}`
     );
-    this.datasource = new import_datasource.DatasourceService(this.config.database);
+    this.datasourceInstance = new import_datasource.DatasourceService(this.config.database);
     import_logger.Logger.getInstance().debug(
       `Connected!: ${this.queryConfig.queryIdentifier}`
     );
-    await this.datasource.initialize().catch((error) => {
+    await this.datasourceInstance.initialize().catch((error) => {
       import_logger.Logger.getInstance().debug(error);
       throw new Error("Error while initializing data sink service");
     });
@@ -89,8 +95,7 @@ class DatasourceExtractorService {
       });
     }
     import_logger.Logger.getInstance().debug(
-      "Data sink service initialized: ",
-      this.queryConfig.queryIdentifier
+      `Data sink service initialized: ${this.queryConfig.queryIdentifier}`
     );
     this.initialized = true;
     this.setInterval();
@@ -116,11 +121,19 @@ class DatasourceExtractorService {
     this.processing = true;
     try {
       await this.executeQuery().catch((error) => {
+        import_logger.Logger.getInstance().error(
+          `Error while extracting data from data sink service ${error.message}`
+        );
         throw new Error(
           `Error while extracting data from data sink service ${error.message}`
         );
       });
     } catch (error) {
+      if (error instanceof Error) {
+        import_logger.Logger.getInstance().error(
+          `Error while extracting data from data sink service ${error.message}`
+        );
+      }
       (0, import_handle_error.handleError)("Error while querying datasource", error);
     } finally {
       this.processing = false;
@@ -138,6 +151,9 @@ class DatasourceExtractorService {
       return null;
     });
     if (result === null) {
+      import_logger.Logger.getInstance().debug(
+        `Error while querying datasource ${this.queryConfig.queryIdentifier}`
+      );
       return;
     }
     await this.queryResultHandler.handleResult(result, this.queryConfig);
