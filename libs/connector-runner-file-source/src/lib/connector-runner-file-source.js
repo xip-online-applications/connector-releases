@@ -29,7 +29,7 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_FILE_SOURCE_CONFIG";
     this.init = async () => {
-      if (!this.offsetStore) {
+      if (!this.offsetStoreInstance) {
         throw new Error(
           "Offset store is not defined. Please provide an temp location for the offset store."
         );

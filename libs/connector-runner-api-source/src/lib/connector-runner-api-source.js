@@ -31,7 +31,7 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_API_SOURCE_CONFIG";
     this.kafkaWrapper = void 0;
     this.init = async () => {
-      if (!this.offsetStore) {
+      if (!this.offsetStoreInstance) {
         throw new Error("Offset store is not defined. Please provide an temp location for the offset store.");
       }
       const config = this.config;
@@ -39,14 +39,14 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
       const apiResultHandler = new import_api_result.ApiResultHandler(
         config,
         this.kafkaWrapper,
-        this.offsetStore
+        this.offsetStoreInstance
       );
       for (const apiConfig of config.apiCalls) {
         new import_api_extractor.ApiExtractorService(
           config,
           apiConfig,
           apiResultHandler,
-          this.offsetStore
+          this.offsetStoreInstance
         );
       }
     };

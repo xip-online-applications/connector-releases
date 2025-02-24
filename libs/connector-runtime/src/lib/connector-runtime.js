@@ -47,7 +47,7 @@ class ConnectorRuntime {
     this.apiConfig = apiConfig;
     this.actionConfigs = actionConfigs;
     this.IPC_CHANNEL = "connector-runtime";
-    this.offsetStore = void 0;
+    this.offsetStoreInstance = void 0;
     this.callbackFunction = void 0;
     // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = () => true;
@@ -73,7 +73,7 @@ class ConnectorRuntime {
       }).catch((err) => {
         throw err;
       });
-      this.offsetStore = offsetStore;
+      this.offsetStoreInstance = offsetStore;
     }
     if (process.on) {
       process.on("message", (message) => {
@@ -154,6 +154,12 @@ class ConnectorRuntime {
         action.config["parsedTemplates"] = containers;
       }
     }
+  }
+  get offsetStore() {
+    if (this.offsetStoreInstance === void 0) {
+      throw new Error("Kafka service not initialized");
+    }
+    return this.offsetStoreInstance;
   }
   get kafkaService() {
     if (this.kafkaServiceInstance === void 0) {

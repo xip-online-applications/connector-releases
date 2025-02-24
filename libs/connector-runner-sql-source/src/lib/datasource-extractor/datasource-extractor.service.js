@@ -44,15 +44,27 @@ class DatasourceExtractorService {
     this.ipcBus = ipcBus;
     this.initialized = false;
     this.processing = false;
+    import_logger.Logger.getInstance().debug(
+      "Creating data sink service: ",
+      queryConfig.queryIdentifier
+    );
     this.handlebarsTemplate = import_handlebars.default.compile(queryConfig.query, {
       strict: true
     });
     this.validateTemplate();
+    import_logger.Logger.getInstance().debug(
+      "Sink Service build. Go init now: ",
+      queryConfig.queryIdentifier
+    );
   }
   async init() {
-    this.datasource = new import_datasource.DatasourceService(this.config.database);
     import_logger.Logger.getInstance().debug(
       "Initializing data sink service: ",
+      this.queryConfig.queryIdentifier
+    );
+    this.datasource = new import_datasource.DatasourceService(this.config.database);
+    import_logger.Logger.getInstance().debug(
+      "Connected!: ",
       this.queryConfig.queryIdentifier
     );
     await this.datasource.initialize().catch((error) => {

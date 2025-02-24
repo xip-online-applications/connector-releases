@@ -39,6 +39,9 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
         kafkaWrapper,
         this.offsetStore
       );
+      this.log.debug(
+        `Initializing SQL source runner, gotten ${config.queries.length} queries`
+      );
       for (const queryConfig of config.queries) {
         const extractor = new import_datasource_extractor.DatasourceExtractorService(
           config,
