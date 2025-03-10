@@ -23,13 +23,15 @@ module.exports = __toCommonJS(query_result_handler_exports);
 var import_logger = require("@transai/logger");
 class QueryResultHandler {
   constructor(config, kafkaService, offsetStore) {
-    this.config = config;
-    this.kafkaService = kafkaService;
-    this.offsetStore = offsetStore;
     this.storeTimestamp = (timestamp, queryConfig) => {
       const date = new Date(timestamp.timestamp).toISOString();
-      this.offsetStore.setOffset(
-        { timestamp: timestamp.timestamp, id: timestamp.id, date },
+      this.#offsetStore.setOffset(
+        {
+          timestamp: timestamp.timestamp,
+          id: timestamp.id,
+          date,
+          rawTimestamp: timestamp.rawTimestamp
+        },
         queryConfig.queryIdentifier
       );
     };
@@ -43,17 +45,27 @@ class QueryResultHandler {
         timestamp = new Date(recordTimestamp).getTime();
       }
       const id = this.getOptionalRecordField(record, queryConfig.keyField) ?? 0;
-      return { id, timestamp };
+      return { id, timestamp, rawTimestamp: recordTimestamp ?? "" };
     };
+    // eslint-disable-next-line class-methods-use-this
     this.getOptionalRecordField = (record, fieldName) => {
       return Object.keys(record).indexOf(fieldName) > -1 ? record[fieldName] : null;
     };
+    this.#config = config;
+    this.#kafkaService = kafkaService;
+    this.#offsetStore = offsetStore;
   }
+  #config;
+  #kafkaService;
+  #offsetStore;
   async handleResult(result, queryConfig) {
+    import_logger.Logger.getInstance().debug(
+      `${queryConfig.queryIdentifier} runned successfully. Gotten ${result.records.length} records`
+    );
     if (result.records.length === 0) {
       return;
     }
-    let lastTimestamp = { timestamp: 0, id: 0 };
+    let lastTimestamp = { timestamp: 0, id: 0, rawTimestamp: 0 };
     const preparedRecords = result.records.map((r) => {
       const newField = {
         ...r
@@ -70,9 +82,9 @@ class QueryResultHandler {
       import_logger.Logger.getInstance().debug(
         `${queryConfig.queryIdentifier} Sending ${result.affected} records to Kafka using batch`
       );
-      const success = await this.kafkaService.sendBatch(
+      const success = await this.#kafkaService.sendBatch(
         preparedRecords,
-        this.config,
+        this.#config,
         queryConfig
       );
       if (success) {

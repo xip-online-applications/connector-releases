@@ -21,8 +21,8 @@ __export(api_result_handler_exports, {
 });
 module.exports = __toCommonJS(api_result_handler_exports);
 var import_html_entities = require("html-entities");
-var import_helper = require("./helper.functions");
 var import_logger = require("@transai/logger");
+var import_helper = require("./helper.functions");
 class ApiResultHandler {
   constructor(config, kafkaService, offsetStore) {
     this.config = config;
@@ -68,30 +68,32 @@ class ApiResultHandler {
       );
     }
     if (!success) {
-      import_logger.Logger.getInstance().debug("Error while sending record to Kafka: ", parsedContent);
+      import_logger.Logger.getInstance().debug(
+        "Error while sending record to Kafka: ",
+        parsedContent
+      );
     }
   }
   async sendBatch(parsedContent, apiConfig) {
     const list = parsedContent[apiConfig.listField ?? ""];
     if (list && Array.isArray(list)) {
-      import_logger.Logger.getInstance().debug(`Found ${list.length} records in list field ${apiConfig.listField}`);
+      import_logger.Logger.getInstance().debug(
+        `Found ${list.length} records in list field ${apiConfig.listField}`
+      );
       if (apiConfig.type === "metric") {
-        await this.kafkaService.sendMetric(
-          list,
-          this.config,
-          apiConfig
-        );
+        await this.kafkaService.sendMetric(list, this.config, apiConfig);
       } else {
-        await this.kafkaService.sendDocuments(
-          list,
-          this.config,
-          apiConfig
-        );
+        await this.kafkaService.sendDocuments(list, this.config, apiConfig);
       }
       const item = list[list.length - 1];
-      this.storeTimestamp(apiConfig.incrementalField ? new Date(item[apiConfig.incrementalField]) : /* @__PURE__ */ new Date(), apiConfig);
+      this.storeTimestamp(
+        apiConfig.incrementalField ? new Date(item[apiConfig.incrementalField]) : /* @__PURE__ */ new Date(),
+        apiConfig
+      );
     } else {
-      import_logger.Logger.getInstance().debug(`No records found in list field ${apiConfig.listField}, skipping. ${JSON.stringify(parsedContent)}`);
+      import_logger.Logger.getInstance().debug(
+        `No records found in list field ${apiConfig.listField}, skipping. ${JSON.stringify(parsedContent)}`
+      );
     }
   }
   async handleSingleRecord(parsedContent, apiConfig) {
@@ -110,14 +112,20 @@ class ApiResultHandler {
       );
     }
     if (!success) {
-      import_logger.Logger.getInstance().debug("Error while sending record to Kafka: ", parsedContent);
+      import_logger.Logger.getInstance().debug(
+        "Error while sending record to Kafka: ",
+        parsedContent
+      );
     }
     if (success) {
       this.storeTimestamp(/* @__PURE__ */ new Date(), apiConfig);
     }
   }
   storeTimestamp(timestamp, apiConfig) {
-    this.offsetStore.setOffset({ timestamp: timestamp.getTime(), id: 0 }, (0, import_helper.generateOffsetIdentifier)(apiConfig));
+    this.offsetStore.setOffset(
+      { timestamp: timestamp.getTime(), id: 0, rawTimestamp: 0 },
+      (0, import_helper.generateOffsetIdentifier)(apiConfig)
+    );
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

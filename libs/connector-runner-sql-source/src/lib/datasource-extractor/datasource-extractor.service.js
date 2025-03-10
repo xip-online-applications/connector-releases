@@ -162,7 +162,7 @@ class DatasourceExtractorService {
     }
   }
   validateTemplate() {
-    this.getQuery({ timestamp: 0, id: 0 }, 0);
+    this.getQuery({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
   }
   getQuery(offset, limit) {
     return this.handlebarsTemplate({

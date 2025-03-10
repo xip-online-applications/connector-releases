@@ -49,9 +49,9 @@ class OffsetStoreService {
         "utf8"
       );
       const offsetStore = JSON.parse(offsetFile);
-      return (0, import_types.isOffsetStoreType)(offsetStore) ? offsetStore : { id: 0, timestamp: 0 };
+      return (0, import_types.isOffsetStoreType)(offsetStore) ? offsetStore : { id: 0, timestamp: 0, rawTimestamp: 0 };
     } catch (error) {
-      return { id: 0, timestamp: 0 };
+      return { id: 0, timestamp: 0, rawTimestamp: 0 };
     }
   }
   setOffset(offset, identifier) {

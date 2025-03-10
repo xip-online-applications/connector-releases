@@ -33,9 +33,9 @@ module.exports = __toCommonJS(api_extractor_service_exports);
 var import_rxjs = require("rxjs");
 var import_axios = __toESM(require("axios"));
 var import_handlebars = __toESM(require("handlebars"));
-var import_helper = require("../helper.functions");
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
 var import_logger = require("@transai/logger");
+var import_helper = require("../helper.functions");
 class ApiExtractorService {
   constructor(config, apiConfig, apiResultHandler, offsetStore) {
     this.config = config;
@@ -43,15 +43,23 @@ class ApiExtractorService {
     this.apiResultHandler = apiResultHandler;
     this.offsetStore = offsetStore;
     this.processing = false;
-    import_logger.Logger.getInstance().debug(`Api source service initialized: ${this.apiConfig.name} with interval of ${this.apiConfig.interval} seconds`);
+    import_logger.Logger.getInstance().debug(
+      `Api source service initialized: ${this.apiConfig.name} with interval of ${this.apiConfig.interval} seconds`
+    );
     if (apiConfig.body) {
       this.handlebarsInstance = import_handlebars.default.create();
       (0, import_handlebars_helpers.default)({ handlebars: this.handlebarsInstance });
-      this.handlebarsInstance.registerHelper("formatISODate", function(timestamp, timezone) {
-        const date = new Date(timestamp);
-        return date.toISOString();
-      });
-      this.handlebarsTemplate = this.handlebarsInstance.compile(apiConfig.body, { strict: true });
+      this.handlebarsInstance.registerHelper(
+        "formatISODate",
+        function(timestamp, timezone) {
+          const date = new Date(timestamp);
+          return date.toISOString();
+        }
+      );
+      this.handlebarsTemplate = this.handlebarsInstance.compile(
+        apiConfig.body,
+        { strict: true }
+      );
       this.validateTemplate();
     }
     (0, import_rxjs.interval)(this.apiConfig.interval * 1e3).subscribe(async () => {
@@ -60,13 +68,18 @@ class ApiExtractorService {
   }
   async extract() {
     if (this.processing) {
-      import_logger.Logger.getInstance().debug("Api source service is already processing: ", this.apiConfig.name);
+      import_logger.Logger.getInstance().debug(
+        "Api source service is already processing: ",
+        this.apiConfig.name
+      );
       return;
     }
     this.processing = true;
     try {
       await this.executeApi().catch((error) => {
-        throw new Error(`Error while extracting data from api source service ${error.message}`);
+        throw new Error(
+          `Error while extracting data from api source service ${error.message}`
+        );
       });
     } catch (error) {
     } finally {
@@ -74,13 +87,21 @@ class ApiExtractorService {
     }
   }
   async executeApi() {
-    const latestOffset = this.offsetStore.getOffset((0, import_helper.generateOffsetIdentifier)(this.apiConfig));
+    const latestOffset = this.offsetStore.getOffset(
+      (0, import_helper.generateOffsetIdentifier)(this.apiConfig)
+    );
     if (this.config.debug)
-      import_logger.Logger.getInstance().debug(`Latest offset for ${this.apiConfig.name}: ${JSON.stringify(latestOffset)}`);
+      import_logger.Logger.getInstance().debug(
+        `Latest offset for ${this.apiConfig.name}: ${JSON.stringify(latestOffset)}`
+      );
     const body = this.getBody(latestOffset, this.apiConfig.batchSize ?? 10);
-    import_logger.Logger.getInstance().debug(`Executing ${this.apiConfig.method} request to ${this.apiConfig.url} with body ${body}`);
+    import_logger.Logger.getInstance().debug(
+      `Executing ${this.apiConfig.method} request to ${this.apiConfig.url} with body ${body}`
+    );
     const contentType = this.apiConfig.format ?? "text";
-    const headers = { "Content-Type": contentType };
+    const headers = {
+      "Content-Type": contentType
+    };
     if (this.apiConfig.authorization) {
       headers["Authorization"] = this.apiConfig.authorization;
     }
@@ -102,8 +123,9 @@ class ApiExtractorService {
       }
       await this.apiResultHandler.handleResult(result, this.apiConfig);
     } catch (error) {
-      import_logger.Logger.getInstance().debug(`Error while extracting data from api source service: ${error.message}`);
-      return;
+      import_logger.Logger.getInstance().debug(
+        `Error while extracting data from api source service: ${error.message}`
+      );
     }
   }
   getBody(offset, limit) {
@@ -116,7 +138,7 @@ class ApiExtractorService {
     });
   }
   validateTemplate() {
-    this.getBody({ timestamp: 0, id: 0 }, 0);
+    this.getBody({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

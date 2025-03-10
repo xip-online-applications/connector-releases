@@ -21,7 +21,7 @@ __export(types_exports, {
 });
 module.exports = __toCommonJS(types_exports);
 function isOffsetStoreType(obj) {
-  return obj !== void 0 && obj !== null && obj.timestamp !== void 0 && typeof obj.timestamp === "number" && !isNaN(obj.timestamp);
+  return obj !== void 0 && obj !== null && obj.timestamp !== void 0 && typeof obj.timestamp === "number" && !Number.isNaN(obj.timestamp);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
