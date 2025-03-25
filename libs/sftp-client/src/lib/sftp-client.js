@@ -30,7 +30,9 @@ class SftpClient {
     this.sftpClient = new sftp(baseYamlConfig.processIdentifier);
   }
   async init() {
-    import_logger.Logger.getInstance().info("Initializing sftp: ", this.config.host);
+    import_logger.Logger.getInstance().info(
+      `Initializing sftp: ${this.config.host}:${this.config.port} using ${this.config.type}`
+    );
     await this.sftpClient.connect(this.config);
     import_logger.Logger.getInstance().info("SFTP client initialized");
   }

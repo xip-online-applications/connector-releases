@@ -23,17 +23,20 @@ module.exports = __toCommonJS(builder_service_exports);
 var import_http = require("./http.service");
 var import_token = require("./token");
 var import_cache = require("./cache");
+var import_filesystem_cache = require("./cache/filesystem-cache.service");
 class HttpServiceBuilder {
   static build(options) {
-    const cacheService = HttpServiceBuilder.buildCacheService(options.cache ?? {});
-    const jwtTokenService = HttpServiceBuilder.buildJwtTokenService(options.jwt, cacheService);
-    return new import_http.HttpService(
-      jwtTokenService,
-      {
-        baseUrl: options.baseUrl,
-        tenantIdentifier: options.jwt.tenantIdentifier
-      }
+    const cacheService = HttpServiceBuilder.buildCacheService(
+      options.cache ?? {}
     );
+    const jwtTokenService = HttpServiceBuilder.buildJwtTokenService(
+      options.jwt,
+      cacheService
+    );
+    return new import_http.HttpService(jwtTokenService, {
+      baseUrl: options.baseUrl,
+      tenantIdentifier: options.jwt.tenantIdentifier
+    });
   }
   static buildFromEnv(options) {
     return HttpServiceBuilder.build({
@@ -60,6 +63,11 @@ class HttpServiceBuilder {
       case "redis":
         return new import_cache.RedisCacheService(String(options.redisUrl), {
           cacheKeyPrefix: options.keyPrefix
+        });
+      case "filesystem":
+        return new import_filesystem_cache.FileSystemCacheService({
+          path: options.path ?? "./cache",
+          keyPrefix: options.keyPrefix
         });
       default:
         return new import_cache.ArrayCacheService();

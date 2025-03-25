@@ -32,6 +32,28 @@ class ConnectorApiClient extends import_management_api_client.AbstractManagement
       enabled: true
     });
   }
+  writeOffsets(connectorIdentifier, offsetIdentifier, offsetData) {
+    return this.put(
+      `/v1/connectors/${connectorIdentifier}/offsets/${offsetIdentifier}`,
+      offsetData
+    );
+  }
+  writeAllOffsets(connectorIdentifier, offsetData) {
+    return this.post(
+      `/v1/connectors/${connectorIdentifier}/offsets`,
+      offsetData
+    );
+  }
+  getCurrentOffset(connectorIdentifier, offsetIdentifier) {
+    return this.get(
+      `/v1/connectors/${connectorIdentifier}/offsets/${offsetIdentifier}`
+    );
+  }
+  getAllOffset(connectorIdentifier) {
+    return this.get(
+      `/v1/connectors/${connectorIdentifier}/offsets`
+    );
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

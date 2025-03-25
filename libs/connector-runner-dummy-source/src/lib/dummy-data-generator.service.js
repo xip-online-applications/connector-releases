@@ -21,31 +21,33 @@ __export(dummy_data_generator_service_exports, {
 });
 module.exports = __toCommonJS(dummy_data_generator_service_exports);
 var import_rxjs = require("rxjs");
-var import_kafka_message = require("./kafka-message.factory");
 var import_logger = require("@transai/logger");
+var import_kafka_message = require("./kafka-message.factory");
 class DummyDataGeneratorService {
-  constructor(kafkaSourceService, config) {
-    this.kafkaSourceService = kafkaSourceService;
-    this.config = config;
-    this.processing = false;
+  static #EVENT = "event.source-sink.kafka";
+  static #METRIC = "event.metric.dummy-data-generator";
+  #kafkaSourceService;
+  #config;
+  #offsetStore;
+  #processing = false;
+  constructor(kafkaSourceService, config, offsetStore) {
+    this.#kafkaSourceService = kafkaSourceService;
+    this.#config = config;
+    this.#offsetStore = offsetStore;
     import_logger.Logger.getInstance().debug(`DummyDataGeneratorService initialized`);
-    (0, import_rxjs.interval)((this.config.interval ?? 10) * 1e3).subscribe(() => this.generate());
+    (0, import_rxjs.interval)((this.#config.interval ?? 10) * 1e3).subscribe(
+      () => this.#generate()
+    );
   }
-  static {
-    this.EVENT = "event.source-sink.kafka";
-  }
-  static {
-    this.METRIC = "event.metric.dummy-data-generator";
-  }
-  async generate() {
-    if (this.processing) {
+  async #generate() {
+    if (this.#processing) {
       import_logger.Logger.getInstance().debug("Api source service is already processing");
       return;
     }
-    if (this.config.debug) {
+    if (this.#config.debug) {
       import_logger.Logger.getInstance().debug("Generating dummy data");
     }
-    this.processing = true;
+    this.#processing = true;
     try {
       const [messages, topic] = (0, import_kafka_message.buildKafkaMessage)(
         {
@@ -58,18 +60,28 @@ class DummyDataGeneratorService {
           collection: "pdc_fm_prodmeld",
           keyField: "identifier"
         },
-        this.config,
-        DummyDataGeneratorService.EVENT,
+        this.#config,
+        DummyDataGeneratorService.#EVENT,
         10
       );
-      if (this.config.debug) {
+      if (this.#config.debug) {
         import_logger.Logger.getInstance().debug("Sending messages", messages.length, topic);
       }
-      await this.kafkaSourceService.send(messages, topic);
+      const x = 3;
+      const random = Math.floor(Math.random() * x) + 1;
+      await this.#kafkaSourceService.send(messages, topic);
+      this.#offsetStore.setOffset(
+        {
+          id: 0,
+          timestamp: (/* @__PURE__ */ new Date()).getTime(),
+          rawTimestamp: (/* @__PURE__ */ new Date()).getTime()
+        },
+        `dummy-source-${random}`
+      );
     } catch (error) {
       import_logger.Logger.getInstance().debug(error);
     } finally {
-      this.processing = false;
+      this.#processing = false;
     }
   }
 }

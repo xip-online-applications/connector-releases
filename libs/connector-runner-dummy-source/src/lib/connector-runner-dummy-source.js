@@ -38,13 +38,14 @@ class ConnectorRunnerDummySource extends import_connector_runtime.ConnectorRunti
       debug: false
     });
     this.init = async () => {
-      const config = this.config;
-      new import_dummy_data_generator.DummyDataGeneratorService(
+      this.#generator = new import_dummy_data_generator.DummyDataGeneratorService(
         this.kafkaService,
-        config
+        this.config,
+        this.offsetStore
       );
     };
   }
+  #generator;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

@@ -41,6 +41,7 @@ var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_logger = require("@transai/logger");
 var import_moment_timezone = __toESM(require("moment-timezone"));
 var import_offset_store2 = require("./offset-store/offset-store.service");
+var import_cloud_offset_store = require("./offset-store/cloud-offset-store.service");
 class ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs) {
     this.connector = connector;
@@ -64,13 +65,22 @@ class ConnectorRuntime {
     );
     const tmpdir = process.env["TRANSAI_TMP_DIR"];
     if (tmpdir) {
-      const offsetStore = new import_offset_store2.OffsetStoreService(tmpdir);
+      this.log.debug(
+        `Connector ID: ${connector.identifier} - ${tmpdir}, using offset store ${process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? "API" : "FILE"}`
+      );
+      const offsetStore = process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? new import_cloud_offset_store.CloudOffsetStoreService(tmpdir, this.CONNECTOR_IDENTIFIER) : new import_offset_store2.OffsetStoreService(tmpdir);
       offsetStore.init().then(() => {
         this.log.debug("Offset store initialized. write start time");
         offsetStore.writeFile(this.CONNECTOR_IDENTIFIER, {
           start: (/* @__PURE__ */ new Date()).toISOString()
+        }).then(() => {
+          this.log.debug("Start time written");
+        }).catch((err) => {
+          this.log.error("Error writing start time");
+          throw err;
         });
       }).catch((err) => {
+        this.log.error("Error init offset store");
         throw err;
       });
       this.offsetStoreInstance = offsetStore;
@@ -157,7 +167,7 @@ class ConnectorRuntime {
   }
   get offsetStore() {
     if (this.offsetStoreInstance === void 0) {
-      throw new Error("Kafka service not initialized");
+      throw new Error("Offset service not initialized");
     }
     return this.offsetStoreInstance;
   }
@@ -241,6 +251,7 @@ class ConnectorRuntime {
     await this.kafkaServiceInstance.init();
   }
   async stop() {
+    await this.offsetStoreInstance?.deInit();
     const processesToExit = [this.exit()];
     if (this.kafkaServiceInstance !== void 0) {
       processesToExit.push(this.kafkaServiceInstance.exitProcess("stop"));

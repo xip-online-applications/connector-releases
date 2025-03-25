@@ -34,7 +34,7 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
           "Offset store is not defined. Please provide an temp location for the offset store."
         );
       }
-      const sftpClient = new import_sftp_client.SftpClient(this.config.sftpConfig, this.config);
+      const sftpClient = this.config.forceReconnect ? new import_sftp_client.ConnectSftpClient(this.config.sftpConfig, this.config) : new import_sftp_client.SftpClient(this.config.sftpConfig, this.config);
       await sftpClient.init();
       await Promise.all(
         this.config.directories.map(async (fileSourceConfig) => {

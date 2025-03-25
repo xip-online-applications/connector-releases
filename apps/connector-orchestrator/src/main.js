@@ -40,8 +40,22 @@ var import_connector_runner_sql_source = require("@transai/connector-runner-sql-
 var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
 var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
-var import_check_two_arrays = require("./check-two-arrays");
 var import_node_process = __toESM(require("node:process"));
+var import_check_two_arrays = require("./check-two-arrays");
+const getLogLevel = () => {
+  let logLevel = import_node_process.default.env.LOG_LEVEL || import_logger.LogLevels.info;
+  const validLogLevels = Object.values(import_logger.LogLevels);
+  const faultyLogLevel = !validLogLevels.includes(logLevel);
+  if (faultyLogLevel) {
+    logLevel = import_logger.LogLevels.info;
+  }
+  if (faultyLogLevel) {
+    console.error(
+      `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'. Using info as default.`
+    );
+  }
+  return logLevel;
+};
 const getConnectorType = (connectorConfig) => {
   switch (connectorConfig.connectorType) {
     case import_types.ConfiguredConnectorTypes.API_SINK:
@@ -135,7 +149,7 @@ const getConnectorType = (connectorConfig) => {
   }
 };
 async function startCluster() {
-  const log = import_logger.Logger.getInstance("connector-orchestrator");
+  const log = import_logger.Logger.getInstance("connector-orchestrator", getLogLevel());
   const managementApiClient = new import_management_api_client.ConnectorApiClient();
   let lastUpdatedTimestamp;
   let enabledConnectors = [];
@@ -284,21 +298,10 @@ async function startConnector() {
   const connectorData = JSON.parse(
     import_node_process.default.env.CONNECTOR
   );
-  let logLevel = import_node_process.default.env.LOG_LEVEL || import_logger.LogLevels.info;
-  const validLogLevels = Object.values(import_logger.LogLevels);
-  const faultyLogLevel = !validLogLevels.includes(logLevel);
-  if (faultyLogLevel) {
-    logLevel = import_logger.LogLevels.info;
-  }
   const log = import_logger.Logger.getInstance(
     `${connectorData.identifier} - ${import_node_process.default.pid}`,
-    logLevel
+    getLogLevel()
   );
-  if (faultyLogLevel) {
-    log.error(
-      `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'. Using info as default.`
-    );
-  }
   log.info(
     `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} started`
   );

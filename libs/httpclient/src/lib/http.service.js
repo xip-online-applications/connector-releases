@@ -38,20 +38,18 @@ class HttpService {
     this.#tokenService = tokenService;
     this.#options = options;
   }
-  async get(url, options = {}) {
+  async get(url, options = {}, queryParams = {}) {
     const baseUrl = options.baseUrl || this.#options.baseUrl;
     const token = await this.#tokenService.getToken({
       ...this.#options,
       ...options
     });
-    const { data } = await import_axios.default.get(
-      `${baseUrl}${url}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const { data } = await import_axios.default.get(`${baseUrl}${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: queryParams
+    });
     return data;
   }
   async post(url, body, options = {}) {
@@ -60,15 +58,24 @@ class HttpService {
       ...this.#options,
       ...options
     });
-    const { data } = await import_axios.default.post(
-      `${baseUrl}${url}`,
-      body,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+    const { data } = await import_axios.default.post(`${baseUrl}${url}`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    );
+    });
+    return data;
+  }
+  async put(url, body, options = {}) {
+    const baseUrl = options.baseUrl || this.#options.baseUrl;
+    const token = await this.#tokenService.getToken({
+      ...this.#options,
+      ...options
+    });
+    const { data } = await import_axios.default.put(`${baseUrl}${url}`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return data;
   }
 }

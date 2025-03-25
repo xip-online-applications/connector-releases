@@ -17,14 +17,22 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var meta_interface_exports = {};
 __export(meta_interface_exports, {
+  LocaleSchema: () => LocaleSchema,
   MetaSchema: () => MetaSchema
 });
 module.exports = __toCommonJS(meta_interface_exports);
 var import_zod = require("zod");
+const LocaleSchema = import_zod.z.record(
+  import_zod.z.string().regex(/^[a-z]{2}$/),
+  // Ensures valid locale codes (e.g., en, nl, de)
+  import_zod.z.record(import_zod.z.string(), import_zod.z.string())
+  // Ensures all fields inside each locale are strings
+);
 const MetaSchema = import_zod.z.record(
-  import_zod.z.union([import_zod.z.string().min(1), import_zod.z.number(), import_zod.z.boolean()])
+  import_zod.z.union([LocaleSchema, import_zod.z.string().min(1), import_zod.z.number(), import_zod.z.boolean()])
 );
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  LocaleSchema,
   MetaSchema
 });

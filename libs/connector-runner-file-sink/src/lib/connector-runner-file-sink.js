@@ -31,10 +31,7 @@ class ConnectorRunnerFileSink extends import_connector_runtime.ConnectorRuntime 
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_FILE_SINK_CONFIG";
     this.init = async () => {
       if (this.sftpClientInstance === void 0) {
-        this.sftpClientInstance = new import_sftp_client.SftpClient(
-          this.config.sftpConfig,
-          this.config
-        );
+        this.sftpClientInstance = this.config.forceReconnect ? new import_sftp_client.ConnectSftpClient(this.config.sftpConfig, this.config) : new import_sftp_client.SftpClient(this.config.sftpConfig, this.config);
       }
       await this.sftpClient.init();
       const jobCallbackFunction = (callbackFunction) => {

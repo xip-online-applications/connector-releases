@@ -87,7 +87,7 @@ class ApiExtractorService {
     }
   }
   async executeApi() {
-    const latestOffset = this.offsetStore.getOffset(
+    const latestOffset = await this.offsetStore.getOffset(
       (0, import_helper.generateOffsetIdentifier)(this.apiConfig)
     );
     if (this.config.debug)

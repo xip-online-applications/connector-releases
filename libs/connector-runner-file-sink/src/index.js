@@ -15,7 +15,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var src_exports = {};
 module.exports = __toCommonJS(src_exports);
 __reExport(src_exports, require("./lib/connector-runner-file-sink"), module.exports);
+__reExport(src_exports, require("./lib/types"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ...require("./lib/connector-runner-file-sink")
+  ...require("./lib/connector-runner-file-sink"),
+  ...require("./lib/types")
 });

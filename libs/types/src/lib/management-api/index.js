@@ -31,6 +31,8 @@ __export(management_api_exports, {
   MeasureInterface: () => import_measure.MeasureInterface,
   MeasuresInterface: () => import_measures.MeasuresInterface,
   MetaInterface: () => import_meta.MetaInterface,
+  PreAggregateInterface: () => import_pre_aggregate.PreAggregateInterface,
+  PreAggregationsInterface: () => import_pre_aggregations.PreAggregationsInterface,
   RelationInterface: () => import_relation.RelationInterface,
   RelationsInterface: () => import_relations.RelationsInterface,
   SegmentInterface: () => import_segment.SegmentInterface,
@@ -74,6 +76,8 @@ var import_switch = require("./dataset/switch.interface");
 var import_when_items = require("./dataset/when-items.interface");
 var import_when_item = require("./dataset/when-item.interface");
 var import_meta = require("./dataset/meta.interface");
+var import_pre_aggregations = require("./dataset/pre-aggregations.interface");
+var import_pre_aggregate = require("./dataset/pre-aggregate.interface");
 var import_semantic_triggers = require("./semantic-trigger/semantic-triggers.interface");
 var import_semantic_trigger = require("./semantic-trigger/semantic-trigger.interface");
 var import_semantic_trigger_record = require("./semantic-trigger/semantic-trigger-record.interface");
@@ -95,6 +99,8 @@ var import_template_implementation_overrides = require("./template-implementatio
   MeasureInterface,
   MeasuresInterface,
   MetaInterface,
+  PreAggregateInterface,
+  PreAggregationsInterface,
   RelationInterface,
   RelationsInterface,
   SegmentInterface,

@@ -140,7 +140,7 @@ class DatasourceExtractorService {
     }
   }
   async executeQuery() {
-    const latestOffset = this.offsetStore.getOffset(
+    const latestOffset = await this.offsetStore.getOffset(
       this.queryConfig.queryIdentifier
     );
     const query = this.getQuery(latestOffset, this.queryConfig.batchSize);

@@ -27,6 +27,8 @@ var import_dimensions = require("./dimensions.interface");
 var import_segments = require("./segments.interface");
 var import_relations = require("./relations.interface");
 var import_measures = require("./measures.interface");
+var import_meta = require("./meta.interface");
+var import_pre_aggregations = require("./pre-aggregations.interface");
 const DatasetSchema = import_zod.z.object({
   name: import_zod.z.string().min(1),
   description: import_zod.z.string().min(1),
@@ -34,11 +36,13 @@ const DatasetSchema = import_zod.z.object({
   prefix: import_zod.z.string().min(1),
   parent: import_zod.z.string().min(1).optional(),
   sql: import_zod.z.string().min(1).optional(),
+  meta: import_meta.MetaSchema.optional(),
   collection: import_collection.CollectionSchema.optional(),
   dimensions: import_dimensions.DimensionsSchema.optional(),
   segments: import_segments.SegmentsSchema.optional(),
   relations: import_relations.RelationsSchema.optional(),
-  measures: import_measures.MeasuresSchema.optional()
+  measures: import_measures.MeasuresSchema.optional(),
+  preAggregations: import_pre_aggregations.PreAggregationsSchema.optional()
 }).superRefine((val, ctx) => {
   if (!val.parent && val.sql === void 0 && val.collection === void 0) {
     ctx.addIssue({

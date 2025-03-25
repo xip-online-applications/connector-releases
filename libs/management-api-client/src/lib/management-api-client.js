@@ -1,8 +1,6 @@
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -16,22 +14,13 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var management_api_client_exports = {};
 __export(management_api_client_exports, {
   AbstractManagementApiClient: () => AbstractManagementApiClient
 });
 module.exports = __toCommonJS(management_api_client_exports);
-var import_axios = __toESM(require("axios"));
-var import_logger = require("@transai/logger");
+var import_httpclient = require("@xip-online-data/httpclient");
 class AbstractManagementApiClient {
   #clientId;
   #clientSecret;
@@ -40,7 +29,7 @@ class AbstractManagementApiClient {
   #audience;
   #identityProviderUrl;
   #auth0_orgIdentifier;
-  #currentAccessToken = void 0;
+  #client;
   constructor() {
     this.#clientId = process.env["MANAGEMENT_API_CLIENT_ID"] ?? "";
     this.#clientSecret = process.env["MANAGEMENT_API_CLIENT_SECRET"] ?? "";
@@ -52,55 +41,47 @@ class AbstractManagementApiClient {
     if (!this.#clientId || !this.#clientSecret || !this.#managementApiUrl || !this.#audience || !this.#identityProviderUrl || !this.#auth0_orgIdentifier || !this.#tenantIdentifier) {
       throw new Error("Missing required environment variables");
     }
-  }
-  async #obtainAccessToken() {
-    const tokenUrl = `${this.#identityProviderUrl}/oauth/token`;
-    const tokenResponse = await import_axios.default.post(
-      tokenUrl,
-      {
-        client_id: this.#clientId,
-        client_secret: this.#clientSecret,
+    this.#client = import_httpclient.HttpServiceBuilder.build({
+      baseUrl: this.#managementApiUrl,
+      jwt: {
+        tokenUrl: `${this.#identityProviderUrl}/oauth/token`,
+        clientId: this.#clientId,
+        clientSecret: this.#clientSecret,
         audience: this.#audience,
-        grant_type: "client_credentials",
-        organization_id: this.#auth0_orgIdentifier,
-        tenantId: this.#tenantIdentifier
+        tenantIdentifier: this.#tenantIdentifier
       },
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-    ).catch((error) => {
-      import_logger.Logger.getInstance().error(error);
-      throw error;
+      cache: this.#getCacheOptions()
     });
-    this.#currentAccessToken = tokenResponse.data.access_token;
   }
   async get(path, queryParams) {
-    if (!this.#currentAccessToken) {
-      await this.#obtainAccessToken();
+    return this.#client.get(path, {}, queryParams);
+  }
+  async put(path, body) {
+    return this.#client.put(path, body);
+  }
+  async post(path, body) {
+    return this.#client.post(path, body);
+  }
+  // eslint-disable-next-line class-methods-use-this
+  #getCacheOptions() {
+    switch (process.env["TOKEN_CACHE"]) {
+      case "memory":
+        return { type: "memory" };
+      case "redis":
+        return {
+          type: "redis",
+          redisUrl: process.env["REDIS_URL"] ?? "",
+          keyPrefix: process.env["REDIS_KEY_PREFIX"] ?? ""
+        };
+      case "filesystem":
+        return {
+          type: "filesystem",
+          path: process.env["FILESYSTEM_CACHE_PATH"] ?? "./cache",
+          keyPrefix: process.env["FILESYSTEM_CACHE_PREFIX"]
+        };
+      default:
+        return { type: "memory" };
     }
-    const url = `${this.#managementApiUrl}${path}`;
-    import_logger.Logger.getInstance().debug(url);
-    const response = await import_axios.default.get(url, {
-      headers: {
-        Authorization: `Bearer ${this.#currentAccessToken}`
-      },
-      params: queryParams
-    }).catch(async (error) => {
-      if (error.response?.status === 401) {
-        await this.#obtainAccessToken();
-        return import_axios.default.get(`${this.#managementApiUrl}${path}`, {
-          headers: {
-            Authorization: `Bearer ${this.#currentAccessToken}`
-          },
-          params: queryParams
-        });
-      }
-      import_logger.Logger.getInstance().error(error);
-      throw error;
-    });
-    return response.data;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
