@@ -154,7 +154,7 @@ class CloudOffsetStoreService {
       this.#managementApiClient.getAllOffset(this.#connectorIdentifier).then((offsets) => {
         this.#log.info(`Successfully synced ${offsets.length} offsets.`);
         this.#log.debug(
-          `Overridden offsets: ${offsets.map((o) => o.identifier).join(", ")}`
+          `Set Cloud offsets: ${offsets.map((o) => o.identifier).join(", ")}`
         );
         this.#offsetStore.initCloudOffsets(offsets);
         this.#initialized = true;

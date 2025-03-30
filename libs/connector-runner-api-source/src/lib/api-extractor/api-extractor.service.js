@@ -37,44 +37,59 @@ var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
 var import_logger = require("@transai/logger");
 var import_helper = require("../helper.functions");
 class ApiExtractorService {
+  #config;
+  #apiConfig;
+  #apiResultHandler;
+  #offsetStore;
+  #handlebarsTemplate;
+  #urlTemplate;
+  #processing = false;
+  #handlebarsInstance;
+  #logger;
   constructor(config, apiConfig, apiResultHandler, offsetStore) {
-    this.config = config;
-    this.apiConfig = apiConfig;
-    this.apiResultHandler = apiResultHandler;
-    this.offsetStore = offsetStore;
-    this.processing = false;
-    import_logger.Logger.getInstance().debug(
-      `Api source service initialized: ${this.apiConfig.name} with interval of ${this.apiConfig.interval} seconds`
+    this.#config = config;
+    this.#apiConfig = apiConfig;
+    this.#apiResultHandler = apiResultHandler;
+    this.#offsetStore = offsetStore;
+    if (!apiConfig.url) {
+      throw new Error("URL is not defined in apiConfig");
+    }
+    this.#logger = import_logger.Logger.getInstance();
+    this.#logger.debug(
+      `Api source service initialized: ${this.#apiConfig.name} with interval of ${this.#apiConfig.interval} seconds`
+    );
+    this.#handlebarsInstance = import_handlebars.default.create();
+    (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
+    this.#handlebarsInstance.registerHelper(
+      "formatISODate",
+      function(timestamp, timezone) {
+        const date = new Date(timestamp);
+        return date.toISOString();
+      }
     );
     if (apiConfig.body) {
-      this.handlebarsInstance = import_handlebars.default.create();
-      (0, import_handlebars_helpers.default)({ handlebars: this.handlebarsInstance });
-      this.handlebarsInstance.registerHelper(
-        "formatISODate",
-        function(timestamp, timezone) {
-          const date = new Date(timestamp);
-          return date.toISOString();
-        }
-      );
-      this.handlebarsTemplate = this.handlebarsInstance.compile(
+      this.#handlebarsTemplate = this.#handlebarsInstance.compile(
         apiConfig.body,
         { strict: true }
       );
       this.validateTemplate();
     }
-    (0, import_rxjs.interval)(this.apiConfig.interval * 1e3).subscribe(async () => {
+    this.#urlTemplate = this.#handlebarsInstance.compile(apiConfig.url, {
+      strict: true
+    });
+    (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
       await this.extract();
     });
   }
   async extract() {
-    if (this.processing) {
-      import_logger.Logger.getInstance().debug(
+    if (this.#processing) {
+      this.#logger.debug(
         "Api source service is already processing: ",
-        this.apiConfig.name
+        this.#apiConfig.name
       );
       return;
     }
-    this.processing = true;
+    this.#processing = true;
     try {
       await this.executeApi().catch((error) => {
         throw new Error(
@@ -82,28 +97,30 @@ class ApiExtractorService {
         );
       });
     } catch (error) {
+      import_logger.Logger.getInstance().debug(JSON.stringify(error));
     } finally {
-      this.processing = false;
+      this.#processing = false;
     }
   }
   async executeApi() {
-    const latestOffset = await this.offsetStore.getOffset(
-      (0, import_helper.generateOffsetIdentifier)(this.apiConfig)
+    const latestOffset = await this.#offsetStore.getOffset(
+      (0, import_helper.generateOffsetIdentifier)(this.#apiConfig)
     );
-    if (this.config.debug)
+    if (this.#config.debug)
       import_logger.Logger.getInstance().debug(
-        `Latest offset for ${this.apiConfig.name}: ${JSON.stringify(latestOffset)}`
+        `Latest offset for ${this.#apiConfig.name}: ${JSON.stringify(latestOffset)}`
       );
-    const body = this.getBody(latestOffset, this.apiConfig.batchSize ?? 10);
+    const body = this.getBody(latestOffset, this.#apiConfig.batchSize ?? 10);
+    const url = this.getUrl(latestOffset, this.#apiConfig.batchSize ?? 10);
     import_logger.Logger.getInstance().debug(
-      `Executing ${this.apiConfig.method} request to ${this.apiConfig.url} with body ${body}`
+      `Executing ${this.#apiConfig.method} request to ${url} with body ${body}`
     );
-    const contentType = this.apiConfig.format ?? "text";
+    const contentType = this.#apiConfig.format ?? "text";
     const headers = {
       "Content-Type": contentType
     };
-    if (this.apiConfig.authorization) {
-      headers["Authorization"] = this.apiConfig.authorization;
+    if (this.#apiConfig.authorization) {
+      headers["Authorization"] = this.#apiConfig.authorization;
     }
     const config = {
       responseType: "text",
@@ -111,28 +128,34 @@ class ApiExtractorService {
     };
     try {
       let result;
-      switch (this.apiConfig.method) {
+      switch (this.#apiConfig.method) {
         case "POST":
-          result = await import_axios.default.post(this.apiConfig.url, body, config);
+          result = await import_axios.default.post(url, body, config);
           break;
         case "GET":
-          result = await import_axios.default.get(this.apiConfig.url, config);
+          result = await import_axios.default.get(url, config);
           break;
         default:
-          throw new Error(`Unsupported method ${this.apiConfig.method}`);
+          throw new Error(`Unsupported method ${this.#apiConfig.method}`);
       }
-      await this.apiResultHandler.handleResult(result, this.apiConfig);
+      await this.#apiResultHandler.handleResult(result, this.#apiConfig);
     } catch (error) {
-      import_logger.Logger.getInstance().debug(
-        `Error while extracting data from api source service: ${error.message}`
+      this.#logger.debug(
+        `Error while extracting data from api source service: ${JSON.stringify(error)}`
       );
     }
   }
   getBody(offset, limit) {
-    if (!this.handlebarsTemplate) {
+    if (!this.#handlebarsTemplate) {
       return "";
     }
-    return this.handlebarsTemplate({
+    return this.#handlebarsTemplate({
+      ...offset,
+      limit
+    });
+  }
+  getUrl(offset, limit) {
+    return this.#urlTemplate({
       ...offset,
       limit
     });

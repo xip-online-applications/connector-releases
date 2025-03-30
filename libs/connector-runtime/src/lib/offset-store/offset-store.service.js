@@ -90,7 +90,7 @@ class OffsetStoreService {
   initCloudOffsets(offsets) {
     offsets.forEach((o) => {
       const { identifier, offset } = o;
-      this.#log.info(`Initializing offset for ${identifier}`);
+      this.#log.debug(`Initializing offset for ${identifier}`);
       this.#cloudOffsetCache.set(identifier, offset);
     });
   }
@@ -105,7 +105,7 @@ class OffsetStoreService {
       })
     ).subscribe((v) => {
       if (v !== null) {
-        this.#log.info("Offsets stored on disk completed.");
+        this.#log.debug("Offsets stored on disk completed.");
       }
     });
   }

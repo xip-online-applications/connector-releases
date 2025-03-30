@@ -31,7 +31,6 @@ __export(jwt_token_service_exports, {
 });
 module.exports = __toCommonJS(jwt_token_service_exports);
 var import_axios = __toESM(require("axios"));
-var import_logger = require("@transai/logger");
 class JwtTokenService {
   #options;
   #cacheService;
@@ -49,7 +48,6 @@ class JwtTokenService {
     }
     const cacheKey = this.getCacheArrayKey(options);
     if (this.#cachedTokens[cacheKey] && this.#cachedTokens[cacheKey].expires_at > Date.now()) {
-      import_logger.Logger.getInstance().debug(`${cacheKey} Use Cached Key`);
       return this.#cachedTokens[cacheKey].token.access_token;
     }
     const audience = options.audience || this.#options.audience;
@@ -66,15 +64,9 @@ class JwtTokenService {
         ...tenantId ? { tenantId } : {}
       })
     };
-    import_logger.Logger.getInstance().debug("FETCHING NEW TOKEN FOR TENANT", cacheKey);
     const { data } = await import_axios.default.request(requestConfig).catch((error) => {
-      import_logger.Logger.getInstance().error(
-        `ERROR FETCHING NEW TOKEN FOR TENANT ${JSON.stringify(error)}`,
-        cacheKey
-      );
       throw new Error("Error fetching token");
     });
-    import_logger.Logger.getInstance().debug("FETCHED NEW TOKEN FOR TENANT", cacheKey);
     this.#cachedTokens[cacheKey] = {
       tenantId,
       audience,
