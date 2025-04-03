@@ -150,7 +150,7 @@ class DatasourceExtractorService {
       this.#processing = false;
     }
   }
-  async #executeQuery() {
+  async #executeQuery(runCount = 0) {
     const latestOffset = await this.#offsetStore.getOffset(
       this.#queryConfig.queryIdentifier
     );
@@ -172,8 +172,14 @@ class DatasourceExtractorService {
       this.#queryConfig,
       latestOffset
     );
-    if (result.affected === this.#queryConfig.batchSize && success) {
-      await this.#executeQuery();
+    if (result.affected === this.#queryConfig.batchSize && success && runCount < 10) {
+      const newRunCount = runCount + 1;
+      await this.#executeQuery(newRunCount);
+    }
+    if (runCount >= 10) {
+      import_logger.Logger.getInstance().warn(
+        `${this.#queryConfig.queryIdentifier} Limiting query since it exceeded 10 runs`
+      );
     }
   }
   #validateTemplate() {

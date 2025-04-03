@@ -35,6 +35,7 @@ var import_logger = require("@transai/logger");
 var import_sql_server = require("./sql-server.query-runner");
 class SqlServerConnectionDriver {
   constructor(connection) {
+    this.database = "";
     /**
      * We store all created query runners because we need to release them.
      */
