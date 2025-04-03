@@ -73,12 +73,16 @@ class OffsetStoreService {
       const date = /* @__PURE__ */ new Date();
       const timestamp = date.getTime();
       const rawTimestamp = date.toISOString();
-      return {
+      const defaultOffset = {
         id: 0,
         timestamp,
         rawTimestamp,
         isoDate: rawTimestamp
       };
+      this.#log.debug(
+        `${identifier} Does not have a offset. Use default offset instead. setting offset to ${JSON.stringify(defaultOffset)}`
+      );
+      return defaultOffset;
     } catch (error) {
       const date = /* @__PURE__ */ new Date();
       const timestamp = date.getTime();
