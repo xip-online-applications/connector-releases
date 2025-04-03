@@ -151,16 +151,18 @@ class CloudOffsetStoreService {
   }
   async #initOffsetsFromCloud() {
     try {
-      this.#managementApiClient.getAllOffset(this.#connectorIdentifier).then((offsets) => {
-        this.#log.info(`Successfully synced ${offsets.length} offsets.`);
-        this.#log.debug(
-          `Set Cloud offsets: ${offsets.map((o) => o.identifier).join(", ")}`
-        );
-        this.#offsetStore.initCloudOffsets(offsets);
-        this.#initialized = true;
-      }).catch((error) => this.#log.error("Error loading offsets:", error));
+      const offsets = await this.#managementApiClient.getAllOffset(this.#connectorIdentifier).catch((error) => {
+        this.#log.error(`Error loading offsets: ${JSON.stringify(error)}`);
+        return [];
+      });
+      this.#log.info(`Successfully synced ${offsets.length} offsets.`);
+      this.#log.debug(
+        `Set Cloud offsets: ${offsets.map((o) => o.identifier).join(", ")}`
+      );
+      this.#offsetStore.initCloudOffsets(offsets);
+      this.#initialized = true;
     } catch (error) {
-      this.#log.error("Error caching offsets:", error);
+      this.#log.error(`Error caching offsets: ${JSON.stringify(error)}`);
     }
   }
 }

@@ -29,7 +29,6 @@ class TypeORMError extends Error {
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(this, new.target.prototype);
     } else {
-      ;
       this.__proto__ = new.target.prototype;
     }
   }

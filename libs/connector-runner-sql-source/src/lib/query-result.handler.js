@@ -37,15 +37,26 @@ class QueryResultHandler {
     };
     this.getTimestamp = (record, queryConfig) => {
       let timestamp = 0;
+      let isoDate = "";
+      let rawTimestamp;
       const recordTimestamp = this.getOptionalRecordField(
         record,
         queryConfig.incrementalField
       );
       if (recordTimestamp) {
-        timestamp = new Date(recordTimestamp).getTime();
+        const dateObject = new Date(recordTimestamp);
+        timestamp = dateObject.getTime();
+        isoDate = dateObject.toISOString();
+      }
+      if (typeof recordTimestamp === "string" || typeof recordTimestamp === "number") {
+        rawTimestamp = recordTimestamp;
+      } else {
+        import_logger.Logger.getInstance().warn(
+          `${queryConfig.queryIdentifier} rawTimestamp is invalid. Not a string or number.`
+        );
       }
       const id = this.getOptionalRecordField(record, queryConfig.keyField) ?? 0;
-      return { id, timestamp, rawTimestamp: recordTimestamp ?? "" };
+      return { id, timestamp, rawTimestamp, isoDate };
     };
     // eslint-disable-next-line class-methods-use-this
     this.getOptionalRecordField = (record, fieldName) => {
@@ -58,19 +69,21 @@ class QueryResultHandler {
   #config;
   #kafkaService;
   #offsetStore;
-  async handleResult(result, queryConfig) {
+  async handleResult(result, queryConfig, previousOffset) {
     import_logger.Logger.getInstance().debug(
       `${queryConfig.queryIdentifier} runned successfully. Gotten ${result.records.length} records`
     );
     if (result.records.length === 0) {
-      return;
+      return true;
     }
-    let lastTimestamp = { timestamp: 0, id: 0, rawTimestamp: 0 };
+    const newestTimeStamp = this.getTimestamp(
+      result.records[result.records.length - 1],
+      queryConfig
+    );
     const preparedRecords = result.records.map((r) => {
       const newField = {
         ...r
       };
-      lastTimestamp = this.getTimestamp(r, queryConfig);
       if (queryConfig.ignoreFields) {
         for (const field of queryConfig.ignoreFields) {
           delete newField[field];
@@ -78,6 +91,12 @@ class QueryResultHandler {
       }
       return newField;
     });
+    if (queryConfig.incrementalField !== "" && newestTimeStamp.id === previousOffset?.id && newestTimeStamp.timestamp === previousOffset?.timestamp && result.affected !== 0) {
+      import_logger.Logger.getInstance().error(
+        `${queryConfig.queryIdentifier} runned successfully. But offset is not changed ${JSON.stringify(newestTimeStamp)}`
+      );
+      return false;
+    }
     try {
       import_logger.Logger.getInstance().debug(
         `${queryConfig.queryIdentifier} Sending ${result.affected} records to Kafka using batch`
@@ -88,12 +107,14 @@ class QueryResultHandler {
         queryConfig
       );
       if (success) {
-        this.storeTimestamp(lastTimestamp, queryConfig);
+        this.storeTimestamp(newestTimeStamp, queryConfig);
       }
+      return success;
     } catch (e) {
       import_logger.Logger.getInstance().debug(
-        `${queryConfig.queryIdentifier} Sending ${result.affected} records to Kafka using single record send`
+        `${queryConfig.queryIdentifier} Sending ${result.affected} records going wrong.`
       );
+      return false;
     }
   }
 }

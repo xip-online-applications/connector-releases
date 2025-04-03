@@ -198,7 +198,7 @@ async function startCluster() {
         );
       }
       const runtime = (/* @__PURE__ */ new Date()).getTime() - startedOn.getTime();
-      const timeoutTime = Math.max(100, 5e3 - runtime);
+      const timeoutTime = Math.max(100, 6e4 - runtime);
       log.debug(
         `Runtime of process ${runtime}, Restarting process for connector ${connector.identifier}, ${connector.connectorType} in ${timeoutTime} ms`
       );

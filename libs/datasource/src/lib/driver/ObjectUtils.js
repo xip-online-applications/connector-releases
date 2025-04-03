@@ -46,7 +46,6 @@ class ObjectUtils {
   static assign(target, ...sources) {
     for (const source of sources) {
       for (const prop of Object.getOwnPropertyNames(source)) {
-        ;
         target[prop] = source[prop];
       }
     }

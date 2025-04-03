@@ -22,6 +22,8 @@ __export(driver_factory_exports, {
 module.exports = __toCommonJS(driver_factory_exports);
 var import_my_sql_connection = require("./my-sql/my-sql-connection.driver");
 var import_postgres_connection = require("./postgres/postgres-connection.driver");
+var import_sql_server_connection = require("./sql-server/sql-server-connection.driver");
+var import_error = require("./error");
 class DriverFactory {
   static create(connection) {
     const { type } = connection.options;
@@ -32,8 +34,15 @@ class DriverFactory {
         return new import_postgres_connection.PostgresConnectionDriver(connection);
       case "mariadb":
         return new import_my_sql_connection.MySqlConnectionDriver(connection);
+      case "mssql":
+        return new import_sql_server_connection.SqlServerConnectionDriver(connection);
       default:
-        throw new Error("Not applicable" + type);
+        throw new import_error.MissingDriverError(type, [
+          "mariadb",
+          "mssql",
+          "mysql",
+          "postgres"
+        ]);
     }
   }
 }

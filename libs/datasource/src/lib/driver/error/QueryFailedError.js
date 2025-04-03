@@ -20,7 +20,7 @@ __export(QueryFailedError_exports, {
   QueryFailedError: () => QueryFailedError
 });
 module.exports = __toCommonJS(QueryFailedError_exports);
-var import_ObjectUtils = require("../ObjectUtils");
+var import_object_utils = require("../../util/object-utils");
 var import_TypeORMError = require("./TypeORMError");
 class QueryFailedError extends import_TypeORMError.TypeORMError {
   constructor(query, parameters, driverError) {
@@ -36,7 +36,7 @@ class QueryFailedError extends import_TypeORMError.TypeORMError {
         // eslint-disable-line
         ...otherProperties
       } = driverError;
-      import_ObjectUtils.ObjectUtils.assign(this, {
+      import_object_utils.ObjectUtils.assign(this, {
         ...otherProperties
       });
     }

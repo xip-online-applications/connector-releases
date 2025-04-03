@@ -44,10 +44,7 @@ class MySqlQueryRunner {
     const databaseConnection = await this.connect();
     const queryStartTime = +/* @__PURE__ */ new Date();
     try {
-      const [raw] = await databaseConnection.execute(
-        query,
-        parameters
-      );
+      const [raw] = await databaseConnection.execute(query, parameters);
       const queryEndTime = +/* @__PURE__ */ new Date();
       const queryExecutionTime = queryEndTime - queryStartTime;
       const result = new import_query_result.QueryResult();

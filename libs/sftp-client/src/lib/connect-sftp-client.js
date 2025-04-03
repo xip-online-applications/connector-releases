@@ -20,12 +20,13 @@ __export(connect_sftp_client_exports, {
   ConnectSftpClient: () => ConnectSftpClient
 });
 module.exports = __toCommonJS(connect_sftp_client_exports);
+var import_logger = require("@transai/logger");
 var import_sftp_client = require("./sftp-client");
 class ConnectSftpClient extends import_sftp_client.SftpClient {
   async init() {
     await super.init();
     await this.sftpClient.end();
-    console.log("SFTP client initialized");
+    import_logger.Logger.getInstance().info("SFTP client initialized");
   }
   async writeFile(destination, content) {
     await this.sftpClient.connect(this.config);

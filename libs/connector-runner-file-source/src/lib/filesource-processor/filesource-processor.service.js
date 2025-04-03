@@ -96,6 +96,7 @@ class FilesourceProcessorService {
     this.#kafkaService = kafkaService;
     this.#sftpClient = sftpClient;
     this.#fileHandler = new import_file_handler.FileHandler(this.#fileSourceConfig.delimiter);
+    this.#logger = import_logger.Logger.getInstance();
   }
   #processing;
   #numberOfImportedFilesPerSession;
@@ -104,10 +105,11 @@ class FilesourceProcessorService {
   #config;
   #kafkaService;
   #sftpClient;
+  #logger;
   async init() {
     (0, import_rxjs.interval)(this.#fileSourceConfig.interval * 1e3).subscribe(async () => {
       await this.process().catch((error) => {
-        throw new Error(
+        this.#logger.error(
           `Error while processing files from filesource processor service ${error.message}`
         );
       });
@@ -115,9 +117,8 @@ class FilesourceProcessorService {
   }
   async process() {
     if (this.#processing) {
-      import_logger.Logger.getInstance().debug(
-        "Filesource processor service is already processing: ",
-        this.#fileSourceConfig.ftpIdentifier
+      this.#logger.debug(
+        `Filesource processor service is already processing: ${this.#fileSourceConfig.ftpIdentifier}`
       );
       return;
     }
@@ -137,8 +138,7 @@ class FilesourceProcessorService {
         import_logger.Logger.getInstance().error(error.message);
       } else {
         import_logger.Logger.getInstance().error(
-          "Error while processing files",
-          JSON.stringify(error)
+          `Error while processing files ${JSON.stringify(error)}`
         );
       }
     } finally {
@@ -146,10 +146,19 @@ class FilesourceProcessorService {
     }
   }
   async processDirectory(directory, fileSelector) {
+    this.#logger.debug(
+      `Processing directory: ${directory} with ${fileSelector?.pattern}`
+    );
     let files = await this.#sftpClient.list(directory);
+    this.#logger.debug(
+      `Number Files in directory ${directory}: ${files.map((f) => f.name).join(", ")}`
+    );
     if (fileSelector) {
       const regex = new RegExp(fileSelector.pattern, fileSelector.flags);
       files = files.filter((f) => regex.test(f.name) || f.type === "d");
+      this.#logger.debug(
+        `Number Files in directory after regex filtering: ${files.length}`
+      );
     }
     await this.processFile(directory, files, fileSelector).catch((error) => {
       (0, import_handle_error.handleError)("Error while initializing the app", error);
@@ -168,15 +177,17 @@ class FilesourceProcessorService {
         continue;
       }
       if (file.type === "-") {
-        import_logger.Logger.getInstance().debug("Processing file: ", path);
+        this.#logger.debug(`Processing file: ${path}`);
         this.#numberOfImportedFilesPerSession += 1;
         const contentBuffer = await this.#sftpClient.readFile(path);
+        this.#logger.debug(`File ${path} read successfully`);
         const parsedContent = await this.#fileHandler.handleBuffer(
           path,
           contentBuffer,
           this.#fileSourceConfig.optionalHeaders ?? [],
           this.#fileSourceConfig.optionalSettings
         );
+        this.#logger.debug(`File ${path} Parsed successfully`);
         if (!parsedContent) {
           continue;
         }

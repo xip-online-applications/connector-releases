@@ -21,6 +21,7 @@ __export(postgres_query_runner_exports, {
 });
 module.exports = __toCommonJS(postgres_query_runner_exports);
 var import_query_result = require("../query-result");
+var import_error = require("../error");
 class PostgresQueryRunner {
   constructor(driver) {
     this.driver = driver;
@@ -48,12 +49,12 @@ class PostgresQueryRunner {
   }
   async query(query, parameters) {
     if (this.isReleased)
-      throw new Error();
+      throw new import_error.QueryRunnerAlreadyReleasedError();
     const databaseConnection = await this.connect();
     try {
       const queryStartTime = +/* @__PURE__ */ new Date();
       const raw = await databaseConnection.query(query, parameters);
-      const maxQueryExecutionTime = this.driver.options.maxQueryExecutionTime;
+      const { maxQueryExecutionTime } = this.driver.options;
       const queryEndTime = +/* @__PURE__ */ new Date();
       const queryExecutionTime = queryEndTime - queryStartTime;
       const result = new import_query_result.QueryResult();

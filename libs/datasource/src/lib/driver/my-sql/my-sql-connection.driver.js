@@ -30,8 +30,8 @@ __export(my_sql_connection_driver_exports, {
   MySqlConnectionDriver: () => MySqlConnectionDriver
 });
 module.exports = __toCommonJS(my_sql_connection_driver_exports);
-var import_my_sql = require("./my-sql.query-runner");
 var mysql = __toESM(require("mysql2/promise"));
+var import_my_sql = require("./my-sql.query-runner");
 class MySqlConnectionDriver {
   constructor(connection) {
     this.options = connection.options;

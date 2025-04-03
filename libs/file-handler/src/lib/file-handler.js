@@ -37,8 +37,11 @@ var import_logger = require("@transai/logger");
 var import_stream = require("stream");
 class FileHandler {
   #delimiter;
+  #logger;
   constructor(delimiter = void 0) {
     this.#delimiter = delimiter;
+    this.#logger = import_logger.Logger.getInstance();
+    this.#logger.info(`FileHandler initialized with delimiter: ${delimiter}`);
   }
   async handleBuffer(file, content, optionalHeaders, optionalSettings) {
     let parsedContent;
@@ -100,6 +103,7 @@ class FileHandler {
       };
       return (0, import_csvtojson.default)(options).fromStream(stream);
     } catch (error) {
+      this.#logger.error(`Error parsing CSV: ${error.message}`);
       throw new Error(`Error parsing CSV content: ${error.message}`);
     }
   }

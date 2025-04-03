@@ -29,7 +29,7 @@ class DatasourceService {
     this.driver = import_driver2.DriverFactory.create(this);
   }
   get version() {
-    return this.options.type + " : " + this.driver.version;
+    return `${this.options.type} : ${this.driver.version}`;
   }
   async initialize() {
     if (this.isInitialized)

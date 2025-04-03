@@ -30,8 +30,9 @@ __export(postgres_connection_driver_exports, {
   PostgresConnectionDriver: () => PostgresConnectionDriver
 });
 module.exports = __toCommonJS(postgres_connection_driver_exports);
-var import_postgres = require("./postgres.query-runner");
 var postgres = __toESM(require("pg"));
+var import_postgres = require("./postgres.query-runner");
+var import_error = require("../error");
 class PostgresConnectionDriver {
   constructor(connection) {
     /**
@@ -64,6 +65,7 @@ class PostgresConnectionDriver {
     );
     await release();
   }
+  // eslint-disable-next-line class-methods-use-this
   disconnect() {
     return Promise.resolve(void 0);
   }
@@ -71,7 +73,7 @@ class PostgresConnectionDriver {
    * Creates a new connection pool for a given database credentials.
    */
   async createPool(options, credentials) {
-    credentials = Object.assign({}, credentials);
+    credentials = { ...credentials };
     const connectionOptions = {
       host: credentials.host,
       user: credentials.username,
@@ -100,7 +102,7 @@ class PostgresConnectionDriver {
    */
   async obtainMasterConnection() {
     if (!this.master) {
-      throw new Error("Driver not Connected");
+      throw new import_error.TypeORMError("Driver not Connected");
     }
     return new Promise((ok, fail) => {
       this.master.connect((err, connection, release) => {
