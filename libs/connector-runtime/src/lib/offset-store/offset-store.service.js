@@ -70,9 +70,25 @@ class OffsetStoreService {
       if (this.#cloudOffsetCache.has(identifier)) {
         return this.#cloudOffsetCache.get(identifier);
       }
-      return { id: 0, timestamp: 0, rawTimestamp: 0 };
+      const date = /* @__PURE__ */ new Date();
+      const timestamp = date.getTime();
+      const rawTimestamp = date.toISOString();
+      return {
+        id: 0,
+        timestamp,
+        rawTimestamp,
+        isoDate: rawTimestamp
+      };
     } catch (error) {
-      return { id: 0, timestamp: 0, rawTimestamp: 0 };
+      const date = /* @__PURE__ */ new Date();
+      const timestamp = date.getTime();
+      const rawTimestamp = date.toISOString();
+      return {
+        id: 0,
+        timestamp,
+        rawTimestamp,
+        isoDate: rawTimestamp
+      };
     }
   }
   setOffset(offset, identifier) {
