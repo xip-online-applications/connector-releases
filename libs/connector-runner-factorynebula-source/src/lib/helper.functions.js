@@ -15,15 +15,25 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var datasource_options_exports = {};
-__export(datasource_options_exports, {
-  isDatasourceOptions: () => isDatasourceOptions
+var helper_functions_exports = {};
+__export(helper_functions_exports, {
+  generateCollectionName: () => generateCollectionName,
+  generateKafkaTopic: () => generateKafkaTopic,
+  generateOffsetIdentifier: () => generateOffsetIdentifier
 });
-module.exports = __toCommonJS(datasource_options_exports);
-function isDatasourceOptions(obj) {
-  return obj !== void 0 && obj.type !== void 0 && typeof obj.type === "string" && (obj.type === "postgres" || obj.type === "mysql" || obj.type === "mssql");
+module.exports = __toCommonJS(helper_functions_exports);
+function generateCollectionName(connectorConfig, sinkConfig) {
+  return `${connectorConfig.datasourceIdentifier}_${sinkConfig.name}`;
+}
+function generateKafkaTopic(connectorConfig) {
+  return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}`;
+}
+function generateOffsetIdentifier(apiConfig) {
+  return `${apiConfig.offsetFilePrefix ?? "offset"}_${apiConfig.name}`;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  isDatasourceOptions
+  generateCollectionName,
+  generateKafkaTopic,
+  generateOffsetIdentifier
 });

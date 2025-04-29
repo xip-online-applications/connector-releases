@@ -101,7 +101,7 @@ class DatasourceExtractorService {
           import_logger.Logger.getInstance().debug(
             `${this.#queryConfig.queryIdentifier} Execute based on finished events: Finished Events ${values}, Run after ${this.#queryConfig.runAfterEvents}`
           );
-          this.extract();
+          this.extract(true);
         }
       });
     }
@@ -116,7 +116,7 @@ class DatasourceExtractorService {
       await this.extract();
     });
   }
-  async extract() {
+  async extract(priority = false) {
     if (!this.#initialized) {
       return;
     }
@@ -131,7 +131,7 @@ class DatasourceExtractorService {
     );
     this.#processing = true;
     try {
-      await this.#executeQuery().catch((error) => {
+      await this.#executeQuery(priority, 0).catch((error) => {
         import_logger.Logger.getInstance().error(
           `Error while extracting data from data sink service ${error.message}`
         );
@@ -150,7 +150,7 @@ class DatasourceExtractorService {
       this.#processing = false;
     }
   }
-  async #executeQuery(runCount = 0) {
+  async #executeQuery(priority, runCount) {
     const latestOffset = await this.#offsetStore.getOffset(
       this.#queryConfig.queryIdentifier
     );
@@ -170,15 +170,17 @@ class DatasourceExtractorService {
     const success = await this.#queryResultHandler.handleResult(
       result,
       this.#queryConfig,
-      latestOffset
+      latestOffset,
+      priority
     );
-    if (result.affected === this.#queryConfig.batchSize && success && runCount < 10) {
+    const rateLimiter = this.#queryConfig.rateLimiter ?? 10;
+    if (result.affected === this.#queryConfig.batchSize && success && runCount < rateLimiter) {
       const newRunCount = runCount + 1;
-      await this.#executeQuery(newRunCount);
+      await this.#executeQuery(priority, newRunCount);
     }
     if (runCount >= 10) {
       import_logger.Logger.getInstance().warn(
-        `${this.#queryConfig.queryIdentifier} Limiting query since it exceeded 10 runs`
+        `${this.#queryConfig.queryIdentifier} Limiting query since it exceeded ${rateLimiter.toString()} runs`
       );
     }
   }

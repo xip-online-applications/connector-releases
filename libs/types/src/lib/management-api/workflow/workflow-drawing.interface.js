@@ -15,15 +15,19 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var datasource_options_exports = {};
-__export(datasource_options_exports, {
-  isDatasourceOptions: () => isDatasourceOptions
+var workflow_drawing_interface_exports = {};
+__export(workflow_drawing_interface_exports, {
+  NodeTypes: () => NodeTypes
 });
-module.exports = __toCommonJS(datasource_options_exports);
-function isDatasourceOptions(obj) {
-  return obj !== void 0 && obj.type !== void 0 && typeof obj.type === "string" && (obj.type === "postgres" || obj.type === "mysql" || obj.type === "mssql");
-}
+module.exports = __toCommonJS(workflow_drawing_interface_exports);
+var NodeTypes = /* @__PURE__ */ ((NodeTypes2) => {
+  NodeTypes2["TRIGGER_NODE"] = "TRIGGER_NODE";
+  NodeTypes2["ACTION_NODE"] = "ACTION_NODE";
+  NodeTypes2["CONDITIONAL_NODE"] = "CONDITIONAL_NODE";
+  NodeTypes2["ANNOTATION_NODE"] = "ANNOTATION_NODE";
+  return NodeTypes2;
+})(NodeTypes || {});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  isDatasourceOptions
+  NodeTypes
 });

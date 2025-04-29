@@ -23,10 +23,14 @@ module.exports = __toCommonJS(kafka_service_exports);
 var import_uuid = require("uuid");
 var import_helper = require("../helper.functions");
 class KafkaService {
+  #kafkaSourceService;
   constructor(kafkaSourceService) {
-    this.kafkaSourceService = kafkaSourceService;
+    this.#kafkaSourceService = kafkaSourceService;
   }
-  async sendBatch(record, config, sinkConfig) {
+  async sendBatch(record, config, sinkConfig, priority = false) {
+    const resultSize = record.length;
+    const { batchSize } = sinkConfig;
+    const endOfBatch = resultSize !== batchSize;
     const parsedRecords = record.map((r) => {
       return {
         type: "SOURCE",
@@ -40,12 +44,14 @@ class KafkaService {
           keyField: sinkConfig.keyField,
           incrementalField: sinkConfig.incrementalField,
           collection: (0, import_helper.generateCollectionName)(config, sinkConfig),
-          body: r
+          body: r,
+          priority,
+          endOfBatch
         }
       };
     });
     const topic = (0, import_helper.generateKafkaTopic)(config, sinkConfig);
-    return this.kafkaSourceService.send(parsedRecords, topic);
+    return this.#kafkaSourceService.send(parsedRecords, topic);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

@@ -52,7 +52,9 @@ class Logger {
         winston.format.json()
       )
     });
+    let transportsAdded = false;
     if (process.env["NODE_ENV"] !== "production" || process.env["LOG_TO_CONSOLE"] === "true") {
+      transportsAdded = true;
       this.logger.add(
         new winston.transports.Console({
           format: winston.format.printf(
@@ -62,6 +64,7 @@ class Logger {
       );
     }
     if (process.env["LOG_TO_FILE"] === "true") {
+      transportsAdded = true;
       this.logger.add(
         new winston.transports.File({
           filename: "error.log",
@@ -70,6 +73,15 @@ class Logger {
       );
       this.logger.add(
         new winston.transports.File({ filename: "combined.log" })
+      );
+    }
+    if (!transportsAdded) {
+      this.logger.add(
+        new winston.transports.Console({
+          format: winston.format.printf(
+            ({ label, level, message }) => `[${label}] ${level}: ${message}`
+          )
+        })
       );
     }
   }

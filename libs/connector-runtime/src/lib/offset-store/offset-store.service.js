@@ -112,7 +112,7 @@ class OffsetStoreService {
       const { identifier, offset } = o;
       this.#log.debug(`Initializing offset for ${identifier}`);
       this.#cloudOffsetCache.set(identifier, offset);
-      if (offset.userOverwrite) {
+      if (offset["userOverwrite"]) {
         this.#offsetCache.set(identifier, offset);
       }
     });

@@ -45,8 +45,12 @@ class SambaClient {
     this.config = config;
     this.execa = execa;
   }
-  async getFile(cmdPath, destination, workingDir = "") {
-    return this.execute("get", `${cmdPath} ${destination}`, workingDir);
+  async getFile(remotePath, localPath, workingDir = "") {
+    return this.execute(
+      "get",
+      `"${getCleanedSmbClientArgs(remotePath)}" "${localPath}"`,
+      workingDir
+    );
   }
   async sendFile(cmdPath, destination) {
     const workingDir = path.dirname(cmdPath);
@@ -57,15 +61,16 @@ class SambaClient {
     );
   }
   async deleteFile(fileName) {
-    return this.execute("del", [`${fileName}`], "");
+    return this.execute("del", [`"${getCleanedSmbClientArgs(fileName)}"`], "");
   }
   async listFiles(fileNamePrefix, fileNameSuffix) {
     try {
       const cmdArgs = `${fileNamePrefix}*${fileNameSuffix}`;
       const allOutput = await this.execute("dir", cmdArgs, "");
       const fileList = [];
-      for (let line of allOutput.split("\n")) {
-        line = line.toString().trim();
+      const lines = allOutput.split("\n");
+      lines.forEach((l) => {
+        const line = l.toString().trim();
         if (line.startsWith(fileNamePrefix)) {
           const parsed = line.substring(
             0,
@@ -73,7 +78,7 @@ class SambaClient {
           );
           fileList.push(parsed);
         }
-      }
+      });
       return fileList;
     } catch (e) {
       if (e instanceof Error) {

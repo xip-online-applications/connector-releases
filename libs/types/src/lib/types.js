@@ -42,6 +42,7 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["SQL_SOURCE"] = "sql-source";
   ConfiguredConnectorTypes2["MQTT"] = "mqtt";
   ConfiguredConnectorTypes2["CUBE_QUERY_RUNNER"] = "cube-query-runner";
+  ConfiguredConnectorTypes2["FACTORY_NEBULA_SOURCE"] = "factory-nebula-source";
   return ConfiguredConnectorTypes2;
 })(ConfiguredConnectorTypes || {});
 function isTopicRegex(obj) {

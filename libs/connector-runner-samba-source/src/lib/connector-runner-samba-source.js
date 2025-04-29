@@ -28,16 +28,16 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_SAMBA_SOURCE_CONFIG";
     this.init = async () => {
-      const config = this.config;
-      for (const sambaSourceConfig of config.directories) {
+      for (const sambaSourceConfig of this.config.directories) {
         const processor = new import_samba_filesource_processor.SambaFilesourceProcessorService(
-          config,
+          this.config,
           sambaSourceConfig,
           this.kafkaService
         );
         await processor.init();
       }
     };
+    // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSambaSourceConnectorConfigType)(config);
     };

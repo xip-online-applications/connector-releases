@@ -41,6 +41,7 @@ var import_connector_runner_cube_query = require("@transai/connector-runner-cube
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
 var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_node_process = __toESM(require("node:process"));
+var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
 var import_check_two_arrays = require("./check-two-arrays");
 const getLogLevel = () => {
   let logLevel = import_node_process.default.env.LOG_LEVEL || import_logger.LogLevels.info;
@@ -138,6 +139,12 @@ const getConnectorType = (connectorConfig) => {
       );
     case import_types.ConfiguredConnectorTypes.MQTT:
       return new import_connector_runner_mqtt.ConnectorRunnerMqtt(
+        connectorConfig,
+        connectorConfig.config,
+        connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.FACTORY_NEBULA_SOURCE:
+      return new import_connector_runner_factorynebula_source.ConnectorRunnerFactorynebulaSource(
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions

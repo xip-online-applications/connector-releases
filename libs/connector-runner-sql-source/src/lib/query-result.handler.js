@@ -69,7 +69,7 @@ class QueryResultHandler {
   #config;
   #kafkaService;
   #offsetStore;
-  async handleResult(result, queryConfig, previousOffset) {
+  async handleResult(result, queryConfig, previousOffset, priority = false) {
     import_logger.Logger.getInstance().debug(
       `${queryConfig.queryIdentifier} runned successfully. Gotten ${result.records.length} records`
     );
@@ -104,7 +104,8 @@ class QueryResultHandler {
       const success = await this.#kafkaService.sendBatch(
         preparedRecords,
         this.#config,
-        queryConfig
+        queryConfig,
+        priority
       );
       if (success) {
         this.storeTimestamp(newestTimeStamp, queryConfig);

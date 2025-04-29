@@ -81,9 +81,14 @@ class MySqlConnectionDriver {
   /**
    * Creates a new connection pool for a given database credentials.
    */
+  // eslint-disable-next-line class-methods-use-this
   async createPool(connectionOptions) {
     const pool = mysql.createPool(connectionOptions);
-    const conn = await pool.getConnection();
+    const conn = (
+      // Ignore the IDE message cause it is a mysql2 promise connection,
+      // and not the regular mysql2 that the ide thinks. IT WORKS!
+      await pool.getConnection()
+    );
     conn.release();
     return pool;
   }

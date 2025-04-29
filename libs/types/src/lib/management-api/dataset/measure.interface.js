@@ -28,6 +28,7 @@ const MeasureSchema = import_zod.z.object({
   description: import_zod.z.string().min(1).optional(),
   type: import_zod.z.nativeEnum(import_type_enums.MeasureTypesEnum),
   format: import_zod.z.nativeEnum(import_type_enums.MeasureFormatsEnum).optional(),
+  index: import_zod.z.string().optional(),
   sql: import_zod.z.string().min(1).optional(),
   dimension: import_zod.z.string().min(1).optional(),
   public: import_zod.z.boolean().optional(),

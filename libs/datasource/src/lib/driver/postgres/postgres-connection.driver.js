@@ -31,8 +31,11 @@ __export(postgres_connection_driver_exports, {
 });
 module.exports = __toCommonJS(postgres_connection_driver_exports);
 var postgres = __toESM(require("pg"));
+var import_pg_types = require("pg-types");
 var import_postgres = require("./postgres.query-runner");
 var import_error = require("../error");
+var import_logger = require("@transai/logger");
+const { types } = postgres;
 class PostgresConnectionDriver {
   constructor(connection) {
     /**
@@ -46,6 +49,24 @@ class PostgresConnectionDriver {
   }
   loadDependencies() {
     try {
+      import_logger.Logger.getInstance().info("Loading Postgres driver");
+      if (this.options.disableParsing) {
+        import_logger.Logger.getInstance().info("Disable parsing of datetime types");
+        const overrideTypes = [
+          import_pg_types.builtins.DATE,
+          import_pg_types.builtins.TIME,
+          import_pg_types.builtins.TIMETZ,
+          import_pg_types.builtins.TIMESTAMP,
+          import_pg_types.builtins.TIMESTAMPTZ
+        ];
+        overrideTypes.forEach((type) => {
+          types.setTypeParser(type, (value) => {
+            return value;
+          });
+        });
+      } else {
+        import_logger.Logger.getInstance().info("Enable parsing of datetime types (DEFAULT)");
+      }
       this.postgres = postgres;
     } catch (e) {
     }

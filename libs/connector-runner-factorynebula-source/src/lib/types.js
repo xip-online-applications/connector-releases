@@ -15,15 +15,20 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var datasource_options_exports = {};
-__export(datasource_options_exports, {
-  isDatasourceOptions: () => isDatasourceOptions
+var types_exports = {};
+__export(types_exports, {
+  isApiConfigType: () => isApiConfigType,
+  isApiSourceConfigType: () => isApiSourceConfigType
 });
-module.exports = __toCommonJS(datasource_options_exports);
-function isDatasourceOptions(obj) {
-  return obj !== void 0 && obj.type !== void 0 && typeof obj.type === "string" && (obj.type === "postgres" || obj.type === "mysql" || obj.type === "mssql");
+module.exports = __toCommonJS(types_exports);
+function isApiConfigType(obj) {
+  return obj !== void 0 && obj !== null && obj.url !== void 0 && obj.name !== void 0 && typeof obj.name === "string" && obj.interval !== void 0 && typeof obj.interval === "number" && !isNaN(obj.interval);
+}
+function isApiSourceConfigType(obj) {
+  return Array.isArray(obj.apiCalls) && obj.apiCalls.every((q) => isApiConfigType(q)) && Array.from(new Set(obj.apiCalls.map((q) => q.name))).length === obj.apiCalls.length;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  isDatasourceOptions
+  isApiConfigType,
+  isApiSourceConfigType
 });
