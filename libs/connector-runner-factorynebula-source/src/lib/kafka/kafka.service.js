@@ -75,7 +75,7 @@ class KafkaService {
     const topic = (0, import_helper.generateKafkaTopic)(config);
     return this.kafkaSourceService.send(kafkaPayload, topic);
   }
-  async sendToolDataToKafka(records, config, apiConfig) {
+  async sendTooldataToKafka(records, config, apiConfig) {
     const kafkaPayload = records.map((body) => {
       const additionalMetadata = getMetadataFromObject(
         body.value,
