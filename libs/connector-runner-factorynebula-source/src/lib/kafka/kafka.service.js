@@ -89,7 +89,7 @@ class KafkaService {
         ttl: -1,
         tenantIdentifier: config.tenantIdentifier,
         payload: {
-          body,
+          body: body.value,
           metadata: {
             ...body.metadata,
             ...additionalMetadata
