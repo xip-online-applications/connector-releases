@@ -37,10 +37,10 @@ class ApiResultHandler {
     if (keys.length === 0) {
       return;
     }
-    await this.handlePayload(result, apiConfig);
+    await this.handlePayload(result, keys[0], apiConfig);
   }
-  async handlePayload(result, apiConfig) {
-    const parsedContent = JSON.parse((0, import_html_entities.decode)(result.data));
+  async handlePayload(result, key, apiConfig) {
+    const parsedContent = JSON.parse((0, import_html_entities.decode)(result.data))[key];
     if (parsedContent.origin === "Tooldata") {
       await this.handleTooldata(parsedContent, apiConfig);
     } else {
