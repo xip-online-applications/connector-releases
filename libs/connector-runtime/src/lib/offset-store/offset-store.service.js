@@ -58,7 +58,7 @@ class OffsetStoreService {
       return this.#offsetCache.get(identifier);
     }
     this.#log.debug(
-      `${identifier} Does not have a offset regular. Use disk cache instead.`
+      `${identifier} Does not have a memory offset. Use disk cache instead.`
     );
     try {
       const offsetFile = await import_fs.promises.readFile(this.#getOffsetFilePath(identifier), "utf8").catch((error) => {
@@ -66,13 +66,13 @@ class OffsetStoreService {
           this.#log.debug(
             `OffsetStore: ${this.#getOffsetFilePath(
               identifier
-            )} does not exist. Use default offset.`
+            )} does not exist. continue to check api offsets.`
           );
         } else {
           this.#log.error(
             `OffsetStore: Error reading offset file ${this.#getOffsetFilePath(
               identifier
-            )}: ${error}`
+            )}: ${error}, continue to check api offsets.`
           );
         }
         return "{}";
@@ -85,7 +85,7 @@ class OffsetStoreService {
       this.#log.debug(
         `${identifier} OffsetStore: ${this.#getOffsetFilePath(
           identifier
-        )} is not valid. Use API offset.`
+        )} is not valid. Gotten ${offsetFile}. Try to use api offset.`
       );
       if (this.#cloudOffsetCache.has(identifier)) {
         return this.#cloudOffsetCache.get(identifier);
