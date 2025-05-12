@@ -265,7 +265,7 @@ async function startCluster() {
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
       );
     } else {
-      log.info(
+      log.debug(
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
       );
     }
@@ -295,7 +295,7 @@ async function startCluster() {
     }
   };
   log.info("Starting process to check connectors");
-  (0, import_rxjs.timer)(0, 0.1 * 60 * 1e3).pipe(
+  (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
     (0, import_rxjs.catchError)((e) => {
       log.error(`Error while checking connectors ${JSON.parse(e)}`);
       return (0, import_rxjs.of)(null);
