@@ -260,11 +260,12 @@ async function startCluster() {
   };
   const checkConnectors = async () => {
     const test = Object.entries(import_cluster.default.workers).length;
-    log.trace(
-      `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
-    );
     if (test !== enabledConnectors.length) {
       log.error(
+        `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
+      );
+    } else {
+      log.info(
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
       );
     }
@@ -276,7 +277,6 @@ async function startCluster() {
       log.info(
         "Last updated timestamp has changed. Check for new or changed connectors"
       );
-      lastUpdatedTimestamp = newLastUpdatedTimestamp;
       const newEnabledConnectors = await managementApiClient.getActiveConnectors().catch((error) => {
         log.error("Error while getting active connectors", error);
         return enabledConnectors;
@@ -291,11 +291,23 @@ async function startCluster() {
       const toAdd = comparisonResult.onlyInB;
       toRemove.forEach(stopProcess);
       toAdd.forEach(startProcess);
+      lastUpdatedTimestamp = newLastUpdatedTimestamp;
     }
   };
-  (0, import_rxjs.timer)(0, 0.1 * 60 * 1e3).subscribe(() => {
+  log.info("Starting process to check connectors");
+  (0, import_rxjs.timer)(0, 0.1 * 60 * 1e3).pipe(
+    (0, import_rxjs.catchError)((e) => {
+      log.error(`Error while checking connectors ${JSON.parse(e)}`);
+      return (0, import_rxjs.of)(null);
+    })
+  ).subscribe(() => {
     try {
-      checkConnectors();
+      checkConnectors().then(() => {
+        log.debug("Checked connectors");
+      }).catch((e) => {
+        log.error(`Error while checking connectors, ${JSON.parse(e)}`);
+        return null;
+      });
     } catch (error) {
       log.error("Error while checking connectors", error);
     }
@@ -316,24 +328,33 @@ async function startConnector() {
   await connector.start();
   import_node_process.default.on("SIGINT", async () => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGINT`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGINT signal. Start graceful shutdown`
     );
     await connector.stop();
+    log.warn(
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGINT signal and finished graceful shutdown`
+    );
     import_node_process.default.exit(0);
   });
   import_node_process.default.on("SIGTERM", async () => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGTERM`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGTERM. Start graceful shutdown`
     );
     await connector.stop();
+    log.warn(
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received SIGTERM and finished graceful shutdown`
+    );
     import_node_process.default.exit(0);
   });
   import_node_process.default.on("uncaughtException", async (error) => {
     log.warn(
-      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received uncaughtException`
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received uncaughtException signal. Start graceful shutdown`
     );
-    (0, import_handle_error.handleError)("Uncaught exception in worker", error);
+    log.error(error);
     await connector.stop();
+    log.warn(
+      `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${import_node_process.default.pid} received uncaughtException and finished graceful shutdown`
+    );
     import_node_process.default.exit(1);
   });
 }

@@ -20,6 +20,7 @@ __reExport(workflow_exports, require("./connector.interface"), module.exports);
 __reExport(workflow_exports, require("./workflow-definition.interface"), module.exports);
 __reExport(workflow_exports, require("./workflow-run"), module.exports);
 __reExport(workflow_exports, require("./workflow-drawing.interface"), module.exports);
+__reExport(workflow_exports, require("./trigger-types.interface"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./action.interface"),
@@ -27,5 +28,6 @@ __reExport(workflow_exports, require("./workflow-drawing.interface"), module.exp
   ...require("./connector.interface"),
   ...require("./workflow-definition.interface"),
   ...require("./workflow-run"),
-  ...require("./workflow-drawing.interface")
+  ...require("./workflow-drawing.interface"),
+  ...require("./trigger-types.interface")
 });

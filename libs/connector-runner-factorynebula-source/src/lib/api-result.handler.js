@@ -37,20 +37,20 @@ class ApiResultHandler {
     if (keys.length === 0) {
       return;
     }
-    await this.handlePayload(result, apiConfig);
+    await this.handlePayload(result, keys[0], apiConfig);
   }
-  async handlePayload(result, apiConfig) {
-    const parsedContent = JSON.parse((0, import_html_entities.decode)(result.data));
-    if (parsedContent.origin === "ToolData") {
-      await this.handleToolData(parsedContent, apiConfig);
+  async handlePayload(result, key, apiConfig) {
+    const parsedContent = JSON.parse((0, import_html_entities.decode)(result.data))[key];
+    if (parsedContent.origin === "Tooldata") {
+      await this.handleTooldata(parsedContent, apiConfig);
     } else {
       await this.handleOthers(parsedContent, apiConfig);
     }
   }
-  async handleToolData(parsedContent, apiConfig) {
+  async handleTooldata(parsedContent, apiConfig) {
     const values = parsedContent.data?.values;
     if (!values) {
-      import_logger.Logger.getInstance().debug("No values found in ToolData message.");
+      import_logger.Logger.getInstance().debug("No values found in Tooldata message.");
       return;
     }
     const toolData = Object.entries(values).map(
@@ -70,7 +70,7 @@ class ApiResultHandler {
         return void 0;
       }
     );
-    const success = await this.#kafkaService.sendToolDataToKafka(
+    const success = await this.#kafkaService.sendTooldataToKafka(
       toolData.filter((t) => t !== void 0),
       this.#config,
       apiConfig
