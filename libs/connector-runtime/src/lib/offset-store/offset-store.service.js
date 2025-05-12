@@ -57,16 +57,36 @@ class OffsetStoreService {
     if (this.#offsetCache.has(identifier)) {
       return this.#offsetCache.get(identifier);
     }
+    this.#log.debug(
+      `${identifier} Does not have a offset regular. Use disk cache instead.`
+    );
     try {
-      const offsetFile = await import_fs.promises.readFile(
-        this.#getOffsetFilePath(identifier),
-        "utf8"
-      );
+      const offsetFile = await import_fs.promises.readFile(this.#getOffsetFilePath(identifier), "utf8").catch((error) => {
+        if (error.code === "ENOENT") {
+          this.#log.debug(
+            `OffsetStore: ${this.#getOffsetFilePath(
+              identifier
+            )} does not exist. Use default offset.`
+          );
+        } else {
+          this.#log.error(
+            `OffsetStore: Error reading offset file ${this.#getOffsetFilePath(
+              identifier
+            )}: ${error}`
+          );
+        }
+        return "{}";
+      });
       const offsetStore = JSON.parse(offsetFile);
       const isValidOffset = (0, import_types2.isOffsetStoreType)(offsetStore);
       if (isValidOffset) {
         return offsetStore;
       }
+      this.#log.debug(
+        `${identifier} OffsetStore: ${this.#getOffsetFilePath(
+          identifier
+        )} is not valid. Use API offset.`
+      );
       if (this.#cloudOffsetCache.has(identifier)) {
         return this.#cloudOffsetCache.get(identifier);
       }
@@ -79,7 +99,7 @@ class OffsetStoreService {
         rawTimestamp,
         isoDate: rawTimestamp
       };
-      this.#log.debug(
+      this.#log.warn(
         `${identifier} Does not have a offset. Use default offset instead. setting offset to ${JSON.stringify(defaultOffset)}`
       );
       return defaultOffset;
