@@ -265,7 +265,7 @@ async function startCluster() {
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
       );
     } else {
-      log.debug(
+      log.info(
         `Number of workers: ${test}, Number of configured workes ${enabledConnectors.length}, number of started workers ${startedConnectorProcesses.length}`
       );
     }
@@ -273,24 +273,24 @@ async function startCluster() {
       log.error("Error while getting last updated timestamp", error);
       return lastUpdatedTimestamp;
     });
-    if (newLastUpdatedTimestamp !== lastUpdatedTimestamp) {
+    const newEnabledConnectors = await managementApiClient.getActiveConnectors().catch((error) => {
+      log.error("Error while getting active connectors", error);
+      return enabledConnectors;
+    });
+    if (newLastUpdatedTimestamp !== lastUpdatedTimestamp || enabledConnectors.length !== newEnabledConnectors.length) {
       log.info(
-        "Last updated timestamp has changed. Check for new or changed connectors"
+        "Last updated timestamp has changed or number of enabled connectors has changed"
       );
-      const newEnabledConnectors = await managementApiClient.getActiveConnectors().catch((error) => {
-        log.error("Error while getting active connectors", error);
-        return enabledConnectors;
-      });
       log.info(`received ${newEnabledConnectors.length} enabled connectors`);
       const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
         enabledConnectors,
         newEnabledConnectors
       );
-      enabledConnectors = newEnabledConnectors;
       const toRemove = comparisonResult.onlyInA;
       const toAdd = comparisonResult.onlyInB;
       toRemove.forEach(stopProcess);
       toAdd.forEach(startProcess);
+      enabledConnectors = [...newEnabledConnectors];
       lastUpdatedTimestamp = newLastUpdatedTimestamp;
     }
   };

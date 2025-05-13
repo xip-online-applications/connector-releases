@@ -99,7 +99,7 @@ class OffsetStoreService {
         rawTimestamp,
         isoDate: rawTimestamp
       };
-      this.#log.warn(
+      this.#log.debug(
         `${identifier} Does not have a offset. Use default offset instead. setting offset to ${JSON.stringify(defaultOffset)}`
       );
       return defaultOffset;
