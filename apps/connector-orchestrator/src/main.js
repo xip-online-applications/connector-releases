@@ -250,10 +250,16 @@ async function startCluster() {
       (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
     );
     if (process2) {
-      process2.worker.kill();
-      log.info(
-        `${connector.identifier} - ${connector.connectorType} Process killed`
-      );
+      try {
+        process2.worker.kill();
+        log.info(
+          `${connector.identifier} - ${connector.connectorType} Process killed`
+        );
+      } catch (error) {
+        log.error(
+          `Error while killing process for connector ${connector.identifier}, ${connector.connectorType} ${JSON.stringify(error)}`
+        );
+      }
     } else {
       log.error(`Could not find process for connector ${connector.identifier}`);
     }
@@ -273,14 +279,14 @@ async function startCluster() {
       log.error("Error while getting last updated timestamp", error);
       return lastUpdatedTimestamp;
     });
-    const newEnabledConnectors = await managementApiClient.getActiveConnectors().catch((error) => {
-      log.error("Error while getting active connectors", error);
-      return enabledConnectors;
-    });
-    if (newLastUpdatedTimestamp !== lastUpdatedTimestamp || enabledConnectors.length !== newEnabledConnectors.length) {
+    if (newLastUpdatedTimestamp !== lastUpdatedTimestamp) {
       log.info(
-        "Last updated timestamp has changed or number of enabled connectors has changed"
+        "Last updated timestamp has changed. Check for new or changed connectors"
       );
+      const newEnabledConnectors = await managementApiClient.getActiveConnectors().catch((error) => {
+        log.error("Error while getting active connectors", error);
+        return enabledConnectors;
+      });
       log.info(`received ${newEnabledConnectors.length} enabled connectors`);
       const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
         enabledConnectors,
@@ -294,6 +300,7 @@ async function startCluster() {
       lastUpdatedTimestamp = newLastUpdatedTimestamp;
     }
   };
+  let mutex = false;
   log.info("Starting process to check connectors");
   (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
     (0, import_rxjs.catchError)((e) => {
@@ -302,9 +309,16 @@ async function startCluster() {
     })
   ).subscribe(() => {
     try {
+      if (mutex) {
+        log.error("Mutex is set, skipping check");
+        return;
+      }
+      mutex = true;
       checkConnectors().then(() => {
+        mutex = false;
         log.debug("Checked connectors");
       }).catch((e) => {
+        mutex = false;
         log.error(`Error while checking connectors, ${JSON.parse(e)}`);
         return null;
       });
