@@ -48,11 +48,13 @@ class ApiExtractorService {
   #logger;
   #token;
   #tokenExpiresAt;
-  constructor(config, apiConfig, apiResultHandler, offsetStore) {
+  #tokenManager;
+  constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager) {
     this.#config = config;
     this.#apiConfig = apiConfig;
     this.#apiResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
+    this.#tokenManager = tokenManager;
     if (!apiConfig.url) {
       throw new Error("URL is not defined in apiConfig");
     }
@@ -140,6 +142,12 @@ class ApiExtractorService {
     };
     if (this.#apiConfig.tokenUrl) {
       const token = await this.getAccessToken();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+    if (this.#tokenManager) {
+      const token = await this.#tokenManager.getAccessToken();
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }

@@ -25,6 +25,7 @@ var import_api_result = require("./api-result.handler");
 var import_api_extractor = require("./api-extractor/api-extractor.service");
 var import_types = require("./types");
 var import_kafka = require("./kafka/kafka.service");
+var import_token_manager = require("./token-manager/token-manager");
 class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -32,7 +33,9 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
     this.kafkaWrapper = void 0;
     this.init = async () => {
       if (!this.offsetStoreInstance) {
-        throw new Error("Offset store is not defined. Please provide an temp location for the offset store.");
+        throw new Error(
+          "Offset store is not defined. Please provide an temp location for the offset store."
+        );
       }
       const config = this.config;
       this.kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
@@ -41,12 +44,21 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
         this.kafkaWrapper,
         this.offsetStoreInstance
       );
+      let tokenManager = void 0;
+      if (config.tokenUrl && config.clientId && config.clientSecret) {
+        tokenManager = new import_token_manager.TokenManager(
+          config.tokenUrl,
+          config.clientId,
+          config.clientSecret
+        );
+      }
       for (const apiConfig of config.apiCalls) {
         new import_api_extractor.ApiExtractorService(
           config,
           apiConfig,
           apiResultHandler,
-          this.offsetStoreInstance
+          this.offsetStoreInstance,
+          tokenManager
         );
       }
     };
