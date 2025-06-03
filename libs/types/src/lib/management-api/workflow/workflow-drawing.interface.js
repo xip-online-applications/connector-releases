@@ -27,6 +27,7 @@ var NodeTypes = /* @__PURE__ */ ((NodeTypes2) => {
   NodeTypes2["CONDITIONAL"] = "CONDITIONAL";
   NodeTypes2["ANNOTATION"] = "ANNOTATION";
   NodeTypes2["PLACEHOLDER"] = "PLACEHOLDER";
+  NodeTypes2["INVISIBLE"] = "INVISIBLE";
   NodeTypes2["END"] = "END";
   return NodeTypes2;
 })(NodeTypes || {});

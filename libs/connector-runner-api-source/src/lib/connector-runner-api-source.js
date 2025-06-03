@@ -26,6 +26,7 @@ var import_api_extractor = require("./api-extractor/api-extractor.service");
 var import_types = require("./types");
 var import_kafka = require("./kafka/kafka.service");
 var import_token_manager = require("./token-manager/token-manager");
+var import_jsession_manager = require("./jsession-manager/jsession-manager");
 class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -44,12 +45,20 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
         this.kafkaWrapper,
         this.offsetStoreInstance
       );
-      let tokenManager = void 0;
+      let tokenManager;
+      let sessionManager;
       if (config.tokenUrl && config.clientId && config.clientSecret) {
         tokenManager = new import_token_manager.TokenManager(
           config.tokenUrl,
           config.clientId,
           config.clientSecret
+        );
+      }
+      if (config.sessionUrl && config.sessionUsername && config.sessionPassword) {
+        sessionManager = new import_jsession_manager.JsessionManager(
+          config.sessionUrl,
+          config.sessionUsername,
+          config.sessionPassword
         );
       }
       for (const apiConfig of config.apiCalls) {
@@ -58,7 +67,8 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
           apiConfig,
           apiResultHandler,
           this.offsetStoreInstance,
-          tokenManager
+          tokenManager,
+          sessionManager
         );
       }
     };

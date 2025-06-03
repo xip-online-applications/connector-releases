@@ -49,12 +49,14 @@ class ApiExtractorService {
   #token;
   #tokenExpiresAt;
   #tokenManager;
-  constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager) {
+  #sessionManager;
+  constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager, sessionManager) {
     this.#config = config;
     this.#apiConfig = apiConfig;
     this.#apiResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
     this.#tokenManager = tokenManager;
+    this.#sessionManager = sessionManager;
     if (!apiConfig.url) {
       throw new Error("URL is not defined in apiConfig");
     }
@@ -81,23 +83,6 @@ class ApiExtractorService {
     this.#urlTemplate = this.#handlebarsInstance.compile(apiConfig.url, {
       strict: true
     });
-    if (this.#apiConfig.tokenUrl) {
-      this.getAccessToken().then((token) => {
-        if (token) {
-          this.#logger.debug(
-            `Access token retrieved successfully for ${this.#apiConfig.name}`
-          );
-        } else {
-          this.#logger.error(
-            `Failed to retrieve access token for ${this.#apiConfig.name}`
-          );
-        }
-      }).catch((error) => {
-        this.#logger.error(
-          `Error retrieving access token for ${this.#apiConfig.name}: ${error}`
-        );
-      });
-    }
     (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
       await this.extract();
     });
@@ -140,16 +125,17 @@ class ApiExtractorService {
     const headers = {
       "Content-Type": contentType
     };
-    if (this.#apiConfig.tokenUrl) {
-      const token = await this.getAccessToken();
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-    }
     if (this.#tokenManager) {
       const token = await this.#tokenManager.getAccessToken();
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+    if (this.#sessionManager) {
+      const sessionCookie = await this.#sessionManager.getSessionCookie();
+      if (sessionCookie) {
+        headers["Cookie"] = sessionCookie;
+        headers["X-CustomerID"] = this.#config.apiKey;
       }
     }
     if (this.#apiConfig.authorization) {
@@ -195,32 +181,6 @@ class ApiExtractorService {
   }
   validateTemplate() {
     this.getBody({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
-  }
-  async getAccessToken() {
-    const { tokenUrl, clientId, clientSecret } = this.#apiConfig;
-    if (!tokenUrl || !clientId || !clientSecret)
-      return void 0;
-    const now = Date.now();
-    if (this.#token && this.#tokenExpiresAt && now < this.#tokenExpiresAt) {
-      return this.#token;
-    }
-    try {
-      const response = await import_axios.default.post(tokenUrl, null, {
-        params: {
-          grant_type: "client_credentials",
-          client_id: clientId,
-          client_secret: clientSecret
-        }
-      });
-      const { access_token: accesToken, expires_in: expiresIn } = response.data;
-      const expiresInMiliseconds = expiresIn * 1e3;
-      this.#token = accesToken;
-      this.#tokenExpiresAt = now + expiresInMiliseconds - 1e4;
-      return this.#token;
-    } catch (error) {
-      this.#logger.error(`Failed to retrieve access token: ${error}`);
-      return void 0;
-    }
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
