@@ -48,13 +48,18 @@ class SambaFileWriterService {
       };
     }
     try {
-      import_logger.Logger.getInstance().debug(`Handle message ${message.eventId}, writing file ${content} to samba server`);
+      import_logger.Logger.getInstance().debug(
+        `Handle message ${message.eventId}, writing file ${content} to samba server`
+      );
       await this.sambaClient.sendFile(tmpFileLoc, path);
     } catch (error) {
-      import_logger.Logger.getInstance().error(`${message.eventId} Error while sending file to samba server`, error);
+      import_logger.Logger.getInstance().error(
+        `${message.eventId} Error while sending file to samba server`,
+        error
+      );
       return {
         success: false,
-        message: "Error while sending file to samba server"
+        message: `Error while sending file to samba server: ${JSON.stringify(error)}`
       };
     } finally {
       success = await this.removeTempFileFromFileSystem(tmpFileLoc);
@@ -70,15 +75,17 @@ class SambaFileWriterService {
       message: "Message processed successfully"
     };
   }
+  // eslint-disable-next-line class-methods-use-this
   writeToFileSystem(tmpFileLoc, content) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fs.writeFile(tmpFileLoc, content, (err) => {
         resolve(err == void 0);
       });
     });
   }
+  // eslint-disable-next-line class-methods-use-this
   removeTempFileFromFileSystem(tmpFileLoc) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fs.unlink(tmpFileLoc, (err) => {
         resolve(err == void 0);
       });
