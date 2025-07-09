@@ -32,12 +32,8 @@ const SemanticTriggerSchema = import_zod.z.object({
   filters: import_semantic_trigger_filters.SemanticTriggerFiltersSchema.optional(),
   cron: import_zod.z.string().nullable().optional(),
   tz: import_zod.z.string().nullable().optional(),
-<<<<<<< HEAD
   incrementalField: import_zod.z.string().optional(),
   ungrouped: import_zod.z.boolean().optional()
-=======
-  incrementalField: import_zod.z.string().optional()
->>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
