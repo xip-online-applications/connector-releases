@@ -49,13 +49,22 @@ class ApiExtractorService {
   #token;
   #tokenExpiresAt;
   #tokenManager;
+<<<<<<< HEAD
   #subscription;
   constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager) {
+=======
+  #sessionManager;
+  constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager, sessionManager) {
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
     this.#config = config;
     this.#apiConfig = apiConfig;
     this.#apiResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
     this.#tokenManager = tokenManager;
+<<<<<<< HEAD
+=======
+    this.#sessionManager = sessionManager;
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
     if (!apiConfig.url) {
       throw new Error("URL is not defined in apiConfig");
     }
@@ -82,6 +91,7 @@ class ApiExtractorService {
     this.#urlTemplate = this.#handlebarsInstance.compile(apiConfig.url, {
       strict: true
     });
+<<<<<<< HEAD
     if (this.#apiConfig.tokenUrl) {
       this.getAccessToken().then((token) => {
         if (token) {
@@ -107,6 +117,11 @@ class ApiExtractorService {
   }
   stop() {
     this.#subscription?.unsubscribe();
+=======
+    (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
+      await this.extract();
+    });
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
   }
   async extract() {
     if (this.#processing) {
@@ -146,16 +161,24 @@ class ApiExtractorService {
     const headers = {
       "Content-Type": contentType
     };
-    if (this.#apiConfig.tokenUrl) {
-      const token = await this.getAccessToken();
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-    }
     if (this.#tokenManager) {
       const token = await this.#tokenManager.getAccessToken();
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+<<<<<<< HEAD
+    if (this.#tokenManager) {
+      const token = await this.#tokenManager.getAccessToken();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+=======
+    if (this.#sessionManager) {
+      const sessionCookie = await this.#sessionManager.getSessionCookie();
+      if (sessionCookie) {
+        headers["Cookie"] = sessionCookie;
+        headers["X-CustomerID"] = this.#config.apiKey;
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
       }
     }
     if (this.#apiConfig.authorization) {
@@ -201,32 +224,6 @@ class ApiExtractorService {
   }
   validateTemplate() {
     this.getBody({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
-  }
-  async getAccessToken() {
-    const { tokenUrl, clientId, clientSecret } = this.#apiConfig;
-    if (!tokenUrl || !clientId || !clientSecret)
-      return void 0;
-    const now = Date.now();
-    if (this.#token && this.#tokenExpiresAt && now < this.#tokenExpiresAt) {
-      return this.#token;
-    }
-    try {
-      const response = await import_axios.default.post(tokenUrl, null, {
-        params: {
-          grant_type: "client_credentials",
-          client_id: clientId,
-          client_secret: clientSecret
-        }
-      });
-      const { access_token: accesToken, expires_in: expiresIn } = response.data;
-      const expiresInMiliseconds = expiresIn * 1e3;
-      this.#token = accesToken;
-      this.#tokenExpiresAt = now + expiresInMiliseconds - 1e4;
-      return this.#token;
-    } catch (error) {
-      this.#logger.error(`Failed to retrieve access token: ${error}`);
-      return void 0;
-    }
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

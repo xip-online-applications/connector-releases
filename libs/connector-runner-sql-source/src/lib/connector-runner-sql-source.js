@@ -56,9 +56,12 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
         );
       }
     };
+<<<<<<< HEAD
     this.exit = async () => {
       this.extractors.forEach((service) => service.stop());
     };
+=======
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
     // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSqlSourceRunnerConfigType)(config);

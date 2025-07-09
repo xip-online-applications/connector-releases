@@ -26,6 +26,10 @@ var import_api_extractor = require("./api-extractor/api-extractor.service");
 var import_types = require("./types");
 var import_kafka = require("./kafka/kafka.service");
 var import_token_manager = require("./token-manager/token-manager");
+<<<<<<< HEAD
+=======
+var import_jsession_manager = require("./jsession-manager/jsession-manager");
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
 class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -33,8 +37,12 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
     this.kafkaWrapper = void 0;
     this.#apiExtractorServices = [];
     this.init = async () => {
+<<<<<<< HEAD
       const store = this.offsetStoreInstance;
       if (!store) {
+=======
+      if (!this.offsetStoreInstance) {
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
         throw new Error(
           "Offset store is not defined. Please provide an temp location for the offset store."
         );
@@ -47,6 +55,10 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
         store
       );
       let tokenManager;
+<<<<<<< HEAD
+=======
+      let sessionManager;
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
       if (config.tokenUrl && config.clientId && config.clientSecret) {
         tokenManager = new import_token_manager.TokenManager(
           config.tokenUrl,
@@ -54,6 +66,7 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
           config.clientSecret
         );
       }
+<<<<<<< HEAD
       this.#apiExtractorServices = config.apiCalls.map(
         (apiConfig) => new import_api_extractor.ApiExtractorService(
           config,
@@ -67,6 +80,25 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
     this.exit = async () => {
       this.#apiExtractorServices.forEach((service) => service.stop());
       this.#apiExtractorServices = [];
+=======
+      if (config.sessionUrl && config.sessionUsername && config.sessionPassword) {
+        sessionManager = new import_jsession_manager.JsessionManager(
+          config.sessionUrl,
+          config.sessionUsername,
+          config.sessionPassword
+        );
+      }
+      for (const apiConfig of config.apiCalls) {
+        new import_api_extractor.ApiExtractorService(
+          config,
+          apiConfig,
+          apiResultHandler,
+          this.offsetStoreInstance,
+          tokenManager,
+          sessionManager
+        );
+      }
+>>>>>>> a100488ce446f8996dca337bce0e01d011c39f6c
     };
     this.isValidConfig = (config) => {
       return (0, import_types.isApiSourceConfigType)(config);
