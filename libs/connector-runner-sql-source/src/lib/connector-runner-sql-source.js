@@ -32,19 +32,18 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_SQL_SOURCE_CONFIG";
     this.extractors = /* @__PURE__ */ new Map();
     this.init = async () => {
-      const config = this.config;
       const kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
       const queryResultHandler = new import_query_result.QueryResultHandler(
-        config,
+        this.config,
         kafkaWrapper,
         this.offsetStore
       );
       this.log.debug(
-        `Initializing SQL source runner, gotten ${config.queries.length} queries`
+        `Initializing SQL source runner, gotten ${this.config.queries.length} queries`
       );
-      for (const queryConfig of config.queries) {
+      for (const queryConfig of this.config.queries) {
         const extractor = new import_datasource_extractor.DatasourceExtractorService(
-          config,
+          this.config,
           queryConfig,
           this.offsetStore,
           queryResultHandler,
@@ -52,11 +51,15 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
         );
         await extractor.init();
         this.extractors.set(
-          (0, import_helper.generateCollectionName)(config, queryConfig),
+          (0, import_helper.generateCollectionName)(this.config, queryConfig),
           extractor
         );
       }
     };
+    this.exit = async () => {
+      this.extractors.forEach((service) => service.stop());
+    };
+    // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSqlSourceRunnerConfigType)(config);
     };

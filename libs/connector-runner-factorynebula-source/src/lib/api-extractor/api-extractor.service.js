@@ -46,6 +46,7 @@ class ApiExtractorService {
   #processing = false;
   #handlebarsInstance;
   #logger;
+  #subscription;
   constructor(config, apiConfig, apiResultHandler, offsetStore) {
     this.#config = config;
     this.#apiConfig = apiConfig;
@@ -77,9 +78,14 @@ class ApiExtractorService {
     this.#urlTemplate = this.#handlebarsInstance.compile(apiConfig.url, {
       strict: true
     });
-    (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
-      await this.extract();
-    });
+    this.#subscription = (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(
+      async () => {
+        await this.extract();
+      }
+    );
+  }
+  stop() {
+    this.#subscription?.unsubscribe();
   }
   async extract() {
     if (this.#processing) {

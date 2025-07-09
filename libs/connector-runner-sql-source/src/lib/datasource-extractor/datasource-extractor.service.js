@@ -51,6 +51,7 @@ class DatasourceExtractorService {
   #offsetStore;
   #queryResultHandler;
   #ipcBus;
+  #subscription;
   constructor(config, queryConfig, offsetStore, queryResultHandler, ipcBus) {
     this.#config = config;
     this.#queryConfig = queryConfig;
@@ -111,10 +112,15 @@ class DatasourceExtractorService {
     this.#initialized = true;
     this.setInterval();
   }
+  stop() {
+    this.#subscription?.unsubscribe();
+  }
   setInterval() {
-    (0, import_rxjs.timer)(0, this.#queryConfig.interval * 1e3).subscribe(async () => {
-      await this.extract();
-    });
+    this.#subscription = (0, import_rxjs.timer)(0, this.#queryConfig.interval * 1e3).subscribe(
+      async () => {
+        await this.extract();
+      }
+    );
   }
   async extract(priority = false) {
     if (!this.#initialized) {
@@ -155,26 +161,28 @@ class DatasourceExtractorService {
       this.#queryConfig.queryIdentifier
     );
     const query = this.#getQuery(latestOffset, this.#queryConfig.batchSize);
-    const result = await this.#datasource.query(query).catch((error) => {
-      import_logger.Logger.getInstance().error(
-        `Error while querying datasource ${this.#queryConfig.queryIdentifier} ${query} ${JSON.stringify(error)}`
-      );
-      return null;
-    });
+    const result = await this.#datasource.query(query);
     if (result === null) {
       import_logger.Logger.getInstance().debug(
         `Error while querying datasource ${this.#queryConfig.queryIdentifier}`
       );
       return;
     }
+    if ("error" in result && result.error) {
+      import_logger.Logger.getInstance().error(
+        `Error while querying datasource ${this.#queryConfig.queryIdentifier} ${query} ${JSON.stringify(result)}`
+      );
+      return;
+    }
+    const queryResult = result;
     const success = await this.#queryResultHandler.handleResult(
-      result,
+      queryResult,
       this.#queryConfig,
       latestOffset,
       priority
     );
     const rateLimiter = this.#queryConfig.rateLimiter ?? 10;
-    if (result.affected === this.#queryConfig.batchSize && success && runCount < rateLimiter) {
+    if (queryResult.affected === this.#queryConfig.batchSize && success && runCount < rateLimiter) {
       const newRunCount = runCount + 1;
       await this.#executeQuery(priority, newRunCount);
     }

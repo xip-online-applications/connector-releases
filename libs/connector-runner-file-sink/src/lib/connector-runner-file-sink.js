@@ -24,6 +24,7 @@ var import_connector_runtime = require("@transai/connector-runtime");
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_sftp_client = require("@xip-online-data/sftp-client");
 var import_handle_error = require("@xip-online-data/handle-error");
+var import_logger = require("@transai/logger");
 class ConnectorRunnerFileSink extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs, injectedSftpInstance) {
     super(connector, apiConfig, actionConfigs);
@@ -56,6 +57,12 @@ class ConnectorRunnerFileSink extends import_connector_runtime.ConnectorRuntime 
           const parsedFilename = handleBars.filename({
             inputs: message.payload
           }).trim();
+          if (message.testRun) {
+            import_logger.Logger.getInstance().info(
+              `Test run for ${message.eventId} with parsedContent ${parsedContent}, parsedFilename ${parsedFilename}`
+            );
+            return callbackFunction(message);
+          }
           try {
             if (parsedContent === void 0 || parsedFilename === void 0) {
               return (0, import_kafka_base_service.UnprocessableEntity)("Content or destination not provided")(

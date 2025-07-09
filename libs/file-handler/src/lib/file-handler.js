@@ -95,13 +95,12 @@ class FileHandler {
       let noHeader = true;
       const optionalSettingsKeys = Object.keys(optionalSettings ?? {});
       if (optionalSettingsKeys.includes("noHeader")) {
-        noHeader = optionalSettings?.noHeader;
+        noHeader = (optionalSettings ?? {})["noHeader"] === true;
       }
-      const options = {
+      return (0, import_csvtojson.default)({
         delimiter: this.#delimiter ?? ",",
         noheader: noHeader
-      };
-      return (0, import_csvtojson.default)(options).fromStream(stream);
+      }).fromStream(stream);
     } catch (error) {
       this.#logger.error(`Error parsing CSV: ${error.message}`);
       throw new Error(`Error parsing CSV content: ${error.message}`);

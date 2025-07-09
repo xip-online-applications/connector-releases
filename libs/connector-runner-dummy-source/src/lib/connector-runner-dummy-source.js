@@ -44,6 +44,9 @@ class ConnectorRunnerDummySource extends import_connector_runtime.ConnectorRunti
         this.offsetStore
       );
     };
+    this.exit = async () => {
+      this.#generator?.stop();
+    };
   }
   #generator;
 }

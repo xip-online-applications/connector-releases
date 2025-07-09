@@ -106,14 +106,20 @@ class FilesourceProcessorService {
   #kafkaService;
   #sftpClient;
   #logger;
+  #subscription;
   async init() {
-    (0, import_rxjs.interval)(this.#fileSourceConfig.interval * 1e3).subscribe(async () => {
+    this.#subscription = (0, import_rxjs.interval)(
+      this.#fileSourceConfig.interval * 1e3
+    ).subscribe(async () => {
       await this.process().catch((error) => {
         this.#logger.error(
           `Error while processing files from filesource processor service ${error.message}`
         );
       });
     });
+  }
+  stop() {
+    this.#subscription?.unsubscribe();
   }
   async process() {
     if (this.#processing) {

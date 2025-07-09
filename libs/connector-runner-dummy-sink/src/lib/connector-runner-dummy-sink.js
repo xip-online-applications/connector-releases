@@ -35,10 +35,12 @@ class ConnectorRunnerDummySink extends import_connector_runtime.ConnectorRuntime
         brokers: ["localhost:9092"],
         groupId: "dummy-sink",
         clientId: "dummy-sink",
-        consumerTopics: [{
-          pattern: "_source_",
-          flags: "i"
-        }]
+        consumerTopics: [
+          {
+            pattern: "_source_",
+            flags: "i"
+          }
+        ]
       },
       debug: false
     });
@@ -53,8 +55,12 @@ class ConnectorRunnerDummySink extends import_connector_runtime.ConnectorRuntime
       };
       const mainCallbackFunction = (callbackFunction) => {
         return async (message) => {
-          if (this.config?.debug)
-            import_logger.Logger.getInstance().debug("Received message: ", message.eventId, message.payload);
+          import_logger.Logger.getInstance().info(
+            "Received message: ",
+            message.testRun ? "(test run)" : "",
+            message.eventId,
+            message.payload
+          );
           if (dummyProcessFailed()) {
             import_logger.Logger.getInstance().error("Dummy process failed");
             return (0, import_kafka_base_service.InternalServerError)("Dummy process failed")(message);

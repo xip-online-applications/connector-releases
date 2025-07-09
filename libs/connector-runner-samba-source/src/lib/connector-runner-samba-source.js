@@ -27,6 +27,7 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
   constructor() {
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_SAMBA_SOURCE_CONFIG";
+    this.#processors = [];
     this.init = async () => {
       for (const sambaSourceConfig of this.config.directories) {
         const processor = new import_samba_filesource_processor.SambaFilesourceProcessorService(
@@ -37,11 +38,16 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
         await processor.init();
       }
     };
+    this.exit = async () => {
+      this.#processors.forEach((service) => service.stop());
+      this.#processors = [];
+    };
     // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSambaSourceConnectorConfigType)(config);
     };
   }
+  #processors;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

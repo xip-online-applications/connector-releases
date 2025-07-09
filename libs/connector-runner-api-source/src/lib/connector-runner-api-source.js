@@ -25,35 +25,54 @@ var import_api_result = require("./api-result.handler");
 var import_api_extractor = require("./api-extractor/api-extractor.service");
 var import_types = require("./types");
 var import_kafka = require("./kafka/kafka.service");
+var import_token_manager = require("./token-manager/token-manager");
 class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_API_SOURCE_CONFIG";
     this.kafkaWrapper = void 0;
+    this.#apiExtractorServices = [];
     this.init = async () => {
-      if (!this.offsetStoreInstance) {
-        throw new Error("Offset store is not defined. Please provide an temp location for the offset store.");
+      const store = this.offsetStoreInstance;
+      if (!store) {
+        throw new Error(
+          "Offset store is not defined. Please provide an temp location for the offset store."
+        );
       }
       const config = this.config;
       this.kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
       const apiResultHandler = new import_api_result.ApiResultHandler(
         config,
         this.kafkaWrapper,
-        this.offsetStoreInstance
+        store
       );
-      for (const apiConfig of config.apiCalls) {
-        new import_api_extractor.ApiExtractorService(
+      let tokenManager;
+      if (config.tokenUrl && config.clientId && config.clientSecret) {
+        tokenManager = new import_token_manager.TokenManager(
+          config.tokenUrl,
+          config.clientId,
+          config.clientSecret
+        );
+      }
+      this.#apiExtractorServices = config.apiCalls.map(
+        (apiConfig) => new import_api_extractor.ApiExtractorService(
           config,
           apiConfig,
           apiResultHandler,
-          this.offsetStoreInstance
-        );
-      }
+          store,
+          tokenManager
+        )
+      );
+    };
+    this.exit = async () => {
+      this.#apiExtractorServices.forEach((service) => service.stop());
+      this.#apiExtractorServices = [];
     };
     this.isValidConfig = (config) => {
       return (0, import_types.isApiSourceConfigType)(config);
     };
   }
+  #apiExtractorServices;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

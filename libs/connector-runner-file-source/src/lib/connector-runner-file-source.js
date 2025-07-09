@@ -28,6 +28,7 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
   constructor() {
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_FILE_SOURCE_CONFIG";
+    this.#processors = [];
     this.init = async () => {
       if (!this.offsetStoreInstance) {
         throw new Error(
@@ -36,7 +37,7 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
       }
       const sftpClient = this.config.forceReconnect ? new import_sftp_client.ConnectSftpClient(this.config.sftpConfig, this.config) : new import_sftp_client.SftpClient(this.config.sftpConfig, this.config);
       await sftpClient.init();
-      await Promise.all(
+      this.#processors = await Promise.all(
         this.config.directories.map(async (fileSourceConfig) => {
           const processor = new import_filesource_processor.FilesourceProcessorService(
             fileSourceConfig,
@@ -45,14 +46,19 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
             sftpClient
           );
           await processor.init();
+          return processor;
         })
       );
+    };
+    this.exit = async () => {
+      this.#processors.forEach((service) => service.stop());
     };
     // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isYamlConfigType)(config);
     };
   }
+  #processors;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

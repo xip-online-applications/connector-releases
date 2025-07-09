@@ -70,7 +70,7 @@ class KafkaBaseService extends import_abstract_kafka_service.AbstractKafkaServic
         try {
           let callbackIdentifier = `${message.tenantIdentifier}_${message.eventType}`;
           if (this.baseYamlConfig.debug)
-            import_logger.Logger.getInstance().trace(
+            import_logger.Logger.getInstance().verbose(
               `Received message from topic ${callbackIdentifier}: ${JSON.stringify(message)}`
             );
           if (!this.callbackWrappers.has(callbackIdentifier)) {
@@ -79,7 +79,7 @@ class KafkaBaseService extends import_abstract_kafka_service.AbstractKafkaServic
           const callbackWrapper = this.callbackWrappers.get(callbackIdentifier);
           if (!callbackWrapper) {
             if (this.baseYamlConfig.debug)
-              import_logger.Logger.getInstance().trace(
+              import_logger.Logger.getInstance().verbose(
                 `Callback function for topic ${callbackIdentifier} not set`
               );
             return;
@@ -103,6 +103,9 @@ class KafkaBaseService extends import_abstract_kafka_service.AbstractKafkaServic
     };
     this.reportResult = async (message, result, responseSource) => {
       if (this.disableLogs) {
+        import_logger.Logger.getInstance().debug(
+          "Skipping report result due to disableLogs flag"
+        );
         return;
       }
       const returnMessage = {

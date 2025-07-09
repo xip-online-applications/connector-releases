@@ -25,6 +25,9 @@ var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_datasource = require("@xip-online-data/datasource");
 var import_handle_error = require("@xip-online-data/handle-error");
 var import_logger = require("@transai/logger");
+function trimTrailingSemicolon(input) {
+  return input.endsWith(";") ? input.slice(0, -1) : input;
+}
 class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs, injectedDataSinkInstance) {
     super(connector, apiConfig, actionConfigs);
@@ -52,15 +55,31 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
             const inputParams = actionConfig.inputParameters.map(
               (input) => input.name
             );
-            const query = message.testRun ? `BEGIN TRANSACTION ${config.query}; ROLLBACK TRANSACTION` : config.query;
+            const query = message.testRun ? `START TRANSACTION; ${trimTrailingSemicolon(config.query)}; ROLLBACK;` : `${trimTrailingSemicolon(config.query)};`;
             const params = inputParams.map((param) => message.payload[param]);
-            this.log.debug(
-              `Handle message ${message.eventId} with query ${query} and params ${params}`
-            );
+            if (message.testRun) {
+              this.log.info(
+                `Handle message ${message.eventId} with query ${query} and params ${params}`
+              );
+            } else {
+              this.log.debug(
+                `Handle message ${message.eventId} with query ${query} and params ${params}`
+              );
+            }
             try {
-              const result = await this.dataSinkService.query(query, params).catch((error) => {
-                throw error;
-              });
+              this.log.debug("executing query");
+              const result = await this.dataSinkService.query(query, params);
+              if (result === null) {
+                this.log.error(`Query failed, no result`);
+                return (0, import_kafka_base_service.InternalServerError)("Query failed, no result")(message);
+              }
+              if (typeof result === "object" && "error" in result && result.error) {
+                this.log.error(`Query failed with error: ${result.error}`);
+                return (0, import_kafka_base_service.InternalServerError)(
+                  typeof result === "object" && "error" in result && result.error ? result.error : "Unknown error"
+                )(message);
+              }
+              this.log.debug("query done");
               if (result) {
                 return callbackFunction(message);
               }

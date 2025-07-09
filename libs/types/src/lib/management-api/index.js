@@ -40,7 +40,6 @@ __export(management_api_exports, {
   SemanticTriggerFilterInterface: () => import_semantic_trigger_filter.SemanticTriggerFilterInterface,
   SemanticTriggerFiltersInterface: () => import_semantic_trigger_filters.SemanticTriggerFiltersInterface,
   SemanticTriggerInterface: () => import_semantic_trigger.SemanticTriggerInterface,
-  SemanticTriggerRecordInterface: () => import_semantic_trigger_record.SemanticTriggerRecordInterface,
   SemanticTriggersInterface: () => import_semantic_triggers.SemanticTriggersInterface,
   SwitchInterface: () => import_switch.SwitchInterface,
   TemplateImplementationOverridesInterface: () => import_template_implementation_overrides.TemplateImplementationOverridesInterface,
@@ -80,7 +79,7 @@ var import_pre_aggregations = require("./dataset/pre-aggregations.interface");
 var import_pre_aggregate = require("./dataset/pre-aggregate.interface");
 var import_semantic_triggers = require("./semantic-trigger/semantic-triggers.interface");
 var import_semantic_trigger = require("./semantic-trigger/semantic-trigger.interface");
-var import_semantic_trigger_record = require("./semantic-trigger/semantic-trigger-record.interface");
+__reExport(management_api_exports, require("./semantic-trigger/semantic-trigger-record.interface"), module.exports);
 var import_semantic_trigger_filters = require("./semantic-trigger/semantic-trigger-filters.interface");
 var import_semantic_trigger_filter = require("./semantic-trigger/semantic-trigger-filter.interface");
 var import_template_implementation_overrides = require("./template-implementation-overrides.interface");
@@ -108,7 +107,6 @@ var import_template_implementation_overrides = require("./template-implementatio
   SemanticTriggerFilterInterface,
   SemanticTriggerFiltersInterface,
   SemanticTriggerInterface,
-  SemanticTriggerRecordInterface,
   SemanticTriggersInterface,
   SwitchInterface,
   TemplateImplementationOverridesInterface,
@@ -121,5 +119,6 @@ var import_template_implementation_overrides = require("./template-implementatio
   ...require("./tenant.interface"),
   ...require("./cube-dataset.interface"),
   ...require("./event-origin.interface"),
-  ...require("./workflow")
+  ...require("./workflow"),
+  ...require("./semantic-trigger/semantic-trigger-record.interface")
 });

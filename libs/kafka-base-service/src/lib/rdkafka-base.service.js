@@ -103,6 +103,9 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
     };
     this.reportResult = async (message, result, responseSource) => {
       if (this.disableLogs) {
+        import_logger.Logger.getInstance().debug(
+          "Skipping report result due to disableLogs flag"
+        );
         return;
       }
       const returnMessage = {

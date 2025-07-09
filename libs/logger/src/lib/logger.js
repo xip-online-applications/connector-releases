@@ -32,6 +32,7 @@ __export(logger_exports, {
 });
 module.exports = __toCommonJS(logger_exports);
 var winston = __toESM(require("winston"));
+var import_node_process = __toESM(require("node:process"));
 var LogLevels = /* @__PURE__ */ ((LogLevels2) => {
   LogLevels2["error"] = "error";
   LogLevels2["warn"] = "warn";
@@ -53,7 +54,7 @@ class Logger {
       )
     });
     let transportsAdded = false;
-    if (process.env["NODE_ENV"] !== "production" || process.env["LOG_TO_CONSOLE"] === "true") {
+    if (import_node_process.default.env["NODE_ENV"] !== "production" || import_node_process.default.env["LOG_TO_CONSOLE"] === "true") {
       transportsAdded = true;
       this.logger.add(
         new winston.transports.Console({
@@ -63,7 +64,7 @@ class Logger {
         })
       );
     }
-    if (process.env["LOG_TO_FILE"] === "true") {
+    if (import_node_process.default.env["LOG_TO_FILE"] === "true") {
       transportsAdded = true;
       this.logger.add(
         new winston.transports.File({
@@ -85,47 +86,60 @@ class Logger {
       );
     }
   }
-  static getInstance(identifier, loglevel = "info" /* info */) {
+  static getInstance(identifier, loglevel) {
     if (!Logger.instance) {
-      Logger.instance = new Logger(identifier ?? "default", loglevel);
+      Logger.instance = new Logger(
+        identifier ?? "default",
+        Logger.#getLogLevel(loglevel)
+      );
     }
     return Logger.instance;
   }
-  info(message, ...args) {
-    if (typeof message === "object") {
-      this.logger.info(JSON.stringify(message), ...args);
-    } else {
-      this.logger.info(message, ...args);
+  info(...args) {
+    this.#logFunction(this.logger.info, ...args);
+  }
+  debug(...args) {
+    this.#logFunction(this.logger.debug, ...args);
+  }
+  error(...args) {
+    this.#logFunction(this.logger.error, ...args);
+  }
+  warn(...args) {
+    this.#logFunction(this.logger.warn, ...args);
+  }
+  verbose(...args) {
+    this.#logFunction(this.logger.verbose, ...args);
+  }
+  silly(...args) {
+    this.#logFunction(this.logger.silly, ...args);
+  }
+  #logFunction(func, ...meta) {
+    try {
+      const message = meta.map(
+        (param) => typeof param === "object" ? JSON.stringify(param) : String(param)
+      );
+      func(message.join(" "), ...meta);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
-  debug(message, ...args) {
-    if (typeof message === "object") {
-      this.logger.debug(JSON.stringify(message), ...args);
-    } else {
-      this.logger.debug(message, ...args);
+  static #getLogLevel = (givenLevel) => {
+    if (givenLevel !== void 0) {
+      return givenLevel;
     }
-  }
-  error(message, ...args) {
-    if (typeof message === "object") {
-      this.logger.error(JSON.stringify(message), ...args);
-    } else {
-      this.logger.error(message, ...args);
+    let logLevel = import_node_process.default.env["LOG_LEVEL"] || "info" /* info */;
+    const validLogLevels = Object.values(LogLevels);
+    const faultyLogLevel = !validLogLevels.includes(logLevel);
+    if (faultyLogLevel) {
+      logLevel = "info" /* info */;
     }
-  }
-  warn(message, ...args) {
-    if (typeof message === "object") {
-      this.logger.warn(JSON.stringify(message), ...args);
-    } else {
-      this.logger.warn(message, ...args);
+    if (faultyLogLevel) {
+      console.error(
+        `Invalid log level: ${logLevel} only allow; 'error', 'warn', 'info', 'debug', 'trace'. Using info as default.`
+      );
     }
-  }
-  trace(message, ...args) {
-    if (typeof message === "object") {
-      this.logger.verbose(JSON.stringify(message), ...args);
-    } else {
-      this.logger.verbose(message, ...args);
-    }
-  }
+    return logLevel;
+  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

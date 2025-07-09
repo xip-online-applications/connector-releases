@@ -108,7 +108,7 @@ class ConnectorRunnerFileCopy extends import_connector_runtime.ConnectorRuntime 
           await this.transferFunction(file, destinationPath, sourcePath);
         } else {
           import_logger.Logger.getInstance().info(
-            `Test run: Would have transferred ${file.name} from ${sourcePath} to ${destinationPath}`
+            `Test run: Would have transferred ${file.name} from ${sourcePath} to ${destinationPath}. NOTHING DONE DUE TO TESTRUN!`
           );
         }
       }
@@ -156,6 +156,11 @@ class ConnectorRunnerFileCopy extends import_connector_runtime.ConnectorRuntime 
             const parsedFileRegex = handleBars.fileRegex({
               inputs: message.payload
             }).trim();
+            if (message.testRun) {
+              import_logger.Logger.getInstance().info(
+                `Test run for ${message.eventId} with parsedLocalPath ${parsedLocalPath}, parsedRemotePath ${parsedRemotePath}, parsedFileRegex ${parsedFileRegex}`
+              );
+            }
             await this.copyFunction(
               parsedFileRegex,
               parsedLocalPath,

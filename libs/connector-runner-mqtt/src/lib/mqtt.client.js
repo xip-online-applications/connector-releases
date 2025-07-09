@@ -28,11 +28,8 @@ function generateKafkaTopic(connectorConfig) {
   return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}`;
 }
 class MqttClient {
-  #baseConnectorConfig;
-  #client;
-  #kafkaService;
-  #logger;
   constructor(baseConnectorConfig, mqttConfig, kafkaService) {
+    this.mqttConfig = mqttConfig;
     this.#logger = import_logger.Logger.getInstance();
     this.#baseConnectorConfig = baseConnectorConfig;
     this.#kafkaService = kafkaService;
@@ -71,6 +68,15 @@ class MqttClient {
       );
       await this.#kafkaService.send([kafkaPayload], kafkaTopic);
     });
+  }
+  #baseConnectorConfig;
+  #client;
+  #kafkaService;
+  #logger;
+  async stop() {
+    this.#client?.removeAllListeners();
+    await this.#client?.unsubscribeAsync(this.mqttConfig.topic);
+    await this.#client?.endAsync();
   }
   #buildKafkaPayload = (topic, message) => {
     return {

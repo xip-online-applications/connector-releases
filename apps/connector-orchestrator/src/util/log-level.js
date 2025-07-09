@@ -15,28 +15,27 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var connector_runner_mqtt_exports = {};
-__export(connector_runner_mqtt_exports, {
-  ConnectorRunnerMqtt: () => ConnectorRunnerMqtt
+var log_level_exports = {};
+__export(log_level_exports, {
+  getLogLevel: () => getLogLevel
 });
-module.exports = __toCommonJS(connector_runner_mqtt_exports);
-var import_connector_runtime = require("@transai/connector-runtime");
-var import_mqtt = require("./mqtt.client");
-class ConnectorRunnerMqtt extends import_connector_runtime.ConnectorRuntime {
-  constructor() {
-    super(...arguments);
-    this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_MQTT_SOURCE_CONFIG";
-    this.init = async () => {
-      const config = await this.getConfig();
-      this.#mqttClient = new import_mqtt.MqttClient(config, config, this.kafkaService);
-    };
-    this.exit = async () => {
-      this.#mqttClient?.stop();
-    };
+module.exports = __toCommonJS(log_level_exports);
+var import_logger = require("@transai/logger");
+const getLogLevel = (node) => {
+  let logLevel = node.process.env.LOG_LEVEL || import_logger.LogLevels.info;
+  const validLogLevels = Object.values(import_logger.LogLevels);
+  const faultyLogLevel = !validLogLevels.includes(logLevel);
+  if (faultyLogLevel) {
+    logLevel = import_logger.LogLevels.info;
   }
-  #mqttClient;
-}
+  if (faultyLogLevel) {
+    console.error(
+      `Invalid log level: ${logLevel}; only allowed values are 'error', 'warn', 'info', 'debug', 'trace'. Using 'info' as the default.`
+    );
+  }
+  return logLevel;
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ConnectorRunnerMqtt
+  getLogLevel
 });

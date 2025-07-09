@@ -30,14 +30,18 @@ class DummyDataGeneratorService {
   #config;
   #offsetStore;
   #processing = false;
+  #subscription;
   constructor(kafkaSourceService, config, offsetStore) {
     this.#kafkaSourceService = kafkaSourceService;
     this.#config = config;
     this.#offsetStore = offsetStore;
     import_logger.Logger.getInstance().debug(`DummyDataGeneratorService initialized`);
-    (0, import_rxjs.interval)((this.#config.interval ?? 10) * 1e3).subscribe(
-      () => this.#generate()
-    );
+    this.#subscription = (0, import_rxjs.interval)(
+      (this.#config.interval ?? 10) * 1e3
+    ).subscribe(() => this.#generate());
+  }
+  stop() {
+    this.#subscription?.unsubscribe();
   }
   async #generate() {
     if (this.#processing) {

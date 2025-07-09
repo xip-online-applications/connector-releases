@@ -54,6 +54,7 @@ class SambaFilesourceProcessorService {
   #logger;
   #processing = false;
   #numberOfImportedFilesPerSession = 0;
+  #subscription;
   constructor(config, sambaSourceConfig, kafkaService) {
     this.#config = config;
     this.#sambaSourceConfig = sambaSourceConfig;
@@ -65,8 +66,11 @@ class SambaFilesourceProcessorService {
     this.#sambaClientInstance = new import_samba_client.SambaClient(this.#sambaConfig);
     this.setInterval();
   }
+  stop() {
+    this.#subscription?.unsubscribe();
+  }
   setInterval() {
-    (0, import_rxjs.interval)(this.#sambaSourceConfig.interval * 1e3).pipe((0, import_rxjs.filter)(() => !this.#processing)).subscribe(async () => {
+    this.#subscription = (0, import_rxjs.interval)(this.#sambaSourceConfig.interval * 1e3).pipe((0, import_rxjs.filter)(() => !this.#processing)).subscribe(async () => {
       await this.process().catch((error) => {
         throw new Error(
           `Error while processing files from filesource processor service ${error.message}`
@@ -94,7 +98,7 @@ class SambaFilesourceProcessorService {
         );
         throw error;
       });
-      import_logger.Logger.getInstance().trace(
+      import_logger.Logger.getInstance().verbose(
         `Imported ${this.#numberOfImportedFilesPerSession} files from ${this.#sambaConfig.address}`
       );
     } catch (error) {

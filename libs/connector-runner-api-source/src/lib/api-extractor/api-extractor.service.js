@@ -48,11 +48,14 @@ class ApiExtractorService {
   #logger;
   #token;
   #tokenExpiresAt;
-  constructor(config, apiConfig, apiResultHandler, offsetStore) {
+  #tokenManager;
+  #subscription;
+  constructor(config, apiConfig, apiResultHandler, offsetStore, tokenManager) {
     this.#config = config;
     this.#apiConfig = apiConfig;
     this.#apiResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
+    this.#tokenManager = tokenManager;
     if (!apiConfig.url) {
       throw new Error("URL is not defined in apiConfig");
     }
@@ -96,9 +99,14 @@ class ApiExtractorService {
         );
       });
     }
-    (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
-      await this.extract();
-    });
+    this.#subscription = (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(
+      async () => {
+        await this.extract();
+      }
+    );
+  }
+  stop() {
+    this.#subscription?.unsubscribe();
   }
   async extract() {
     if (this.#processing) {
@@ -140,6 +148,12 @@ class ApiExtractorService {
     };
     if (this.#apiConfig.tokenUrl) {
       const token = await this.getAccessToken();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+    if (this.#tokenManager) {
+      const token = await this.#tokenManager.getAccessToken();
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }

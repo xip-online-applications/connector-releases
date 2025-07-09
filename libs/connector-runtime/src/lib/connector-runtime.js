@@ -98,7 +98,7 @@ class ConnectorRuntime {
       this.log.warn("IPC channel is not available. process.send is undefined.");
     }
     this.messageSubject.subscribe((message) => {
-      this.log.trace(
+      this.log.verbose(
         `${process.pid} Received message from parent process:`,
         message
       );

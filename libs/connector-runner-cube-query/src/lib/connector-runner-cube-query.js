@@ -82,15 +82,15 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
             const { payload } = message;
             const payloadKeys = Object.keys(payload);
             if (payload && payloadKeys.length > 0) {
-              const query = (0, import_helper_functions.replacePlaceholdersInConfig)(
+              const parsedQuery = (0, import_helper_functions.replacePlaceholdersInConfig)(
                 config.query,
                 payload
               );
               let queryResult;
               try {
-                queryResult = await cubeApi.load(query);
+                queryResult = await cubeApi.load(parsedQuery);
               } catch (error) {
-                let errorMessage = `Error in query ${JSON.stringify(query)}`;
+                let errorMessage = `Error in query ${JSON.stringify(parsedQuery)}`;
                 if (error instanceof Error) {
                   errorMessage += error.message;
                 }
@@ -111,7 +111,7 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
               return (0, import_kafka_base_service.BadRequest)("No results found for given query")({
                 ...message,
                 meta: {
-                  query
+                  query: parsedQuery
                 }
               });
             }

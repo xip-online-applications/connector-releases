@@ -28,8 +28,7 @@ class ConnectorRunnerDummyNode extends import_connector_runtime.ConnectorRuntime
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_DUMMY_NODE_CONFIG";
     this.init = async () => {
-      const config = this.config;
-      const failProbability = config.failProbability || 0;
+      const failProbability = this.config.failProbability || 0;
       if (failProbability > 0) {
         import_logger.Logger.getInstance().debug("Fail probability set to", failProbability);
       }
@@ -38,8 +37,12 @@ class ConnectorRunnerDummyNode extends import_connector_runtime.ConnectorRuntime
       };
       const mainCallbackFunction = (callbackFunction) => {
         return async (message) => {
-          if (this.config?.debug)
-            import_logger.Logger.getInstance().debug("Received message: ", message.eventId, message.payload);
+          import_logger.Logger.getInstance().info(
+            "Received message: ",
+            message.testRun ? "(test run)" : "",
+            message.eventId,
+            message.payload
+          );
           if (dummyProcessFailed()) {
             import_logger.Logger.getInstance().error("Dummy process failed");
             return (0, import_kafka_base_service.InternalServerError)("Dummy process failed")(message);
