@@ -57,9 +57,14 @@ class SambaFileWriterService {
         `${message.eventId} Error while sending file to samba server`,
         error
       );
+      let errorMessage = "unknown error";
+      const keys = Object.keys(error);
+      if (keys.includes("stdout")) {
+        errorMessage = error.stdout || "unknown error";
+      }
       return {
         success: false,
-        message: `Error while sending file to samba server: ${JSON.stringify(error)}`
+        message: `Error while sending file to samba server: ${errorMessage}`
       };
     } finally {
       success = await this.removeTempFileFromFileSystem(tmpFileLoc);
