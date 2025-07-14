@@ -68,7 +68,11 @@ class ConnectorRuntime {
       this.log.debug(
         `Connector ID: ${connector.identifier} - ${tmpdir}, using offset store ${process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? "API" : "FILE"}`
       );
-      const offsetStore = process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? new import_cloud_offset_store.CloudOffsetStoreService(tmpdir, this.CONNECTOR_IDENTIFIER) : new import_offset_store2.OffsetStoreService(tmpdir);
+      const offsetStore = process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? new import_cloud_offset_store.CloudOffsetStoreService(
+        tmpdir,
+        apiConfig,
+        this.CONNECTOR_IDENTIFIER
+      ) : new import_offset_store2.OffsetStoreService(tmpdir, apiConfig);
       offsetStore.init().then(() => {
         this.log.debug("Offset store initialized. write start time");
         offsetStore.writeFile(this.CONNECTOR_IDENTIFIER, {

@@ -29,11 +29,13 @@ class OffsetStoreService {
   #offsetCache = /* @__PURE__ */ new Map();
   #cloudOffsetCache = /* @__PURE__ */ new Map();
   #log = import_logger.Logger.getInstance();
+  #connectorConfig;
   get offsetValues() {
     return Array.from(this.#offsetCache.keys());
   }
-  constructor(offsetDirectory) {
+  constructor(offsetDirectory, connectorConfig) {
     this.#offsetDirectory = offsetDirectory;
+    this.#connectorConfig = connectorConfig;
   }
   async init() {
     let locExist = true;
@@ -81,6 +83,30 @@ class OffsetStoreService {
       const isValidOffset = (0, import_types2.isOffsetStoreType)(offsetStore);
       if (isValidOffset) {
         return offsetStore;
+      }
+      const offsetFileDeprecated = await import_fs.promises.readFile(this.#getOffsetFilePathDeprecated(identifier), "utf8").catch((error) => {
+        if (error.code === "ENOENT") {
+          this.#log.debug(
+            `OffsetStore: ${this.#getOffsetFilePath(
+              identifier
+            )} does not exist. continue to check api offsets.`
+          );
+        } else {
+          this.#log.error(
+            `OffsetStore: Error reading offset file ${this.#getOffsetFilePath(
+              identifier
+            )}: ${error}, continue to check api offsets.`
+          );
+        }
+        return "{}";
+      });
+      const offsetStoreDeprecated = JSON.parse(offsetFileDeprecated);
+      const isValidOffsetDeprecated = (0, import_types2.isOffsetStoreType)(offsetStoreDeprecated);
+      if (isValidOffsetDeprecated) {
+        this.#log.warn(
+          `OffsetStore: read file from deprecated location. Leave connector on for a while so it will be migrated to the new location automatically :).`
+        );
+        return offsetStoreDeprecated;
       }
       this.#log.debug(
         `${identifier} OffsetStore: ${this.#getOffsetFilePath(
@@ -168,6 +194,9 @@ class OffsetStoreService {
     );
   }
   #getOffsetFilePath(identifier) {
+    return `${this.#offsetDirectory}/${this.#connectorConfig.datasourceIdentifier}-${identifier}.json`;
+  }
+  #getOffsetFilePathDeprecated(identifier) {
     return `${this.#offsetDirectory}/${identifier}.json`;
   }
 }

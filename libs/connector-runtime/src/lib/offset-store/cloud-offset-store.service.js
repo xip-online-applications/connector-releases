@@ -41,8 +41,11 @@ class CloudOffsetStoreService {
   #connectorIdentifier;
   #offsetStore;
   #initialized = false;
-  constructor(offsetDirectory, connectorIdentifier) {
-    this.#offsetStore = new import_offset_store.OffsetStoreService(offsetDirectory);
+  constructor(offsetDirectory, connectorConfig, connectorIdentifier) {
+    this.#offsetStore = new import_offset_store.OffsetStoreService(
+      offsetDirectory,
+      connectorConfig
+    );
     this.#connectorIdentifier = connectorIdentifier;
   }
   async init() {
