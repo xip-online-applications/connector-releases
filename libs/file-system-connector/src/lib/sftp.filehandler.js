@@ -63,7 +63,7 @@ class SftpFilehandler {
     );
   }
   async writeFile(data, remotePath, filename) {
-    this.sftpClient.put(data.get(), `${remotePath}/${filename}`, {
+    await this.sftpClient.put(data.get(), `${remotePath}/${filename}`, {
       writeStreamOptions: {
         flags: "w",
         // w - write and a - append

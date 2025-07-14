@@ -27,6 +27,8 @@ const fileHandlerFactory = (config) => {
       return new import_file_system_connector.SambaFilehandler(config);
     case "sftp":
       return new import_file_system_connector.SftpFilehandler(config);
+    case "sftp-reconnect":
+      return new import_file_system_connector.SftpReconnectFilehandler(config);
     case "dummy":
       return new import_file_system_connector.DummyFilehandler(config);
     default:

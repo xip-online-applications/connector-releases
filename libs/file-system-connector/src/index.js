@@ -19,11 +19,13 @@ __reExport(src_exports, require("./lib/types"), module.exports);
 __reExport(src_exports, require("./lib/dummy.filehandler"), module.exports);
 __reExport(src_exports, require("./lib/samba.filehandler"), module.exports);
 __reExport(src_exports, require("./lib/sftp.filehandler"), module.exports);
+__reExport(src_exports, require("./lib/sftp-reconnect.filehandler"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./lib/file-handler.interface"),
   ...require("./lib/types"),
   ...require("./lib/dummy.filehandler"),
   ...require("./lib/samba.filehandler"),
-  ...require("./lib/sftp.filehandler")
+  ...require("./lib/sftp.filehandler"),
+  ...require("./lib/sftp-reconnect.filehandler")
 });
