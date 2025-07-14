@@ -68,13 +68,13 @@ class OffsetStoreService {
           this.#log.debug(
             `OffsetStore: ${this.#getOffsetFilePath(
               identifier
-            )} does not exist. continue to check api offsets.`
+            )} does not exist. continue to deprecated offsets.`
           );
         } else {
           this.#log.error(
             `OffsetStore: Error reading offset file ${this.#getOffsetFilePath(
               identifier
-            )}: ${error}, continue to check api offsets.`
+            )}: ${error}, continue to deprecated offsets.`
           );
         }
         return "{}";
@@ -87,13 +87,13 @@ class OffsetStoreService {
       const offsetFileDeprecated = await import_fs.promises.readFile(this.#getOffsetFilePathDeprecated(identifier), "utf8").catch((error) => {
         if (error.code === "ENOENT") {
           this.#log.debug(
-            `OffsetStore: ${this.#getOffsetFilePath(
+            `OffsetStore: ${this.#getOffsetFilePathDeprecated(
               identifier
             )} does not exist. continue to check api offsets.`
           );
         } else {
           this.#log.error(
-            `OffsetStore: Error reading offset file ${this.#getOffsetFilePath(
+            `OffsetStore: Error reading offset file ${this.#getOffsetFilePathDeprecated(
               identifier
             )}: ${error}, continue to check api offsets.`
           );
