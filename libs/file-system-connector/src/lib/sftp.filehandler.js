@@ -94,4 +94,3 @@ class SftpFilehandler {
 0 && (module.exports = {
   SftpFilehandler
 });
-//# sourceMappingURL=sftp.filehandler.js.map

@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var cube_dataset_interface_exports = {};
 module.exports = __toCommonJS(cube_dataset_interface_exports);
-//# sourceMappingURL=cube-dataset.interface.js.map

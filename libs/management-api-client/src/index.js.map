@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/management-api-client/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-api-client';\nexport * from './lib/management-api-client';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,uCAAd;AACA,wBAAc,wCADd;",
-  "names": []
-}

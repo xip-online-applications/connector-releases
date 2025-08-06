@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/measures.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { MeasureInterface, MeasureSchema } from './measure.interface';\n\nexport const MeasuresSchema = z.record(\n  z.union([MeasureSchema, z.literal(false)]),\n);\n\nexport interface MeasuresInterface {\n  [key: string]: MeasureInterface | false;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,qBAAgD;AAEzC,MAAM,iBAAiB,aAAE;AAAA,EAC9B,aAAE,MAAM,CAAC,8BAAe,aAAE,QAAQ,KAAK,CAAC,CAAC;AAC3C;",
-  "names": []
-}

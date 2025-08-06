@@ -25,4 +25,3 @@ __reExport(token_exports, require("./jwt-token-options.interface"), module.expor
   ...require("./token.interface"),
   ...require("./jwt-token-options.interface")
 });
-//# sourceMappingURL=index.js.map

@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/connector-runner-dummy-source"), module.e
 0 && (module.exports = {
   ...require("./lib/connector-runner-dummy-source")
 });
-//# sourceMappingURL=index.js.map

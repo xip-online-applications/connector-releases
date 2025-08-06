@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var persistent_offset_store_interface_exports = {};
 module.exports = __toCommonJS(persistent_offset_store_interface_exports);
-//# sourceMappingURL=persistent-offset-store.interface.js.map

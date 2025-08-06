@@ -45,4 +45,3 @@ function parseCubeResultToObjects(data) {
 0 && (module.exports = {
   parseCubeResultToObjects
 });
-//# sourceMappingURL=cube-query-helper.js.map

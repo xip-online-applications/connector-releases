@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/semantic-trigger/index.ts"],
-  "sourcesContent": ["export * from './semantic-trigger-filter.interface';\nexport * from './semantic-trigger-filters.interface';\nexport * from './semantic-trigger-record.interface';\nexport * from './semantic-trigger.interface';\nexport * from './semantic-triggers.interface';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,qCAAc,gDAAd;AACA,qCAAc,iDADd;AAEA,qCAAc,gDAFd;AAGA,qCAAc,yCAHd;AAIA,qCAAc,0CAJd;",
-  "names": []
-}

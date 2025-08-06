@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/NamingStrategyNotFoundError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to use naming strategy that does not exist.\n */\nexport class NamingStrategyNotFoundError extends TypeORMError {\n  constructor(strategyName: string | Function, connectionName: string) {\n    super();\n\n    const name =\n      typeof strategyName === 'function'\n        ? (strategyName as any).name\n        : strategyName;\n    this.message =\n      `Naming strategy \"${name}\" was not found. Looks like this naming strategy does not ` +\n      `exist or it was not registered in current \"${connectionName}\" connection?`;\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,oCAAoC,iCAAa;AAAA,EAC5D,YAAY,cAAiC,gBAAwB;AACnE,UAAM;AAEN,UAAM,OACJ,OAAO,iBAAiB,aACnB,aAAqB,OACtB;AACN,SAAK,UACH,oBAAoB,IAAI,wGACsB,cAAc;AAAA,EAChE;AACF;",
-  "names": []
-}

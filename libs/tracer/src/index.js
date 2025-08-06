@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/tracer"), module.exports);
 0 && (module.exports = {
   ...require("./lib/tracer")
 });
-//# sourceMappingURL=index.js.map

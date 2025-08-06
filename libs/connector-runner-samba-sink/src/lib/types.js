@@ -29,4 +29,3 @@ function isSambaSinkConfigType(obj) {
 0 && (module.exports = {
   isSambaSinkConfigType
 });
-//# sourceMappingURL=types.js.map

@@ -32,4 +32,3 @@ class OptimisticLockVersionMismatchError extends import_TypeORMError.TypeORMErro
 0 && (module.exports = {
   OptimisticLockVersionMismatchError
 });
-//# sourceMappingURL=OptimisticLockVersionMismatchError.js.map

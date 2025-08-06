@@ -33,4 +33,3 @@ function isSqlSourceRunnerConfigType(obj) {
   isSourceConfigType,
   isSqlSourceRunnerConfigType
 });
-//# sourceMappingURL=types.js.map

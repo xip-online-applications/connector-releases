@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/connector-runner-dummy-sink"), module.exp
 0 && (module.exports = {
   ...require("./lib/connector-runner-dummy-sink")
 });
-//# sourceMappingURL=index.js.map

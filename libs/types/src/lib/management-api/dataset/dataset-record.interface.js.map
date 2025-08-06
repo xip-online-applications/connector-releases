@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/dataset-record.interface.ts"],
-  "sourcesContent": ["import { DatasetInterface } from './dataset.interface';\n\nexport interface DatasetRecordInterface extends DatasetInterface {\n  id: string;\n  tenantId: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

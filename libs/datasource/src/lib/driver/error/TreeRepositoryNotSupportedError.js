@@ -32,4 +32,3 @@ class TreeRepositoryNotSupportedError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   TreeRepositoryNotSupportedError
 });
-//# sourceMappingURL=TreeRepositoryNotSupportedError.js.map

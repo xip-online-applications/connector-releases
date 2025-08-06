@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var my_sql_connection_credentials_options_exports = {};
 module.exports = __toCommonJS(my_sql_connection_credentials_options_exports);
-//# sourceMappingURL=my-sql-connection-credentials.options.js.map

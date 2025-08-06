@@ -120,4 +120,3 @@ class ConnectorRunnerSambaSink extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerSambaSink
 });
-//# sourceMappingURL=connector-runner-samba-sink.js.map

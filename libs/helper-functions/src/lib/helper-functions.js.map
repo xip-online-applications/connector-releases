@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/helper-functions/src/lib/helper-functions.ts"],
-  "sourcesContent": ["export function nameToId(name: string): string {\n  return name.toLowerCase().replace(/[^a-z0-9]/g, '-');\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,SAAS,MAAsB;AAC7C,SAAO,KAAK,YAAY,EAAE,QAAQ,cAAc,GAAG;AACrD;",
-  "names": []
-}

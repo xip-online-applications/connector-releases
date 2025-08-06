@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CannotExecuteNotConnectedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to execute operation allowed only if connection is opened.\n */\nexport class CannotExecuteNotConnectedError extends TypeORMError {\n  constructor(connectionName: string) {\n    super(\n      `Cannot execute operation on \"${connectionName}\" connection because connection is not yet established.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,uCAAuC,iCAAa;AAAA,EAC/D,YAAY,gBAAwB;AAClC;AAAA,MACE,gCAAgC,cAAc;AAAA,IAChD;AAAA,EACF;AACF;",
-  "names": []
-}

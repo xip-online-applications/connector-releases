@@ -27,8 +27,26 @@ var import_rxjs = require("rxjs");
 var import_kafkajs_msk_iam_authentication_mechanism = require("@jm18457/kafkajs-msk-iam-authentication-mechanism");
 var import_node = require("@sentry/node");
 var import_logger = require("@transai/logger");
+var import_aws_msk_iam_sasl_signer_js = require("aws-msk-iam-sasl-signer-js");
 var import_in_memory = require("./in-memory.message-monitor");
 var import_redis = require("./redis.message-monitor");
+const getAwsCredentials = (awsSasl) => () => {
+  return Promise.resolve({
+    accessKeyId: awsSasl.accessKeyId,
+    secretAccessKey: awsSasl.secretAccessKey
+  });
+};
+const oauthBearerTokenProvider = (awsSasl) => async () => {
+  const authTokenResponse = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthTokenFromCredentialsProvider)({
+    region: awsSasl.region ?? "eu-west-1",
+    awsCredentialsProvider: getAwsCredentials(awsSasl)
+  });
+  return {
+    value: authTokenResponse.token,
+    principal: "",
+    lifetime: authTokenResponse.expiryTime
+  };
+};
 class AbstractRdKafkaService {
   constructor(baseYamlConfig, connectorTopic) {
     this.baseYamlConfig = baseYamlConfig;
@@ -101,15 +119,19 @@ class AbstractRdKafkaService {
       }
     };
     this.logger = import_logger.Logger.getInstance();
+    const { kafka: kafkaConfig } = baseYamlConfig;
     const kafkaJS = {
-      brokers: baseYamlConfig.kafka.brokers,
+      brokers: kafkaConfig.brokers,
       ssl: false,
-      clientId: `${baseYamlConfig.kafka.clientId}-${(0, import_uuid.v4)()}`,
+      clientId: `${kafkaConfig.clientId}-${(0, import_uuid.v4)()}`,
       logLevel: 2
     };
-    const authConfig = this.getAuthProviderOptions(baseYamlConfig.kafka.sasl);
-    if (authConfig.sasl) {
-      kafkaJS.sasl = authConfig.sasl;
+    if (kafkaConfig.sasl) {
+      const { sasl } = kafkaConfig;
+      kafkaJS.sasl = {
+        mechanism: "oauthbearer",
+        oauthBearerProvider: oauthBearerTokenProvider(sasl)
+      };
       kafkaJS.ssl = true;
     }
     this.messageMonitor = this.getCorrespondingMonitor();
@@ -228,4 +250,3 @@ class AbstractRdKafkaService {
 0 && (module.exports = {
   AbstractRdKafkaService
 });
-//# sourceMappingURL=abstract-rdkafka-service.js.map

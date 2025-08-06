@@ -37,4 +37,3 @@ function isXodActionType(obj) {
   isXodBaseMessageType,
   isXodEventType
 });
-//# sourceMappingURL=message.types.js.map

@@ -58,4 +58,3 @@ class ConnectorRunnerDummyNode extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerDummyNode
 });
-//# sourceMappingURL=connector-runner-dummy-node.js.map

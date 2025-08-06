@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/connector.interface.ts"],
-  "sourcesContent": ["import { ConfiguredConnectorTypes } from '../../types';\nimport { ActionInterface } from './action.interface';\n\nexport interface CreateConnectorInterface<T = object> {\n  identifier: string;\n  connectorType: ConfiguredConnectorTypes;\n  tenantIdentifier: string;\n  name: string;\n  location: string;\n  config: T;\n  enabled: boolean;\n}\n\nexport interface ConnectorInterface<T = object>\n  extends CreateConnectorInterface<T> {\n  createdAt: Date;\n  updatedAt: Date;\n  actions?: Array<ActionInterface>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

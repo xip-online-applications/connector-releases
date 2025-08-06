@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/handle-error/src/index.ts"],
-  "sourcesContent": ["export * from './lib/handle-error';\nexport * from './lib/wait-till-restart';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,+BAAd;AACA,wBAAc,oCADd;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/ReturningStatementNotSupportedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user tries to build a query with RETURNING / OUTPUT statement,\n * but used database does not support it.\n */\nexport class ReturningStatementNotSupportedError extends TypeORMError {\n  constructor() {\n    super(\n      `OUTPUT or RETURNING clause only supported by Microsoft SQL Server or PostgreSQL or MariaDB databases.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAMtB,MAAM,4CAA4C,iCAAa;AAAA,EACpE,cAAc;AACZ;AAAA,MACE;AAAA,IACF;AAAA,EACF;AACF;",
-  "names": []
-}

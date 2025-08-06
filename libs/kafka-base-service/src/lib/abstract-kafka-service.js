@@ -248,4 +248,3 @@ class AbstractKafkaService {
 0 && (module.exports = {
   AbstractKafkaService
 });
-//# sourceMappingURL=abstract-kafka-service.js.map

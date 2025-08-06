@@ -37,4 +37,3 @@ async function waitTillRestart(message, error = void 0) {
 0 && (module.exports = {
   waitTillRestart
 });
-//# sourceMappingURL=wait-till-restart.js.map

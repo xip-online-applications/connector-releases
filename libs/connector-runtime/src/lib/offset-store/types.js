@@ -27,4 +27,3 @@ function isOffsetStoreType(obj) {
 0 && (module.exports = {
   isOffsetStoreType
 });
-//# sourceMappingURL=types.js.map

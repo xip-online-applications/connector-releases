@@ -119,4 +119,3 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
 0 && (module.exports = {
   ConnectorRunnerApiSink
 });
-//# sourceMappingURL=connector-runner-api-sink.js.map

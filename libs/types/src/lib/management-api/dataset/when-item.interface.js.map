@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/when-item.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { FilterInterface, FilterSchema } from './filter.interface';\n\nexport const WhenItemSchema = z.intersection(\n  FilterSchema,\n  z.object({\n    label: z.string().min(1),\n    description: z.string().min(1).optional(),\n  }),\n);\n\nexport interface WhenItemInterface extends FilterInterface {\n  label: string;\n  description?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,oBAA8C;AAEvC,MAAM,iBAAiB,aAAE;AAAA,EAC9B;AAAA,EACA,aAAE,OAAO;AAAA,IACP,OAAO,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,IACvB,aAAa,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,EAC1C,CAAC;AACH;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../apps/connector-orchestrator/src/main.ts"],
-  "sourcesContent": ["import { handleError } from '@xip-online-data/handle-error';\nimport { ConnectorApiClient } from '@transai/management-api-client';\nimport { ClusterManager } from './cluster/cluster.manager';\nimport { ConnectorManager } from './connector/connector.manager';\nimport { NodeWrapper } from './util/node-wrapper';\n\nasync function main() {\n  const node = new NodeWrapper();\n\n  if (node.cluster.isPrimary) {\n    new ClusterManager(node, new ConnectorApiClient()).start().subscribe();\n  } else {\n    await new ConnectorManager(node).start();\n  }\n}\n\nmain().catch((error) => {\n  handleError('Error while initializing the app', error);\n});\n"],
-  "mappings": "AAAA,0BAA4B;AAC5B,mCAAmC;AACnC,qBAA+B;AAC/B,uBAAiC;AACjC,0BAA4B;AAE5B,eAAe,OAAO;AACpB,QAAM,OAAO,IAAI,gCAAY;AAE7B,MAAI,KAAK,QAAQ,WAAW;AAC1B,QAAI,8BAAe,MAAM,IAAI,gDAAmB,CAAC,EAAE,MAAM,EAAE,UAAU;AAAA,EACvE,OAAO;AACL,UAAM,IAAI,kCAAiB,IAAI,EAAE,MAAM;AAAA,EACzC;AACF;AAEA,KAAK,EAAE,MAAM,CAAC,UAAU;AACtB,uCAAY,oCAAoC,KAAK;AACvD,CAAC;",
-  "names": []
-}

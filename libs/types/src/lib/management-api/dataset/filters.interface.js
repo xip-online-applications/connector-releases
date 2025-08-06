@@ -30,4 +30,3 @@ const FiltersSchema = import_zod.z.record(
 0 && (module.exports = {
   FiltersSchema
 });
-//# sourceMappingURL=filters.interface.js.map

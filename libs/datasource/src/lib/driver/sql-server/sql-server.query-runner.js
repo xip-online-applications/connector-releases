@@ -92,4 +92,3 @@ class SqlServerQueryRunner {
 0 && (module.exports = {
   SqlServerQueryRunner
 });
-//# sourceMappingURL=sql-server.query-runner.js.map

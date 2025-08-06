@@ -80,4 +80,3 @@ function isBaseConnectorConfigType(obj) {
   isKafkaBrokerConfigType,
   isTopicRegex
 });
-//# sourceMappingURL=types.js.map

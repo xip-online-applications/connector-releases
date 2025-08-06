@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/connector-runner-sql-source"), module.exp
 0 && (module.exports = {
   ...require("./lib/connector-runner-sql-source")
 });
-//# sourceMappingURL=index.js.map

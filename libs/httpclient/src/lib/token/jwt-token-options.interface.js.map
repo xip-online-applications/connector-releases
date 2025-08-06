@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/token/jwt-token-options.interface.ts"],
-  "sourcesContent": ["export interface JwtTokenOptionsInterface {\n  tokenUrl: string;\n  clientId: string;\n  clientSecret: string;\n  audience?: string;\n  tenantIdentifier?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

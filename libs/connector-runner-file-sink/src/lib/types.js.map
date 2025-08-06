@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-file-sink/src/lib/types.ts"],
-  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\nimport { SftpConfig } from '@xip-online-data/sftp-client';\n\nexport interface FileSinkConfig extends BaseConnectorConfig {\n  sftpConfig: SftpConfig;\n  forceReconnect?: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}
