@@ -29,3 +29,4 @@ __reExport(src_exports, require("./lib/sftp-reconnect.filehandler"), module.expo
   ...require("./lib/sftp.filehandler"),
   ...require("./lib/sftp-reconnect.filehandler")
 });
+//# sourceMappingURL=index.js.map

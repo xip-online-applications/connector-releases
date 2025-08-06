@@ -81,7 +81,6 @@ class MySqlConnectionDriver {
   /**
    * Creates a new connection pool for a given database credentials.
    */
-  // eslint-disable-next-line class-methods-use-this
   async createPool(connectionOptions) {
     const pool = mysql.createPool(connectionOptions);
     const conn = (
@@ -111,3 +110,4 @@ class MySqlConnectionDriver {
 0 && (module.exports = {
   MySqlConnectionDriver
 });
+//# sourceMappingURL=my-sql-connection.driver.js.map

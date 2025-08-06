@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-mqtt/src/lib/types.ts"],
+  "sourcesContent": ["export interface MqttConfig {\n  brokerUrl: string;\n  username: string;\n  password: string;\n  topic: string;\n  clientId: string;\n  key?: string;\n  cert?: string;\n  ca?: string;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

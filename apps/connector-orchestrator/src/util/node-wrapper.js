@@ -51,3 +51,4 @@ class NodeWrapper {
 0 && (module.exports = {
   NodeWrapper
 });
+//# sourceMappingURL=node-wrapper.js.map

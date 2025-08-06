@@ -47,3 +47,4 @@ class ExecaWrapper {
 0 && (module.exports = {
   ExecaWrapper
 });
+//# sourceMappingURL=execa.wrapper.js.map

@@ -34,19 +34,26 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         await this.consumer.connect();
       }
       const topics = this.baseYamlConfig.kafka.consumerTopics ?? [];
-      if (this.connectorTopic) {
-        import_logger.Logger.getInstance().info(
-          `Default connector topic: ${this.connectorTopic}`
-        );
-        topics.push(this.connectorTopic);
-      }
-      if (topics.length > 0) {
-        const regexTopics = await this.getRegexTopics();
-        const topicsToSubscribeTo = [...this.getRegularTopics(), ...regexTopics];
-        for (const topic of topicsToSubscribeTo) {
-          import_logger.Logger.getInstance().debug("subscribing to", topic);
-          await this.consumer.subscribe({ topic });
+      if (topics.length > 0 || this.connectorTopic) {
+        if (this.connectorTopic) {
+          import_logger.Logger.getInstance().info(
+            `Default connector topic: ${this.connectorTopic}`
+          );
         }
+        const regexTopics = await this.getRegexTopics();
+        const topicsToSubscribeTo = [
+          ...this.getRegularTopics(),
+          ...regexTopics
+        ];
+        if (this.connectorTopic) {
+          topicsToSubscribeTo.push(this.connectorTopic);
+        }
+        await Promise.all(
+          topicsToSubscribeTo.map(async (topic) => {
+            import_logger.Logger.getInstance().debug("subscribing to", topic);
+            await this.consumer.subscribe({ topic });
+          })
+        );
         if (this.baseYamlConfig.kafka.autoCommitThreshold) {
           import_logger.Logger.getInstance().error(
             "autoCommitThreshold is not supported in bulk listener. Please use autoCommitInterval instead"
@@ -138,7 +145,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
     if (this.messageMonitor !== void 0) {
       callback = this.messageMonitor.processMessage(callback);
     }
-    this.callbackWrappers.get(eventType).push({
+    this.callbackWrappers.get(eventType)?.push({
       callback,
       identifier: eventType === RdKafkaBaseService.DEFAULT_CALLBACK_EVENT_TYPE ? this.baseYamlConfig.processIdentifier : identifier
     });
@@ -148,3 +155,4 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
 0 && (module.exports = {
   RdKafkaBaseService
 });
+//# sourceMappingURL=rdkafka-base.service.js.map

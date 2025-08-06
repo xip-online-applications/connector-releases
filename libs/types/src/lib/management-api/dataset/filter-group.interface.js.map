@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/filter-group.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport { FiltersInterface, FiltersSchema } from './filters.interface';\nimport { FilterGroupTypesEnum } from '../type-enums';\n\nexport const FilterGroupSchema = <z.ZodType<FilterGroupInterface>>z.lazy(() =>\n  z.object({\n    type: z.nativeEnum(FilterGroupTypesEnum),\n    filters: FiltersSchema,\n  }),\n);\n\nexport interface FilterGroupInterface {\n  type: FilterGroupTypesEnum;\n  filters: FiltersInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,qBAAgD;AAChD,wBAAqC;AAE9B,MAAM,oBAAqD,aAAE;AAAA,EAAK,MACvE,aAAE,OAAO;AAAA,IACP,MAAM,aAAE,WAAW,sCAAoB;AAAA,IACvC,SAAS;AAAA,EACX,CAAC;AACH;",
+  "names": []
+}

@@ -62,7 +62,6 @@ class AbstractManagementApiClient {
   async post(path, body) {
     return this.#client.post(path, body);
   }
-  // eslint-disable-next-line class-methods-use-this
   #getCacheOptions() {
     switch (process.env["TOKEN_CACHE"]) {
       case "memory":
@@ -88,3 +87,4 @@ class AbstractManagementApiClient {
 0 && (module.exports = {
   AbstractManagementApiClient
 });
+//# sourceMappingURL=management-api-client.js.map

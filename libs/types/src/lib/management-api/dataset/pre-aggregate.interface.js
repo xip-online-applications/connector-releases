@@ -42,3 +42,4 @@ const PreAggregateSchema = import_zod.z.object({
 0 && (module.exports = {
   PreAggregateSchema
 });
+//# sourceMappingURL=pre-aggregate.interface.js.map

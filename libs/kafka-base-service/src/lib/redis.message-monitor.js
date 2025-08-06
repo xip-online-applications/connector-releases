@@ -73,3 +73,4 @@ class RedisMessageMonitor extends import_abstract.AbstractMessageMonitor {
 0 && (module.exports = {
   RedisMessageMonitor
 });
+//# sourceMappingURL=redis.message-monitor.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CustomRepositoryNotFoundError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown if custom repository was not found.\n */\nexport class CustomRepositoryNotFoundError extends TypeORMError {\n  constructor(repository: any) {\n    super(\n      `Custom repository ${\n        typeof repository === 'function'\n          ? repository.name\n          : repository.constructor.name\n      } was not found. ` +\n        `Did you forgot to put @EntityRepository decorator on it?`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,sCAAsC,iCAAa;AAAA,EAC9D,YAAY,YAAiB;AAC3B;AAAA,MACE,qBACE,OAAO,eAAe,aAClB,WAAW,OACX,WAAW,YAAY,IAC7B;AAAA,IAEF;AAAA,EACF;AACF;",
+  "names": []
+}

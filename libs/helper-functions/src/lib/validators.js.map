@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/helper-functions/src/lib/validators.ts"],
+  "sourcesContent": ["import {KafkaCallbackResponse, XodBaseMessageType} from \"@xip-online-data/types\";\nimport {BadRequest} from \"@xip-online-data/kafka-base-service\";\n\nexport function expirationValidator(callbackFunction: (message: XodBaseMessageType) => Promise<KafkaCallbackResponse>): (message: XodBaseMessageType) => Promise<KafkaCallbackResponse> {\n  return async (message: XodBaseMessageType) => {\n    if (!isExpired(message)) {\n      return BadRequest('Action Duration has expired')(message);\n    }\n    return callbackFunction(message);\n  };\n}\n\nfunction isExpired(message: XodBaseMessageType): boolean {\n  const now = new Date();\n  const actionDuration = new Date(message.ttl);\n  return now < actionDuration;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,gCAAyB;AAElB,SAAS,oBAAoB,kBAAoJ;AACtL,SAAO,OAAO,YAAgC;AAC5C,QAAI,CAAC,UAAU,OAAO,GAAG;AACvB,iBAAO,sCAAW,6BAA6B,EAAE,OAAO;AAAA,IAC1D;AACA,WAAO,iBAAiB,OAAO;AAAA,EACjC;AACF;AAEA,SAAS,UAAU,SAAsC;AACvD,QAAM,MAAM,oBAAI,KAAK;AACrB,QAAM,iBAAiB,IAAI,KAAK,QAAQ,GAAG;AAC3C,SAAO,MAAM;AACf;",
+  "names": []
+}

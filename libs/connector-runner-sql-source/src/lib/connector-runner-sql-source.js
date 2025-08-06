@@ -59,7 +59,6 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
     this.exit = async () => {
       this.extractors.forEach((service) => service.stop());
     };
-    // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSqlSourceRunnerConfigType)(config);
     };
@@ -69,3 +68,4 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerSqlSource
 });
+//# sourceMappingURL=connector-runner-sql-source.js.map

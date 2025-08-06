@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/LimitOnUpdateNotSupportedError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user tries to build an UPDATE query with LIMIT but the database does not support it.\n */\n\nexport class LimitOnUpdateNotSupportedError extends TypeORMError {\n  constructor() {\n    super(`Your database does not support LIMIT on UPDATE statements.`);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAMtB,MAAM,uCAAuC,iCAAa;AAAA,EAC/D,cAAc;AACZ,UAAM,4DAA4D;AAAA,EACpE;AACF;",
+  "names": []
+}

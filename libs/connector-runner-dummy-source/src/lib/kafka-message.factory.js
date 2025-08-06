@@ -47,3 +47,4 @@ function generateKafkaTopic(connectorConfig) {
   buildKafkaMessage,
   generateKafkaTopic
 });
+//# sourceMappingURL=kafka-message.factory.js.map

@@ -56,11 +56,9 @@ class SqlServerConnectionDriver {
     const queryRunner = this.createQueryRunner();
     await queryRunner.release();
   }
-  // eslint-disable-next-line class-methods-use-this
   async afterConnect() {
     return Promise.resolve();
   }
-  // eslint-disable-next-line class-methods-use-this
   disconnect() {
     return Promise.resolve(void 0);
   }
@@ -117,3 +115,4 @@ class SqlServerConnectionDriver {
 0 && (module.exports = {
   SqlServerConnectionDriver
 });
+//# sourceMappingURL=sql-server-connection.driver.js.map

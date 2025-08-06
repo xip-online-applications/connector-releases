@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/kafka-base-service/src/lib/in-memory.message-monitor.ts"],
+  "sourcesContent": ["import {\n  BaseConnectorConfig,\n  InMemoryMessageMonitorConfig,\n  XodBaseMessageType,\n} from '@xip-online-data/types';\nimport { AbstractMessageMonitor } from './abstract.message-monitor';\n\nexport class InMemoryMessageMonitor extends AbstractMessageMonitor {\n  private processedMessages: Array<string> = [];\n\n  constructor(\n    private readonly config: InMemoryMessageMonitorConfig,\n    baseConfig: BaseConnectorConfig,\n  ) {\n    super(baseConfig);\n  }\n\n  protected override async isProcessed(\n    message: XodBaseMessageType,\n  ): Promise<boolean> {\n    return this.processedMessages.includes(message.eventId);\n  }\n\n  protected override async addProcessedMessage(\n    message: XodBaseMessageType,\n  ): Promise<void> {\n    this.processedMessages.push(message.eventId);\n    if (this.processedMessages.length > this.config.messagesToKeep) {\n      this.processedMessages.shift();\n    }\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKA,sBAAuC;AAEhC,MAAM,+BAA+B,uCAAuB;AAAA,EAGjE,YACmB,QACjB,YACA;AACA,UAAM,UAAU;AAHC;AAHnB,SAAQ,oBAAmC,CAAC;AAAA,EAO5C;AAAA,EAEA,MAAyB,YACvB,SACkB;AAClB,WAAO,KAAK,kBAAkB,SAAS,QAAQ,OAAO;AAAA,EACxD;AAAA,EAEA,MAAyB,oBACvB,SACe;AACf,SAAK,kBAAkB,KAAK,QAAQ,OAAO;AAC3C,QAAI,KAAK,kBAAkB,SAAS,KAAK,OAAO,gBAAgB;AAC9D,WAAK,kBAAkB,MAAM;AAAA,IAC/B;AAAA,EACF;AACF;",
+  "names": []
+}

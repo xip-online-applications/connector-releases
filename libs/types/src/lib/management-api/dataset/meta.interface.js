@@ -36,3 +36,4 @@ const MetaSchema = import_zod.z.record(
   LocaleSchema,
   MetaSchema
 });
+//# sourceMappingURL=meta.interface.js.map

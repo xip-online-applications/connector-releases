@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/action.interface.ts"],
+  "sourcesContent": ["export interface InputParameterInterface {\n  name: string;\n  type: 'string' | 'number' | 'boolean' | 'array';\n  required?: boolean;\n  items?: Array<InputParameterInterface>;\n}\n\nexport interface ArrayParameterInterface extends InputParameterInterface {\n  type: 'array';\n  items: Array<InputParameterInterface>;\n}\n\nexport interface CreateActionInterface {\n  identifier: string;\n  version: string;\n  tenantIdentifier: string;\n  name: string;\n  description?: string;\n  connectorIdentifier: string;\n  config: {\n    [key: string]: { [key: string]: string | object } | string | object;\n  };\n  inputParameters: Array<InputParameterInterface>;\n  outputParameters: unknown;\n}\n\nexport interface ActionInterface extends CreateActionInterface {\n  createdAt: Date;\n  updatedAt: Date;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

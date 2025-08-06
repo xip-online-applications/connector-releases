@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/datasource/src/lib/datasource.options.ts"],
+  "sourcesContent": ["import { MySqlConnectionOptions } from './driver/my-sql/my-sql-connection.options';\nimport { PostgresConnectionOptions } from './driver/postgres/postgres-connection.options';\nimport { SqlServerConnectionOptions } from './driver/sql-server/sql-server-connection.options';\n\nexport type DatasourceOptions =\n  | MySqlConnectionOptions\n  | PostgresConnectionOptions\n  | SqlServerConnectionOptions;\n\n/**\n * @Deprecated Set validation in api\n */\nexport function isDatasourceOptions(\n  obj: DatasourceOptions,\n): obj is DatasourceOptions {\n  return (\n    obj !== undefined &&\n    obj.type !== undefined &&\n    typeof obj.type === 'string' &&\n    (obj.type === 'postgres' || obj.type === 'mysql' || obj.type === 'mssql')\n  );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAYO,SAAS,oBACd,KAC0B;AAC1B,SACE,QAAQ,UACR,IAAI,SAAS,UACb,OAAO,IAAI,SAAS,aACnB,IAAI,SAAS,cAAc,IAAI,SAAS,WAAW,IAAI,SAAS;AAErE;",
+  "names": []
+}

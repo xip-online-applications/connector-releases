@@ -18,16 +18,9 @@ var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "defau
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var management_api_exports = {};
 __export(management_api_exports, {
-  ChartInterface: () => import_chart.ChartInterface,
-  CollectionInterface: () => import_collection.CollectionInterface,
-  DatasetInterface: () => import_dataset.DatasetInterface,
-  DatasetRecordInterface: () => import_dataset_record.DatasetRecordInterface,
-  DatasetsInterface: () => import_datasets.DatasetsInterface,
   DimensionInterface: () => import_dimension.DimensionInterface,
   DimensionsInterface: () => import_dimensions.DimensionsInterface,
   FilterGroupInterface: () => import_filter_group.FilterGroupInterface,
-  FilterInterface: () => import_filter.FilterInterface,
-  FiltersInterface: () => import_filters.FiltersInterface,
   MeasureInterface: () => import_measure.MeasureInterface,
   MeasuresInterface: () => import_measures.MeasuresInterface,
   MetaInterface: () => import_meta.MetaInterface,
@@ -37,10 +30,6 @@ __export(management_api_exports, {
   RelationsInterface: () => import_relations.RelationsInterface,
   SegmentInterface: () => import_segment.SegmentInterface,
   SegmentsInterface: () => import_segments.SegmentsInterface,
-  SemanticTriggerFilterInterface: () => import_semantic_trigger_filter.SemanticTriggerFilterInterface,
-  SemanticTriggerFiltersInterface: () => import_semantic_trigger_filters.SemanticTriggerFiltersInterface,
-  SemanticTriggerInterface: () => import_semantic_trigger.SemanticTriggerInterface,
-  SemanticTriggersInterface: () => import_semantic_triggers.SemanticTriggersInterface,
   SwitchInterface: () => import_switch.SwitchInterface,
   TemplateImplementationOverridesInterface: () => import_template_implementation_overrides.TemplateImplementationOverridesInterface,
   WhenItemInterface: () => import_when_item.WhenItemInterface,
@@ -55,13 +44,14 @@ __reExport(management_api_exports, require("./tenant.interface"), module.exports
 __reExport(management_api_exports, require("./cube-dataset.interface"), module.exports);
 __reExport(management_api_exports, require("./event-origin.interface"), module.exports);
 __reExport(management_api_exports, require("./workflow"), module.exports);
-var import_chart = require("./chart.interface");
-var import_datasets = require("./dataset/datasets.interface");
-var import_dataset = require("./dataset/dataset.interface");
-var import_dataset_record = require("./dataset/dataset-record.interface");
-var import_collection = require("./dataset/collection.interface");
-var import_filters = require("./dataset/filters.interface");
-var import_filter = require("./dataset/filter.interface");
+__reExport(management_api_exports, require("./semantic-trigger"), module.exports);
+__reExport(management_api_exports, require("./chart.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/datasets.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/dataset.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/dataset-record.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/collection.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/filters.interface"), module.exports);
+__reExport(management_api_exports, require("./dataset/filter.interface"), module.exports);
 var import_filter_group = require("./dataset/filter-group.interface");
 var import_dimensions = require("./dataset/dimensions.interface");
 var import_dimension = require("./dataset/dimension.interface");
@@ -77,24 +67,13 @@ var import_when_item = require("./dataset/when-item.interface");
 var import_meta = require("./dataset/meta.interface");
 var import_pre_aggregations = require("./dataset/pre-aggregations.interface");
 var import_pre_aggregate = require("./dataset/pre-aggregate.interface");
-var import_semantic_triggers = require("./semantic-trigger/semantic-triggers.interface");
-var import_semantic_trigger = require("./semantic-trigger/semantic-trigger.interface");
-__reExport(management_api_exports, require("./semantic-trigger/semantic-trigger-record.interface"), module.exports);
-var import_semantic_trigger_filters = require("./semantic-trigger/semantic-trigger-filters.interface");
-var import_semantic_trigger_filter = require("./semantic-trigger/semantic-trigger-filter.interface");
 var import_template_implementation_overrides = require("./template-implementation-overrides.interface");
+__reExport(management_api_exports, require("./pagination"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ChartInterface,
-  CollectionInterface,
-  DatasetInterface,
-  DatasetRecordInterface,
-  DatasetsInterface,
   DimensionInterface,
   DimensionsInterface,
   FilterGroupInterface,
-  FilterInterface,
-  FiltersInterface,
   MeasureInterface,
   MeasuresInterface,
   MetaInterface,
@@ -104,10 +83,6 @@ var import_template_implementation_overrides = require("./template-implementatio
   RelationsInterface,
   SegmentInterface,
   SegmentsInterface,
-  SemanticTriggerFilterInterface,
-  SemanticTriggerFiltersInterface,
-  SemanticTriggerInterface,
-  SemanticTriggersInterface,
   SwitchInterface,
   TemplateImplementationOverridesInterface,
   WhenItemInterface,
@@ -120,5 +95,14 @@ var import_template_implementation_overrides = require("./template-implementatio
   ...require("./cube-dataset.interface"),
   ...require("./event-origin.interface"),
   ...require("./workflow"),
-  ...require("./semantic-trigger/semantic-trigger-record.interface")
+  ...require("./semantic-trigger"),
+  ...require("./chart.interface"),
+  ...require("./dataset/datasets.interface"),
+  ...require("./dataset/dataset.interface"),
+  ...require("./dataset/dataset-record.interface"),
+  ...require("./dataset/collection.interface"),
+  ...require("./dataset/filters.interface"),
+  ...require("./dataset/filter.interface"),
+  ...require("./pagination")
 });
+//# sourceMappingURL=index.js.map

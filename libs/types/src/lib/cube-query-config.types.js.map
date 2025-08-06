@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/types/src/lib/cube-query-config.types.ts"],
+  "sourcesContent": ["import { Query } from '@cubejs-client/core';\n\nexport interface CubeQueryConfig {\n  tenantId: string;\n  query: Query;\n  nullable?: boolean;\n  subqueries: Array<CubeSubQueryConfig>;\n}\n\nexport interface CubeSubQueryConfig {\n  tenantId?: string;\n  query: Query;\n  nullable?: boolean;\n  field: string;\n  joinConditions: Array<CubeJoinCondition>;\n}\n\nexport interface CubeJoinCondition {\n  selectField: string;\n  operator: string;\n  valueField: Array<string>;\n  valueMap?: Array<any>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

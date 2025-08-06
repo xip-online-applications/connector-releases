@@ -232,7 +232,6 @@ class SambaFilesourceProcessorService {
       return false;
     }
   }
-  // eslint-disable-next-line class-methods-use-this
   #deleteLocalFile(location) {
     let success = false;
     fs.unlink(location, (err) => {
@@ -245,3 +244,4 @@ class SambaFilesourceProcessorService {
 0 && (module.exports = {
   SambaFilesourceProcessorService
 });
+//# sourceMappingURL=samba-filesource-processor.service.js.map

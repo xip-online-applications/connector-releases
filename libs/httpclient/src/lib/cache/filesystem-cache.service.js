@@ -49,7 +49,6 @@ class FileSystemCacheService {
       return void 0;
     });
   }
-  // eslint-disable-next-line class-methods-use-this
   async clear() {
     return Promise.resolve();
   }
@@ -83,3 +82,4 @@ class FileSystemCacheService {
 0 && (module.exports = {
   FileSystemCacheService
 });
+//# sourceMappingURL=filesystem-cache.service.js.map

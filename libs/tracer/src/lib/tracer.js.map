@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/tracer/src/lib/tracer.ts"],
+  "sourcesContent": ["import hotShots, { StatsD } from 'hot-shots';\n\nexport class Tracer {\n  private static tracer: StatsD;\n\n  private static self: Tracer;\n\n  constructor() {\n    if (!Tracer.tracer) {\n      Tracer.tracer = new hotShots({\n        host: process.env['DD_AGENT_HOST'] ?? '127.0.0.1',\n        prefix: `transai.${process.env['DD_SERVICE'] ?? 'unknown'}.`,\n      });\n\n      console.log('Tracer initialized');\n    }\n  }\n\n  public static init(): Tracer {\n    if (!Tracer.self || !Tracer.tracer) {\n      Tracer.self = new Tracer();\n    }\n\n    return Tracer.self;\n  }\n\n  public get(): StatsD {\n    Tracer.init();\n\n    return Tracer.tracer;\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,uBAAiC;AAE1B,MAAM,OAAO;AAAA,EAKlB,cAAc;AACZ,QAAI,CAAC,OAAO,QAAQ;AAClB,aAAO,SAAS,IAAI,iBAAAA,QAAS;AAAA,QAC3B,MAAM,QAAQ,IAAI,eAAe,KAAK;AAAA,QACtC,QAAQ,WAAW,QAAQ,IAAI,YAAY,KAAK,SAAS;AAAA,MAC3D,CAAC;AAED,cAAQ,IAAI,oBAAoB;AAAA,IAClC;AAAA,EACF;AAAA,EAEA,OAAc,OAAe;AAC3B,QAAI,CAAC,OAAO,QAAQ,CAAC,OAAO,QAAQ;AAClC,aAAO,OAAO,IAAI,OAAO;AAAA,IAC3B;AAEA,WAAO,OAAO;AAAA,EAChB;AAAA,EAEO,MAAc;AACnB,WAAO,KAAK;AAEZ,WAAO,OAAO;AAAA,EAChB;AACF;",
+  "names": ["hotShots"]
+}

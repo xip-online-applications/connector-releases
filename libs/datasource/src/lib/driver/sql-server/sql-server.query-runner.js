@@ -33,7 +33,6 @@ class SqlServerQueryRunner {
    * Creates/uses database connection from the connection pool to perform further operations.
    * Returns obtained database connection.
    */
-  // eslint-disable-next-line class-methods-use-this
   connect() {
     return Promise.resolve();
   }
@@ -93,3 +92,4 @@ class SqlServerQueryRunner {
 0 && (module.exports = {
   SqlServerQueryRunner
 });
+//# sourceMappingURL=sql-server.query-runner.js.map

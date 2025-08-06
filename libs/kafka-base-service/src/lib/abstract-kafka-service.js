@@ -120,6 +120,7 @@ class AbstractKafkaService {
         }
       }
     };
+    import_logger.Logger.getInstance().debug("Using KAFKAJS library");
     const config = {
       clientId: `${baseYamlConfig.kafka.clientId}-${(0, import_uuid.v4)()}`,
       brokers: baseYamlConfig.kafka.brokers,
@@ -247,3 +248,4 @@ class AbstractKafkaService {
 0 && (module.exports = {
   AbstractKafkaService
 });
+//# sourceMappingURL=abstract-kafka-service.js.map

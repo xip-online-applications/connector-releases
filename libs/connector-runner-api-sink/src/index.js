@@ -19,3 +19,4 @@ __reExport(src_exports, require("./lib/connector-runner-api-sink"), module.expor
 0 && (module.exports = {
   ...require("./lib/connector-runner-api-sink")
 });
+//# sourceMappingURL=index.js.map

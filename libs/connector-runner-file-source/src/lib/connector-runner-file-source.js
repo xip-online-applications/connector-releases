@@ -53,7 +53,6 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
     this.exit = async () => {
       this.#processors.forEach((service) => service.stop());
     };
-    // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isYamlConfigType)(config);
     };
@@ -64,3 +63,4 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
 0 && (module.exports = {
   ConnectorRunnerFileSource
 });
+//# sourceMappingURL=connector-runner-file-source.js.map

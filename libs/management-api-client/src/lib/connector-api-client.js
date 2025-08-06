@@ -59,3 +59,4 @@ class ConnectorApiClient extends import_management_api_client.AbstractManagement
 0 && (module.exports = {
   ConnectorApiClient
 });
+//# sourceMappingURL=connector-api-client.js.map

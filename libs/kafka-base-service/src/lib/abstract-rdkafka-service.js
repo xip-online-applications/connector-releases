@@ -44,18 +44,18 @@ class AbstractRdKafkaService {
         `Got ${type}. Graceful shutdown Kafka start`,
         (/* @__PURE__ */ new Date()).toISOString()
       );
-      import_logger.Logger.getInstance().debug("Disconnecting consumer and producer");
+      this.logger.debug("Disconnecting consumer and producer");
       try {
         await this.consumer?.disconnect();
-        import_logger.Logger.getInstance().debug("Consumer disconnected");
+        this.logger.debug("Consumer disconnected");
       } catch (error) {
-        import_logger.Logger.getInstance().error("Error while disconnecting consumer", error);
+        this.logger.error("Error while disconnecting consumer", error);
       }
       try {
         await this.producer?.disconnect();
-        import_logger.Logger.getInstance().debug("Producer disconnected");
+        this.logger.debug("Producer disconnected");
       } catch (error) {
-        import_logger.Logger.getInstance().error("Error while disconnecting producer", error);
+        this.logger.error("Error while disconnecting producer", error);
       }
       console.info("Graceful shutdown Kafka complete", (/* @__PURE__ */ new Date()).toISOString());
       process.exit(0);
@@ -66,21 +66,14 @@ class AbstractRdKafkaService {
       return numberOfApplicableTopics !== this.numberOfSubscribedRegexTopics;
     };
     this.getRegularTopics = () => {
-      const topics = [];
-      for (const topic of this.baseYamlConfig.kafka.consumerTopics ?? []) {
-        if (!(0, import_types.isTopicRegex)(topic)) {
-          topics.push(topic);
-        }
-      }
-      return topics;
+      return (this.baseYamlConfig.kafka.consumerTopics ?? []).filter(
+        (t) => !(0, import_types.isTopicRegex)(t)
+      );
     };
     this.getRegexTopics = async () => {
-      const regexTopics = [];
-      for (const topic of this.baseYamlConfig.kafka.consumerTopics ?? []) {
-        if ((0, import_types.isTopicRegex)(topic)) {
-          regexTopics.push(topic);
-        }
-      }
+      const regexTopics = (this.baseYamlConfig.kafka.consumerTopics ?? []).filter(
+        (t) => (0, import_types.isTopicRegex)(t)
+      );
       if (regexTopics.length === 0) {
         return [];
       }
@@ -98,7 +91,7 @@ class AbstractRdKafkaService {
     this.restartIfNewTopics = async (newTopics) => {
       if (newTopics) {
         try {
-          import_logger.Logger.getInstance().debug("New topics found, restarting consumer");
+          this.logger.debug("New topics found, restarting consumer");
           await this.consumer.disconnect();
           await this.init();
         } catch (error) {
@@ -107,18 +100,16 @@ class AbstractRdKafkaService {
         }
       }
     };
-    const config = {
-      logLevel: 2,
-      clientId: `${baseYamlConfig.kafka.clientId}-${(0, import_uuid.v4)()}`,
-      brokers: baseYamlConfig.kafka.brokers,
-      ...this.getAuthProviderOptions(baseYamlConfig.kafka.sasl)
-    };
+    this.logger = import_logger.Logger.getInstance();
     const kafkaJS = {
-      brokers: config.brokers,
-      ssl: false
+      brokers: baseYamlConfig.kafka.brokers,
+      ssl: false,
+      clientId: `${baseYamlConfig.kafka.clientId}-${(0, import_uuid.v4)()}`,
+      logLevel: 2
     };
-    if (config.sasl) {
-      kafkaJS.sasl = config.sasl;
+    const authConfig = this.getAuthProviderOptions(baseYamlConfig.kafka.sasl);
+    if (authConfig.sasl) {
+      kafkaJS.sasl = authConfig.sasl;
       kafkaJS.ssl = true;
     }
     this.messageMonitor = this.getCorrespondingMonitor();
@@ -132,15 +123,15 @@ class AbstractRdKafkaService {
       }
     };
     if (baseYamlConfig.kafka.newConsumerProtocol) {
-      import_logger.Logger.getInstance().debug("Using new consumer protocol");
+      this.logger.debug("Using new consumer protocol");
       consumerConfig["group.protocol"] = "consumer";
       consumerConfig["group.protocol.type"] = "consumer";
       consumerConfig["group.remote.assignor"] = "uniform";
     }
     this.consumer = this.kafkaBase.consumer(consumerConfig);
     this.producer = this.kafkaBase.producer();
-    if (this.baseYamlConfig.kafka.consumerTopics === void 0 || this.baseYamlConfig.kafka.consumerTopics.length === 0) {
-      import_logger.Logger.getInstance().debug(
+    if (!connectorTopic && (this.baseYamlConfig.kafka.consumerTopics === void 0 || this.baseYamlConfig.kafka.consumerTopics.length === 0)) {
+      this.logger.warn(
         "No consumer topics set. skip setting of consumer events callback"
       );
       return;
@@ -155,12 +146,12 @@ class AbstractRdKafkaService {
       });
     }
     if (process) {
-      import_logger.Logger.getInstance().debug("Setting up gracefull shutdown for kafka...");
+      this.logger.debug("Setting up gracefull shutdown for kafka...");
       this.errorTypes.map((type) => {
         process.on(type, async (e) => {
           try {
-            import_logger.Logger.getInstance().error(`process.on ${type}`);
-            import_logger.Logger.getInstance().error(e);
+            this.logger.error(`process.on ${type}`);
+            this.logger.error(e);
             await this.exitProcess(type);
           } catch (_) {
             process.exit(1);
@@ -169,7 +160,7 @@ class AbstractRdKafkaService {
       });
       this.signalTraps.map((type) => {
         process.on(type, async () => {
-          import_logger.Logger.getInstance().error(`process.once ${type}`);
+          this.logger.error(`process.once ${type}`);
           try {
             await this.exitProcess(type);
           } finally {
@@ -178,9 +169,7 @@ class AbstractRdKafkaService {
         });
       });
     } else {
-      import_logger.Logger.getInstance().debug(
-        "No process found. Gracefull shutdown not possible"
-      );
+      this.logger.debug("No process found. Gracefull shutdown not possible");
     }
   }
   static {
@@ -211,7 +200,7 @@ class AbstractRdKafkaService {
   getCorrespondingMonitor() {
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "in-memory") {
       if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Using in-memory message monitor");
+        this.logger.debug("Using in-memory message monitor");
       return new import_in_memory.InMemoryMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
@@ -219,7 +208,7 @@ class AbstractRdKafkaService {
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "redis") {
       if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Using Redis message monitor");
+        this.logger.debug("Using Redis message monitor");
       return new import_redis.RedisMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
@@ -227,11 +216,11 @@ class AbstractRdKafkaService {
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "disabled") {
       if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Message monitor disabled");
+        this.logger.debug("Message monitor disabled");
       return void 0;
     }
     if (this.baseYamlConfig.debug)
-      import_logger.Logger.getInstance().debug("No setting, Message monitor disabled");
+      this.logger.debug("No setting, Message monitor disabled");
     return void 0;
   }
 }
@@ -239,3 +228,4 @@ class AbstractRdKafkaService {
 0 && (module.exports = {
   AbstractRdKafkaService
 });
+//# sourceMappingURL=abstract-rdkafka-service.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/httpclient/src/index.ts"],
+  "sourcesContent": ["export * from './lib/http.service';\nexport * from './lib/builder.service';\nexport * from './lib/cache';\nexport * from './lib/token';\nexport * from './lib/interface';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,+BAAd;AACA,wBAAc,kCADd;AAEA,wBAAc,wBAFd;AAGA,wBAAc,wBAHd;AAIA,wBAAc,4BAJd;",
+  "names": []
+}

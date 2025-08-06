@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/MetadataWithSuchNameAlreadyExistsError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\nexport class MetadataWithSuchNameAlreadyExistsError extends TypeORMError {\n  constructor(metadataType: string, name: string) {\n    super(\n      `${metadataType} metadata with such name ${name} already exists. ` +\n        `Do you apply decorator twice? Or maybe try to change a name?`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAEtB,MAAM,+CAA+C,iCAAa;AAAA,EACvE,YAAY,cAAsB,MAAc;AAC9C;AAAA,MACE,GAAG,YAAY,4BAA4B,IAAI;AAAA,IAEjD;AAAA,EACF;AACF;",
+  "names": []
+}

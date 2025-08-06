@@ -21,3 +21,4 @@ __reExport(src_exports, require("./lib/types"), module.exports);
   ...require("./lib/connector-runner-file-sink"),
   ...require("./lib/types")
 });
+//# sourceMappingURL=index.js.map

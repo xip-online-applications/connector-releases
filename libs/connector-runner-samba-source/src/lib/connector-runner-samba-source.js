@@ -42,7 +42,6 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
       this.#processors.forEach((service) => service.stop());
       this.#processors = [];
     };
-    // eslint-disable-next-line class-methods-use-this
     this.isValidConfig = (config) => {
       return (0, import_types.isSambaSourceConnectorConfigType)(config);
     };
@@ -53,3 +52,4 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
 0 && (module.exports = {
   ConnectorRunnerSambaSource
 });
+//# sourceMappingURL=connector-runner-samba-source.js.map

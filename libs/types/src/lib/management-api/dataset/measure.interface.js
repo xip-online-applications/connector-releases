@@ -44,3 +44,4 @@ const MeasureSchema = import_zod.z.object({
 0 && (module.exports = {
   MeasureSchema
 });
+//# sourceMappingURL=measure.interface.js.map

@@ -94,3 +94,4 @@ class KafkaService {
 0 && (module.exports = {
   KafkaService
 });
+//# sourceMappingURL=kafka.service.js.map

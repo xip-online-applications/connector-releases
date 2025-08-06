@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var offset_interface_exports = {};
 module.exports = __toCommonJS(offset_interface_exports);
+//# sourceMappingURL=offset.interface.js.map
