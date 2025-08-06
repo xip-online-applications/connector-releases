@@ -128,6 +128,8 @@ class OffsetStoreService {
       this.#log.debug(
         `${identifier} Does not have a offset. Use default offset instead. setting offset to ${JSON.stringify(defaultOffset)}`
       );
+      this.setOffset(defaultOffset, identifier);
+      await this.#storeOffsetFileSystem();
       return defaultOffset;
     } catch (error) {
       const date = /* @__PURE__ */ new Date();

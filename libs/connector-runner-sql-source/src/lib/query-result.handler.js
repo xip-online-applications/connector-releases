@@ -58,7 +58,6 @@ class QueryResultHandler {
       const id = this.getOptionalRecordField(record, queryConfig.keyField) ?? 0;
       return { id, timestamp, rawTimestamp, isoDate };
     };
-    // eslint-disable-next-line class-methods-use-this
     this.getOptionalRecordField = (record, fieldName) => {
       return Object.keys(record).indexOf(fieldName) > -1 ? record[fieldName] : null;
     };

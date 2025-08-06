@@ -80,7 +80,6 @@ class SambaFileWriterService {
       message: "Message processed successfully"
     };
   }
-  // eslint-disable-next-line class-methods-use-this
   writeToFileSystem(tmpFileLoc, content) {
     return new Promise((resolve) => {
       fs.writeFile(tmpFileLoc, content, (err) => {
@@ -88,7 +87,6 @@ class SambaFileWriterService {
       });
     });
   }
-  // eslint-disable-next-line class-methods-use-this
   removeTempFileFromFileSystem(tmpFileLoc) {
     return new Promise((resolve) => {
       fs.unlink(tmpFileLoc, (err) => {

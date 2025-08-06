@@ -232,7 +232,6 @@ class SambaFilesourceProcessorService {
       return false;
     }
   }
-  // eslint-disable-next-line class-methods-use-this
   #deleteLocalFile(location) {
     let success = false;
     fs.unlink(location, (err) => {

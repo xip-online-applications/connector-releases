@@ -90,7 +90,6 @@ class MqttClient {
       payload: this.#buildPayload(topic, message)
     };
   };
-  // eslint-disable-next-line class-methods-use-this
   #buildPayload = (topic, message) => {
     return {
       collection: topic,

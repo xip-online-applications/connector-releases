@@ -17,30 +17,35 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var rdkafka_bulk_listener_service_exports = {};
 __export(rdkafka_bulk_listener_service_exports, {
-  KafkaBulkListenerService: () => KafkaBulkListenerService
+  RdKafkaBulkListenerService: () => RdKafkaBulkListenerService
 });
 module.exports = __toCommonJS(rdkafka_bulk_listener_service_exports);
 var import_types = require("@xip-online-data/types");
 var import_logger = require("@transai/logger");
 var import_abstract_rdkafka_service = require("./abstract-rdkafka-service");
-class KafkaBulkListenerService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
+class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
   constructor(baseYamlConfig, callbackFunction, bulkApplicable = () => true) {
     super(baseYamlConfig);
     this.callbackFunction = callbackFunction;
     this.bulkApplicable = bulkApplicable;
     this.init = async () => {
-      for (const topic of this.baseYamlConfig.kafka.consumerTopics ?? []) {
-        if ((0, import_types.isTopicRegex)(topic)) {
+      const regexTopics = this.baseYamlConfig.kafka.consumerTopics?.filter(
+        (topic) => (0, import_types.isTopicRegex)(topic)
+      ) ?? [];
+      const regularTopics = this.baseYamlConfig.kafka.consumerTopics?.filter(
+        (topic) => !(0, import_types.isTopicRegex)(topic)
+      ) ?? [];
+      await Promise.all([
+        ...regexTopics.map(async (topic) => {
           await this.consumer.subscribe({
             topic: new RegExp(topic.pattern, topic.flags)
           });
-        } else if (typeof topic === "string") {
+        }),
+        ...regularTopics.map(async (topic) => {
           const t = topic.indexOf(this.baseYamlConfig.tenantIdentifier) !== 0 ? `${this.baseYamlConfig.tenantIdentifier}_${topic}` : topic;
           await this.consumer.subscribe({ topic: t });
-        } else {
-          throw new Error("Invalid topic type");
-        }
-      }
+        })
+      ]);
       if (this.baseYamlConfig.kafka.autoCommitThreshold) {
         import_logger.Logger.getInstance().error(
           "autoCommitThreshold is not supported in bulk listener. Please use autoCommitInterval instead"
@@ -105,5 +110,5 @@ class KafkaBulkListenerService extends import_abstract_rdkafka_service.AbstractR
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  KafkaBulkListenerService
+  RdKafkaBulkListenerService
 });

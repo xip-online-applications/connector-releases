@@ -86,7 +86,6 @@ class PostgresConnectionDriver {
     );
     await release();
   }
-  // eslint-disable-next-line class-methods-use-this
   disconnect() {
     return Promise.resolve(void 0);
   }
