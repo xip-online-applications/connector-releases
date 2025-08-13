@@ -29,8 +29,8 @@ function trimTrailingSemicolon(input) {
   return input.endsWith(";") ? input.slice(0, -1) : input;
 }
 class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
-  constructor(connector, apiConfig, actionConfigs, injectedDataSinkInstance) {
-    super(connector, apiConfig, actionConfigs);
+  constructor(connector, connectorConfig, actionConfigs, injectedDataSinkInstance) {
+    super(connector, connectorConfig, actionConfigs);
     this.injectedDataSinkInstance = injectedDataSinkInstance;
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_SQL_SINK_CONFIG";
     this.init = async () => {
@@ -67,7 +67,7 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
               );
             }
             try {
-              this.log.debug("executing query");
+              this.log.debug(`executing query, ${query}`);
               const result = await this.dataSinkService.query(query, params);
               if (result === null) {
                 this.log.error(`Query failed, no result`);
@@ -114,9 +114,18 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
             `Handle message ${message.eventId} with query ${cleanedQuery}`
           );
           try {
-            const result = await this.dataSinkService.query(cleanedQuery).catch((error) => {
-              throw error;
-            });
+            const result = await this.dataSinkService.query(cleanedQuery);
+            if (result === null) {
+              this.log.error(`Query failed, no result`);
+              return (0, import_kafka_base_service.InternalServerError)("Query failed, no result")(message);
+            }
+            if (typeof result === "object" && "error" in result && result.error) {
+              this.log.error(`Query failed with error: ${result.error}`);
+              return (0, import_kafka_base_service.InternalServerError)(
+                typeof result === "object" && "error" in result && result.error ? result.error : "Unknown error"
+              )(message);
+            }
+            this.log.debug("query done");
             if (result) {
               return callbackFunction(message);
             }

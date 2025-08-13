@@ -20,7 +20,6 @@ __export(rdkafka_bulk_listener_service_exports, {
   RdKafkaBulkListenerService: () => RdKafkaBulkListenerService
 });
 module.exports = __toCommonJS(rdkafka_bulk_listener_service_exports);
-var import_types = require("@xip-online-data/types");
 var import_logger = require("@transai/logger");
 var import_abstract_rdkafka_service = require("./abstract-rdkafka-service");
 class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
@@ -29,20 +28,18 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
     this.callbackFunction = callbackFunction;
     this.bulkApplicable = bulkApplicable;
     this.init = async () => {
-      const regexTopics = this.baseYamlConfig.kafka.consumerTopics?.filter(
-        (topic) => (0, import_types.isTopicRegex)(topic)
-      ) ?? [];
-      const regularTopics = this.baseYamlConfig.kafka.consumerTopics?.filter(
-        (topic) => !(0, import_types.isTopicRegex)(topic)
-      ) ?? [];
+      await this.consumer.connect().catch((e) => {
+        import_logger.Logger.getInstance().error(
+          `Failed to connect to Kafka consumer: ${e.message}`
+        );
+        throw new Error(`Failed to connect to Kafka consumer: ${e.message}`);
+      });
+      const topics = [
+        ...await this.getRegexTopics(),
+        ...this.getRegularTopics()
+      ];
       await Promise.all([
-        ...regexTopics.map(async (topic) => {
-          await this.consumer.subscribe({
-            topic: new RegExp(topic.pattern, topic.flags)
-          });
-        }),
-        ...regularTopics.map(async (topic) => {
-          const t = topic.indexOf(this.baseYamlConfig.tenantIdentifier) !== 0 ? `${this.baseYamlConfig.tenantIdentifier}_${topic}` : topic;
+        ...topics.map(async (t) => {
           await this.consumer.subscribe({ topic: t });
         })
       ]);
@@ -59,16 +56,10 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
     };
     this.consumeBatch = async ({
       batch,
-      resolveOffset,
-      heartbeat,
-      pause,
-      commitOffsetsIfNecessary,
-      uncommittedOffsets,
-      isRunning,
-      isStale
+      resolveOffset
     }) => {
       const messages = batch.messages.map(
-        (message) => JSON.parse(message.value.toString())
+        (message) => JSON.parse(message.value?.toString() ?? "")
       );
       import_logger.Logger.getInstance().debug(
         "Received batch of messages",
@@ -97,7 +88,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
     this.consumeBatchAsSingle = async (messages, resolveOffset) => {
       for (const message of messages) {
         try {
-          const parsedMessage = JSON.parse(message.value.toString());
+          const parsedMessage = JSON.parse(message.value?.toString() ?? "{}");
           await this.callbackFunction([parsedMessage]);
           resolveOffset(message.offset);
         } catch (error) {

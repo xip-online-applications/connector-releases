@@ -24,7 +24,6 @@ var import_types = require("@xip-online-data/types");
 var import_uuid = require("uuid");
 var import_kafka_javascript = require("@confluentinc/kafka-javascript");
 var import_rxjs = require("rxjs");
-var import_kafkajs_msk_iam_authentication_mechanism = require("@jm18457/kafkajs-msk-iam-authentication-mechanism");
 var import_node = require("@sentry/node");
 var import_logger = require("@transai/logger");
 var import_aws_msk_iam_sasl_signer_js = require("aws-msk-iam-sasl-signer-js");
@@ -37,13 +36,40 @@ const getAwsCredentials = (awsSasl) => () => {
   });
 };
 const oauthBearerTokenProvider = (awsSasl) => async () => {
-  const authTokenResponse = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthTokenFromCredentialsProvider)({
-    region: awsSasl.region ?? "eu-west-1",
-    awsCredentialsProvider: getAwsCredentials(awsSasl)
+  const principal = process.env["AWS_ROLE_SESSION_NAME"] ?? "";
+  if (awsSasl?.accessKeyId && awsSasl?.secretAccessKey) {
+    import_logger.Logger.getInstance().info(
+      `Generating OAuth Bearer token using ENV variables and principal: ${principal}`
+    );
+    const authTokenResponse2 = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthTokenFromCredentialsProvider)({
+      region: awsSasl.region ?? "eu-west-1",
+      awsCredentialsProvider: getAwsCredentials({
+        accessKeyId: awsSasl.accessKeyId,
+        secretAccessKey: awsSasl.secretAccessKey
+      })
+    });
+    import_logger.Logger.getInstance().info(
+      `Token using ENV variables lifetime ${authTokenResponse2.expiryTime}`
+    );
+    return {
+      principal,
+      value: authTokenResponse2.token,
+      lifetime: authTokenResponse2.expiryTime
+    };
+  }
+  import_logger.Logger.getInstance().info(
+    `Generating OAuth Bearer token using Default Credentials Provider and principal: ${principal}`
+  );
+  const authTokenResponse = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthToken)({
+    region: awsSasl?.region ?? "eu-west-1",
+    awsRoleSessionName: principal
   });
+  import_logger.Logger.getInstance().info(
+    `Token using Default Credentials Provider ${authTokenResponse.expiryTime}`
+  );
   return {
+    principal,
     value: authTokenResponse.token,
-    principal: "",
     lifetime: authTokenResponse.expiryTime
   };
 };
@@ -58,24 +84,27 @@ class AbstractRdKafkaService {
     this.numberOfSubscribedRegexTopics = 0;
     this.messageMonitor = void 0;
     this.exitProcess = async (type) => {
-      console.info(
-        `Got ${type}. Graceful shutdown Kafka start`,
-        (/* @__PURE__ */ new Date()).toISOString()
+      this.logger.warn(
+        `Got ${type}. Graceful shutdown Kafka start ${(/* @__PURE__ */ new Date()).toISOString()}`
       );
-      this.logger.debug("Disconnecting consumer and producer");
+      this.logger.info("Disconnecting consumer and producer");
       try {
         await this.consumer?.disconnect();
-        this.logger.debug("Consumer disconnected");
+        this.logger.info("Consumer disconnected");
       } catch (error) {
-        this.logger.error("Error while disconnecting consumer", error);
+        this.logger.error("Error while disconnecting consumer");
+        console.error(error);
       }
       try {
         await this.producer?.disconnect();
-        this.logger.debug("Producer disconnected");
+        this.logger.info("Producer disconnected");
       } catch (error) {
-        this.logger.error("Error while disconnecting producer", error);
+        this.logger.error("Error while disconnecting producer");
+        console.error(error);
       }
-      console.info("Graceful shutdown Kafka complete", (/* @__PURE__ */ new Date()).toISOString());
+      this.logger.info(
+        `Graceful shutdown Kafka complete ${(/* @__PURE__ */ new Date()).toISOString()}`
+      );
       process.exit(0);
     };
     this.checkForNewTopics = async () => {
@@ -109,7 +138,7 @@ class AbstractRdKafkaService {
     this.restartIfNewTopics = async (newTopics) => {
       if (newTopics) {
         try {
-          this.logger.debug("New topics found, restarting consumer");
+          this.logger.info("New topics found, restarting consumer");
           await this.consumer.disconnect();
           await this.init();
         } catch (error) {
@@ -119,6 +148,7 @@ class AbstractRdKafkaService {
       }
     };
     this.logger = import_logger.Logger.getInstance();
+    this.logger.info("RUNNING RDKAFKA SERVICE");
     const { kafka: kafkaConfig } = baseYamlConfig;
     const kafkaJS = {
       brokers: kafkaConfig.brokers,
@@ -145,7 +175,7 @@ class AbstractRdKafkaService {
       }
     };
     if (baseYamlConfig.kafka.newConsumerProtocol) {
-      this.logger.debug("Using new consumer protocol");
+      this.logger.info("Using new consumer protocol");
       consumerConfig["group.protocol"] = "consumer";
       consumerConfig["group.protocol.type"] = "consumer";
       consumerConfig["group.remote.assignor"] = "uniform";
@@ -168,8 +198,8 @@ class AbstractRdKafkaService {
       });
     }
     if (process) {
-      this.logger.debug("Setting up gracefull shutdown for kafka...");
-      this.errorTypes.map((type) => {
+      this.logger.info("Setting up gracefull shutdown for kafka...");
+      this.errorTypes.forEach((type) => {
         process.on(type, async (e) => {
           try {
             this.logger.error(`process.on ${type}`);
@@ -180,7 +210,7 @@ class AbstractRdKafkaService {
           }
         });
       });
-      this.signalTraps.map((type) => {
+      this.signalTraps.forEach((type) => {
         process.on(type, async () => {
           this.logger.error(`process.once ${type}`);
           try {
@@ -191,33 +221,11 @@ class AbstractRdKafkaService {
         });
       });
     } else {
-      this.logger.debug("No process found. Gracefull shutdown not possible");
+      this.logger.warn("No process found. Gracefull shutdown not possible");
     }
   }
   static {
     this.DEFAULT_CALLBACK_EVENT_TYPE = "*";
-  }
-  getAuthProviderOptions(config) {
-    if (!config) {
-      return {};
-    }
-    const options = {
-      region: config.region ?? process.env["AWS_REGION"] ?? "eu-west-1",
-      credentials: void 0
-    };
-    if (config.accessKeyId && config.secretAccessKey) {
-      options.credentials = {
-        accessKeyId: config.accessKeyId,
-        secretAccessKey: config.secretAccessKey
-      };
-    }
-    return {
-      ssl: true,
-      sasl: {
-        mechanism: import_kafkajs_msk_iam_authentication_mechanism.Type,
-        authenticationProvider: (0, import_kafkajs_msk_iam_authentication_mechanism.awsIamAuthenticator)(options)
-      }
-    };
   }
   getCorrespondingMonitor() {
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "in-memory") {

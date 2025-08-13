@@ -44,6 +44,7 @@ module.exports = __toCommonJS(sentry_exports);
 var import_common = require("@nestjs/common");
 var import_core = require("@nestjs/core");
 var Sentry = __toESM(require("@sentry/node"));
+var import_http = require("@nestjs/common/exceptions/http.exception");
 function register(app, options = {}) {
   const dsn = options.dsn ?? process.env["SENTRY_DSN"];
   if (!dsn) {
@@ -66,7 +67,19 @@ function init(options = {}) {
 }
 let SentryFilter = class extends import_core.BaseExceptionFilter {
   catch(exception, host) {
-    Sentry.captureException(exception);
+    if (exception instanceof import_http.HttpException) {
+      const error = exception;
+      const statusCode = error.getStatus();
+      if (statusCode >= 500) {
+        Sentry.captureException(exception, {
+          tags: {
+            status_code: statusCode
+          }
+        });
+      }
+    } else {
+      Sentry.captureException(exception);
+    }
     super.catch(exception, host);
   }
 };

@@ -50,7 +50,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         }
         await Promise.all(
           topicsToSubscribeTo.map(async (topic) => {
-            import_logger.Logger.getInstance().debug("subscribing to", topic);
+            import_logger.Logger.getInstance().info("Subscribing to", topic);
             await this.consumer.subscribe({ topic });
           })
         );
@@ -103,7 +103,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
           clearInterval(interval);
         }
       } else {
-        import_logger.Logger.getInstance().debug(
+        import_logger.Logger.getInstance().warn(
           `Message nr ${kafkaMessage.message.offset} is not a valid XodActionType`
         );
       }

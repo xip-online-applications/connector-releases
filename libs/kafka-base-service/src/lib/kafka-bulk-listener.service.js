@@ -89,7 +89,7 @@ class KafkaBulkListenerService extends import_abstract_kafka_service.AbstractKaf
           continue;
         }
         try {
-          const parsedMessage = JSON.parse(message.value.toString());
+          const parsedMessage = JSON.parse(message.value?.toString() ?? "{}");
           await this.callbackFunction([parsedMessage]);
           resolveOffset(message.offset);
         } catch (error) {

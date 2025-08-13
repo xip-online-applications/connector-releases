@@ -20,6 +20,8 @@ __reExport(src_exports, require("./lib/kafka-source.interface"), module.exports)
 __reExport(src_exports, require("./lib/kafka-source.service"), module.exports);
 __reExport(src_exports, require("./lib/rdkafka-source.service"), module.exports);
 __reExport(src_exports, require("./lib/kafka-bulk-listener.service"), module.exports);
+__reExport(src_exports, require("./lib/rdkafka-bulk-listener.service"), module.exports);
+__reExport(src_exports, require("./lib/rdkafka-logs.service"), module.exports);
 __reExport(src_exports, require("./lib/types"), module.exports);
 __reExport(src_exports, require("./lib/factories"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
@@ -30,6 +32,8 @@ __reExport(src_exports, require("./lib/factories"), module.exports);
   ...require("./lib/kafka-source.service"),
   ...require("./lib/rdkafka-source.service"),
   ...require("./lib/kafka-bulk-listener.service"),
+  ...require("./lib/rdkafka-bulk-listener.service"),
+  ...require("./lib/rdkafka-logs.service"),
   ...require("./lib/types"),
   ...require("./lib/factories")
 });
