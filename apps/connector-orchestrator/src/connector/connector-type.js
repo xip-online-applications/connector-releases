@@ -36,6 +36,8 @@ var import_connector_runner_sql_source = require("@transai/connector-runner-sql-
 var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
 var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
+var import_connector_runner_mail_source = require("@transai/connector-runner-mail-source");
+var import_connector_runner_mail_sink = require("@transai/connector-runner-mail-sink");
 const getConnectorType = (connectorConfig) => {
   switch (connectorConfig.connectorType) {
     case import_types.ConfiguredConnectorTypes.API_SINK:
@@ -124,6 +126,18 @@ const getConnectorType = (connectorConfig) => {
       );
     case import_types.ConfiguredConnectorTypes.FACTORY_NEBULA_SOURCE:
       return new import_connector_runner_factorynebula_source.ConnectorRunnerFactorynebulaSource(
+        connectorConfig,
+        connectorConfig.config,
+        connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.IMAP_SOURCE:
+      return new import_connector_runner_mail_source.ConnectorRunnerMailSource(
+        connectorConfig,
+        connectorConfig.config,
+        connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.IMAP_SINK:
+      return new import_connector_runner_mail_sink.ConnectorRunnerMailSink(
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
