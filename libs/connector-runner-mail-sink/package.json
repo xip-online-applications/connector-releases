@@ -1,0 +1,8 @@
+{
+  "name": "@transai/connector-runner-mail-sink",
+  "version": "0.1.2",
+  "dependencies": {},
+  "type": "commonjs",
+  "main": "./index.js",
+  "typings": "./index.d.ts"
+}
