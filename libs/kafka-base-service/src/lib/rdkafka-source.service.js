@@ -82,7 +82,7 @@ class RdKafkaSourceService extends import_rdkafka_base.RdKafkaBaseService {
         import_logger.Logger.getInstance().error(
           `IndividualWentWrong: Topic: ${topic}, ${JSON.stringify(error)}`
         );
-        if (message.payload && "keyField" in message.payload && message.payload.keyField) {
+        if (message.payload && "body" in message.payload && message.payload.body && "keyField" in message.payload && message.payload.keyField) {
           import_logger.Logger.getInstance().error(
             `IndividualWentWrong: Message keyfield: ${message.payload.body[message.payload.keyField]}`
           );

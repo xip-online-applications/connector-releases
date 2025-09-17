@@ -65,7 +65,7 @@ class MailsourceProcessorService {
         kafkaPayload = contents.map((content) => ({
           type: "SOURCE",
           eventId: (0, import_uuid.v4)(),
-          eventType: "event.metric",
+          eventType: `${this.#mailSourceConfig.tenantIdentifier}_SOURCE_${this.#mailboxConfig.mailboxIdentifier}`,
           created: Date.now(),
           ttl: 36e5,
           // 1 month
