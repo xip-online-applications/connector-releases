@@ -35,6 +35,7 @@ var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_core = __toESM(require("@cubejs-client/core"));
 var import_httpclient = require("@xip-online-data/httpclient");
 var import_helper_functions = require("@xip-online-data/helper-functions");
+var import_logger = require("@transai/logger");
 class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -80,6 +81,7 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
             }
             const config = action.config;
             const { payload } = message;
+            import_logger.Logger.getInstance().debug("Received payload for Cube query:", payload);
             const payloadKeys = Object.keys(payload);
             if (payload && payloadKeys.length > 0) {
               const parsedQuery = (0, import_helper_functions.replacePlaceholdersInConfig)(
