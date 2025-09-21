@@ -98,6 +98,7 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
                 return (0, import_kafka_base_service.BadRequest)(errorMessage)(message);
               }
               const result = queryResult.serialize().loadResponse.results;
+              this.log.info("Cube query executed successfully", result);
               if (result.length > 0) {
                 const response = {
                   ...message,
