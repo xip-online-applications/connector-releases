@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../apps/connector-orchestrator/src/util/node-wrapper.ts"],
+  "sourcesContent": ["import cluster, { Worker } from 'cluster';\nimport process from 'node:process';\n\nexport type processOnEvent = NodeJS.Signals | 'uncaughtException';\n\nexport interface NodeWrapperInterface {\n  process: {\n    pid: number;\n    env: NodeJS.ProcessEnv;\n    on: (event: processOnEvent, listener: (arg: unknown) => void) => void;\n    exit: (code?: number) => void;\n  };\n\n  cluster: {\n    isPrimary: boolean;\n    workers: NodeJS.Dict<Worker> | undefined;\n    fork: (env?: NodeJS.ProcessEnv) => Worker;\n  };\n}\n\nexport class NodeWrapper implements NodeWrapperInterface {\n  readonly process = {\n    pid: process.pid,\n    env: process.env,\n    on: process.on,\n    exit: process.exit,\n  };\n\n  readonly cluster = {\n    isPrimary: cluster.isPrimary,\n    workers: cluster.workers,\n    fork: cluster.fork,\n  };\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAgC;AAChC,0BAAoB;AAmBb,MAAM,YAA4C;AAAA,EAAlD;AACL,SAAS,UAAU;AAAA,MACjB,KAAK,oBAAAA,QAAQ;AAAA,MACb,KAAK,oBAAAA,QAAQ;AAAA,MACb,IAAI,oBAAAA,QAAQ;AAAA,MACZ,MAAM,oBAAAA,QAAQ;AAAA,IAChB;AAEA,SAAS,UAAU;AAAA,MACjB,WAAW,eAAAC,QAAQ;AAAA,MACnB,SAAS,eAAAA,QAAQ;AAAA,MACjB,MAAM,eAAAA,QAAQ;AAAA,IAChB;AAAA;AACF;",
+  "names": ["process", "cluster"]
+}

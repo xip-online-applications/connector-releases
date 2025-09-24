@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../apps/connector-orchestrator/src/util/log-level.ts"],
+  "sourcesContent": ["import { LogLevels } from '@transai/logger';\nimport { NodeWrapperInterface } from './node-wrapper';\n\nexport const getLogLevel = (node: NodeWrapperInterface) => {\n  let logLevel = (node.process.env.LOG_LEVEL as LogLevels) || LogLevels.info;\n  const validLogLevels = Object.values(LogLevels);\n  const faultyLogLevel = !validLogLevels.includes(logLevel);\n\n  if (faultyLogLevel) {\n    logLevel = LogLevels.info;\n  }\n\n  if (faultyLogLevel) {\n    console.error(\n      `Invalid log level: ${logLevel}; only allowed values are 'error', 'warn', 'info', 'debug', 'trace'. Using 'info' as the default.`,\n    );\n  }\n\n  return logLevel;\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,oBAA0B;AAGnB,MAAM,cAAc,CAAC,SAA+B;AACzD,MAAI,WAAY,KAAK,QAAQ,IAAI,aAA2B,wBAAU;AACtE,QAAM,iBAAiB,OAAO,OAAO,uBAAS;AAC9C,QAAM,iBAAiB,CAAC,eAAe,SAAS,QAAQ;AAExD,MAAI,gBAAgB;AAClB,eAAW,wBAAU;AAAA,EACvB;AAEA,MAAI,gBAAgB;AAClB,YAAQ;AAAA,MACN,sBAAsB,QAAQ;AAAA,IAChC;AAAA,EACF;AAEA,SAAO;AACT;",
+  "names": []
+}
