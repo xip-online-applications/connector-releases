@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-mail-source/src/lib/types.ts"],
+  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\nimport { MailConfig } from '@xip-online-data/mail-client';\n\nexport interface MailboxConfig {\n  mailboxIdentifier: string;\n  host: string;\n  port: number;\n  type?: 'metric' | 'document';\n  interval: number;\n  mailbox: string;\n  offsetFilePrefix?: string;\n}\n\nexport interface MailSourceProcessConfig extends BaseConnectorConfig {\n  mailboxes: Array<MailboxConfig>;\n  mailConfig: MailConfig;\n}\n\nexport function isYamlConfigType(\n  obj: MailSourceProcessConfig,\n): obj is MailSourceProcessConfig {\n  return obj !== undefined && obj !== null;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAkBO,SAAS,iBACd,KACgC;AAChC,SAAO,QAAQ,UAAa,QAAQ;AACtC;",
+  "names": []
+}

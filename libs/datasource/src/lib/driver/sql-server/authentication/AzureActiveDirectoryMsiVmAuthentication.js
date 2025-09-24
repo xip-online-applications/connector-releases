@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var AzureActiveDirectoryMsiVmAuthentication_exports = {};
 module.exports = __toCommonJS(AzureActiveDirectoryMsiVmAuthentication_exports);
+//# sourceMappingURL=AzureActiveDirectoryMsiVmAuthentication.js.map

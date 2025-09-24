@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/samba-client/src/lib/types.ts"],
+  "sourcesContent": ["export interface SambaConfig {\n  address: string;\n  username: string;\n  password?: string;\n  tmpDirectory: string;\n  domain?: string;\n  directory?: string;\n  maxProtocol?: string;\n  port?: string;\n  timeout?: string;\n  maskCmd?: boolean;\n}\n\nexport function isSambaConfig(obj: SambaConfig): obj is SambaConfig {\n  return (\n    typeof obj.address === 'string' &&\n    typeof obj.username === 'string' &&\n    typeof obj.tmpDirectory === 'string' &&\n    (typeof obj.password === 'string' || obj.password === undefined) &&\n    (typeof obj.domain === 'string' || obj.domain === undefined) &&\n    (typeof obj.directory === 'string' || obj.directory === undefined) &&\n    (typeof obj.maxProtocol === 'string' || obj.maxProtocol === undefined) &&\n    (typeof obj.port === 'string' || obj.port === undefined) &&\n    (typeof obj.timeout === 'string' || obj.timeout === undefined) &&\n    (typeof obj.maskCmd === 'boolean' || obj.maskCmd === undefined)\n  )\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAaO,SAAS,cAAc,KAAsC;AAClE,SACE,OAAO,IAAI,YAAY,YACvB,OAAO,IAAI,aAAa,YACxB,OAAO,IAAI,iBAAiB,aAC3B,OAAO,IAAI,aAAa,YAAY,IAAI,aAAa,YACrD,OAAO,IAAI,WAAW,YAAY,IAAI,WAAW,YACjD,OAAO,IAAI,cAAc,YAAY,IAAI,cAAc,YACvD,OAAO,IAAI,gBAAgB,YAAY,IAAI,gBAAgB,YAC3D,OAAO,IAAI,SAAS,YAAY,IAAI,SAAS,YAC7C,OAAO,IAAI,YAAY,YAAY,IAAI,YAAY,YACnD,OAAO,IAAI,YAAY,aAAa,IAAI,YAAY;AAEzD;",
+  "names": []
+}

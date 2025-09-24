@@ -82,11 +82,6 @@ class RdKafkaSourceService extends import_rdkafka_base.RdKafkaBaseService {
         import_logger.Logger.getInstance().error(
           `IndividualWentWrong: Topic: ${topic}, ${JSON.stringify(error)}`
         );
-        if (message.payload && "body" in message.payload && message.payload.body && "keyField" in message.payload && message.payload.keyField) {
-          import_logger.Logger.getInstance().error(
-            `IndividualWentWrong: Message keyfield: ${message.payload.body[message.payload.keyField]}`
-          );
-        }
         success = false;
       }
     }
@@ -97,3 +92,4 @@ class RdKafkaSourceService extends import_rdkafka_base.RdKafkaBaseService {
 0 && (module.exports = {
   RdKafkaSourceService
 });
+//# sourceMappingURL=rdkafka-source.service.js.map

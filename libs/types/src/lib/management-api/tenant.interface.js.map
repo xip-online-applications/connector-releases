@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/types/src/lib/management-api/tenant.interface.ts"],
+  "sourcesContent": ["export interface TenantInterface {\n  identifier: string;\n  name: string;\n  domain: string;\n  bi?: string;\n  isActive: boolean;\n  useApi: boolean;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

@@ -105,3 +105,4 @@ __reExport(management_api_exports, require("./pagination"), module.exports);
   ...require("./dataset/filter.interface"),
   ...require("./pagination")
 });
+//# sourceMappingURL=index.js.map

@@ -30,7 +30,7 @@ __export(mail_attachments_exports, {
   addPdfJsonAttachments: () => addPdfJsonAttachments
 });
 module.exports = __toCommonJS(mail_attachments_exports);
-var import_pdf_parse = __toESM(require("pdf-parse"));
+var import_pdf2md = __toESM(require("@opendocsg/pdf2md"));
 function streamToBuffer(stream) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -48,7 +48,7 @@ async function addPdfJsonAttachments(parsed) {
     if (!isPdf)
       continue;
     const buf = Buffer.isBuffer(att.content) ? att.content : await streamToBuffer(att.content);
-    const pdfParsed = await (0, import_pdf_parse.default)(buf);
+    const pdfParsed = await (0, import_pdf2md.default)(buf);
     const jsonFilename = `${att.filename?.replace(/\.pdf$/i, "") || "attachment"}.json`;
     jsonAtts.push({
       filename: jsonFilename,
@@ -62,7 +62,7 @@ async function addPdfJsonAttachments(parsed) {
       headerLines: att.headerLines,
       checksum: att.checksum,
       // store as Buffer so your existing mapping stays unchanged
-      content: Buffer.from(pdfParsed.text)
+      content: Buffer.from(pdfParsed)
     });
   }
   parsed.attachments.push(...jsonAtts);
@@ -71,3 +71,4 @@ async function addPdfJsonAttachments(parsed) {
 0 && (module.exports = {
   addPdfJsonAttachments
 });
+//# sourceMappingURL=mail-attachments.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/connector-runtime/src/lib/offset-store/persistent-offset-store.interface.ts"],
+  "sourcesContent": ["import { OffsetStore } from './types';\n\nexport interface PersistentOffsetStoreInterface {\n  init(): Promise<void>;\n  deInit(): Promise<void>;\n  getOffset(identifier: string): Promise<OffsetStore>;\n  setOffset(offset: OffsetStore, identifier: string): void;\n  writeFile(fileName: string, data: { [key: string]: string }): Promise<void>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

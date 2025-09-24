@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/ConnectionIsNotSetError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user tries to execute operation that requires connection to be established.\n */\nexport class ConnectionIsNotSetError extends TypeORMError {\n  constructor(dbType: string) {\n    super(\n      `Connection with ${dbType} database is not established. Check connection configuration.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gCAAgC,iCAAa;AAAA,EACxD,YAAY,QAAgB;AAC1B;AAAA,MACE,mBAAmB,MAAM;AAAA,IAC3B;AAAA,EACF;AACF;",
+  "names": []
+}

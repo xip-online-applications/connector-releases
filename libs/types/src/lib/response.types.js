@@ -27,3 +27,4 @@ function isXodResponseType(obj) {
 0 && (module.exports = {
   isXodResponseType
 });
+//# sourceMappingURL=response.types.js.map

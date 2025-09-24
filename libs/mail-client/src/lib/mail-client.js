@@ -23,9 +23,9 @@ module.exports = __toCommonJS(mail_client_exports);
 var import_logger = require("@transai/logger");
 var import_imapflow = require("imapflow");
 var import_mailparser = require("mailparser");
+var import_html_to_text = require("html-to-text");
 var import_mail_token = require("./mail-token");
 var import_mail_attachments = require("./mail-attachments");
-var import_html_to_text = require("html-to-text");
 class MailClient {
   constructor(config) {
     this.config = config;
@@ -51,21 +51,39 @@ class MailClient {
       secure: this.config.secure ?? true,
       logger: import_logger.Logger.getInstance()
     };
-    if (accessToken) {
-      imapFlowConfig.auth = {
-        user: this.config.username,
-        accessToken
-      };
-    }
     if (this.config.password) {
       imapFlowConfig.auth = {
         user: this.config.username,
         pass: this.config.password
       };
+    } else if (accessToken) {
+      imapFlowConfig.auth = {
+        user: this.config.username,
+        accessToken
+      };
     }
     this.mailClient = new import_imapflow.ImapFlow(imapFlowConfig);
+    this.mailClient.on("error", (err) => {
+      console.error("IMAP error:", err);
+    });
+    this.mailClient.on("close", () => {
+      console.info("IMAP closed");
+    });
     await this.mailClient.connect();
     import_logger.Logger.getInstance().info("Mail client initialized");
+  }
+  async ensureLive() {
+    if (!this.mailClient)
+      throw new Error("Mail client not initialized");
+    try {
+      await this.mailClient.noop();
+    } catch {
+      try {
+        await this.mailClient.logout();
+      } catch {
+      }
+      await this.mailClient.connect();
+    }
   }
   async readMail(mailbox, lastSeenUid) {
     const parsedMessages = [];
@@ -74,6 +92,7 @@ class MailClient {
       if (this.mailClient === void 0) {
         throw new Error("Mail client not initialized");
       }
+      await this.ensureLive();
       const lock = await this.mailClient.getMailboxLock(mailbox, {
         readOnly: true
       });
@@ -81,7 +100,7 @@ class MailClient {
         let maxUid = lastSeenUid;
         const fromUid = maxUid + 1;
         const range = `${fromUid}:*`;
-        this.#logger.debug("Fetching messages with range: " + range);
+        this.#logger.debug(`Fetching messages with range: ${range}`);
         for await (const msg of this.mailClient.fetch(
           range,
           {
@@ -139,6 +158,7 @@ class MailClient {
       }
       this.mailClient = void 0;
     }
+    parsedMessages.sort((a, b) => a.uid - b.uid);
     return parsedMessages;
   }
   toJson(parsed, uid) {
@@ -187,14 +207,23 @@ class MailClient {
     if (this.mailClient === void 0) {
       throw new Error("Mail client not initialized");
     }
+    await this.ensureLive();
     await this.mailClient.mailboxOpen(mailbox);
-    const message = await this.mailClient.fetchOne(messageId, {
-      headers: true,
-      source: true,
-      envelope: true
-    });
+    const uids = await this.mailClient.search(
+      { header: { "Message-ID": messageId } },
+      { uid: true }
+    );
+    if (!uids || uids.length === 0) {
+      throw new Error(`Message with Message-ID ${messageId} not found`);
+    }
+    const uid = uids[0];
+    const message = await this.mailClient.fetchOne(
+      uid,
+      { headers: true, source: true, envelope: true },
+      { uid: true }
+    );
     if (!message || !message.source) {
-      throw new Error(`Message with ID ${messageId} not found`);
+      throw new Error(`Message with UID ${uid} not found`);
     }
     const domain = from.split("@")[1] || "transai.com";
     const parsed = await (0, import_mailparser.simpleParser)(message.source);
@@ -207,14 +236,14 @@ class MailClient {
       "In-Reply-To": origMessageId,
       References: [...references, origMessageId].join(" ")
     };
-    const body = `${mailBody}}
+    const body = `${mailBody}
 
 > ${parsed.text?.split("\n").join("\n> ")}`;
     const raw = [
-      `From: me@example.com`,
+      `From: ${from}`,
       `To: ${replyTo}`,
       `Subject: ${subject.startsWith("Re:") ? subject : `Re: ${subject}`}`,
-      `Message-ID: <${Date.now()}.draft@${domain}`,
+      `Message-ID: <${Date.now()}.draft@${domain}>`,
       `Date: ${(/* @__PURE__ */ new Date()).toUTCString()}`,
       `In-Reply-To: ${replyHeaders["In-Reply-To"]}`,
       `References: ${replyHeaders["References"]}`,
@@ -233,3 +262,4 @@ class MailClient {
 0 && (module.exports = {
   MailClient
 });
+//# sourceMappingURL=mail-client.js.map

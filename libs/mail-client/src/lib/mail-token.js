@@ -74,3 +74,4 @@ async function getAccessToken(tenantId, clientId, clientSecret) {
 0 && (module.exports = {
   getAccessToken
 });
+//# sourceMappingURL=mail-token.js.map

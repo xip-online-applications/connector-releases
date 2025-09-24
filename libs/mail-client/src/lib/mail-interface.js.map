@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/mail-client/src/lib/mail-interface.ts"],
+  "sourcesContent": ["export interface MailInterface {\n  init(): Promise<void>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

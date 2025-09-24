@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/pagination/index.ts"],
+  "sourcesContent": ["export * from './paginated-response.interface';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,+BAAc,2CAAd;",
+  "names": []
+}

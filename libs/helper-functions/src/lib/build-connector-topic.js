@@ -27,3 +27,4 @@ function buildConnectorTopic(connectorConfig) {
 0 && (module.exports = {
   buildConnectorTopic
 });
+//# sourceMappingURL=build-connector-topic.js.map

@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var event_origin_interface_exports = {};
 module.exports = __toCommonJS(event_origin_interface_exports);
+//# sourceMappingURL=event-origin.interface.js.map

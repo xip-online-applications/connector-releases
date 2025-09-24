@@ -87,3 +87,4 @@ class AbstractManagementApiClient {
 0 && (module.exports = {
   AbstractManagementApiClient
 });
+//# sourceMappingURL=management-api-client.js.map

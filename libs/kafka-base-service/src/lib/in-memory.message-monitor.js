@@ -41,3 +41,4 @@ class InMemoryMessageMonitor extends import_abstract.AbstractMessageMonitor {
 0 && (module.exports = {
   InMemoryMessageMonitor
 });
+//# sourceMappingURL=in-memory.message-monitor.js.map

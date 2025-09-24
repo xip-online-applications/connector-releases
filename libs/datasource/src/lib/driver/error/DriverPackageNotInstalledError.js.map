@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/DriverPackageNotInstalledError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when required driver's package is not installed.\n */\nexport class DriverPackageNotInstalledError extends TypeORMError {\n  constructor(driverName: string, packageName: string) {\n    super(\n      `${driverName} package has not been found installed. ` +\n        `Try to install it: npm install ${packageName} --save`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,uCAAuC,iCAAa;AAAA,EAC/D,YAAY,YAAoB,aAAqB;AACnD;AAAA,MACE,GAAG,UAAU,yEACuB,WAAW;AAAA,IACjD;AAAA,EACF;AACF;",
+  "names": []
+}

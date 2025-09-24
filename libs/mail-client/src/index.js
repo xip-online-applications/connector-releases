@@ -25,3 +25,4 @@ __reExport(src_exports, require("./lib/mail-token"), module.exports);
   ...require("./lib/types"),
   ...require("./lib/mail-token")
 });
+//# sourceMappingURL=index.js.map

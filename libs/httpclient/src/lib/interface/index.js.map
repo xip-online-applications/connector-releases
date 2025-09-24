@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/httpclient/src/lib/interface/index.ts"],
+  "sourcesContent": ["export * from './http-service-options.interface';\nexport * from './request-options.interface';\nexport * from './http-service.interface';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,8BAAc,6CAAd;AACA,8BAAc,wCADd;AAEA,8BAAc,qCAFd;",
+  "names": []
+}

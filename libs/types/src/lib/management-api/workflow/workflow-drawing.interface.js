@@ -24,6 +24,7 @@ module.exports = __toCommonJS(workflow_drawing_interface_exports);
 var NodeTypes = /* @__PURE__ */ ((NodeTypes2) => {
   NodeTypes2["TRIGGER"] = "TRIGGER";
   NodeTypes2["ACTION"] = "ACTION";
+  NodeTypes2["AGENT"] = "AGENT";
   NodeTypes2["CONDITIONAL"] = "CONDITIONAL";
   NodeTypes2["VALIDATION"] = "VALIDATION";
   NodeTypes2["ANNOTATION"] = "ANNOTATION";
@@ -42,3 +43,4 @@ var ConditionalTypes = /* @__PURE__ */ ((ConditionalTypes2) => {
   ConditionalTypes,
   NodeTypes
 });
+//# sourceMappingURL=workflow-drawing.interface.js.map

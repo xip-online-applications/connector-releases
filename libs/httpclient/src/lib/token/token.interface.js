@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var token_interface_exports = {};
 module.exports = __toCommonJS(token_interface_exports);
+//# sourceMappingURL=token.interface.js.map

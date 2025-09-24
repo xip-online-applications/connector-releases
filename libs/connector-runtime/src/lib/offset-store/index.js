@@ -21,3 +21,4 @@ __reExport(offset_store_exports, require("./types"), module.exports);
   ...require("./persistent-offset-store.interface"),
   ...require("./types")
 });
+//# sourceMappingURL=index.js.map
