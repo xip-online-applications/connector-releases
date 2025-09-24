@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/sftp-client/src/lib/types.ts"],
-  "sourcesContent": ["export interface SftpConfig {\n  type: string;\n  host: string;\n  port: number;\n  username: string;\n  password?: string;\n  protocol?: string;\n  privateKey?: string;\n  keepaliveInterval?: number;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

@@ -71,4 +71,3 @@ async function addPdfJsonAttachments(parsed) {
 0 && (module.exports = {
   addPdfJsonAttachments
 });
-//# sourceMappingURL=mail-attachments.js.map

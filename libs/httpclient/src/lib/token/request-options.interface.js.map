@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/token/request-options.interface.ts"],
-  "sourcesContent": ["export interface TokenRequestOptions {\n  tenantIdentifier?: string;\n  audience?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/ConnectionNotFoundError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to get connection that does not exist.\n */\nexport class ConnectionNotFoundError extends TypeORMError {\n  constructor(name: string) {\n    super(`Connection \"${name}\" was not found.`);\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gCAAgC,iCAAa;AAAA,EACxD,YAAY,MAAc;AACxB,UAAM,eAAe,IAAI,kBAAkB;AAAA,EAC7C;AACF;",
-  "names": []
-}

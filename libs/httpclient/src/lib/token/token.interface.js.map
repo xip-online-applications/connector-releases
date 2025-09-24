@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/token/token.interface.ts"],
-  "sourcesContent": ["export interface TokenInterface {\n  access_token: string;\n  token_type: string;\n  expires_in: number;\n}\n\nexport interface CachedTokenInterface {\n  token: TokenInterface;\n  expires_at: number;\n  tenantId?: string;\n  audience?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

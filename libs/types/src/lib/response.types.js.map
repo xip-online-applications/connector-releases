@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/types/src/lib/response.types.ts"],
-  "sourcesContent": ["import { XodActionType, XodEventType, XodJobType } from './message.types';\n\nexport interface KafkaCallbackResponse {\n  success: boolean;\n  statusCode: number;\n  message: string;\n  payload?: any;\n}\n\nexport interface XodResponseType {\n  type: 'ACTION' | 'EVENT' | 'JOB';\n  message: XodActionType | XodEventType | XodJobType;\n  result: KafkaCallbackResponse;\n  responseSource: string;\n}\n\nexport interface XodEventResponseType extends XodResponseType {\n  type: 'EVENT';\n  message: XodEventType;\n}\n\nexport interface XodActionResponseType extends XodResponseType {\n  type: 'ACTION';\n  message: XodActionType;\n}\n\nexport interface XodJobResponseType extends XodResponseType {\n  type: 'JOB';\n  message: XodJobType;\n}\n\nexport function isXodResponseType(obj: any): obj is XodResponseType {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    obj.type !== undefined &&\n    typeof obj.type === 'string' &&\n    (obj.type === 'ACTION' || obj.type === 'EVENT' || obj.type === 'JOB') &&\n    obj.message !== undefined &&\n    obj.result !== undefined &&\n    typeof obj.result === 'object'\n  );\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AA+BO,SAAS,kBAAkB,KAAkC;AAClE,SACE,QAAQ,UACR,QAAQ,QACR,IAAI,SAAS,UACb,OAAO,IAAI,SAAS,aACnB,IAAI,SAAS,YAAY,IAAI,SAAS,WAAW,IAAI,SAAS,UAC/D,IAAI,YAAY,UAChB,IAAI,WAAW,UACf,OAAO,IAAI,WAAW;AAE1B;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/MustBeEntityError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when method expects entity but instead something else is given.\n */\nexport class MustBeEntityError extends TypeORMError {\n  constructor(operation: string, wrongValue: any) {\n    super(\n      `Cannot ${operation}, given value must be an entity, instead \"${wrongValue}\" is given.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,0BAA0B,iCAAa;AAAA,EAClD,YAAY,WAAmB,YAAiB;AAC9C;AAAA,MACE,UAAU,SAAS,6CAA6C,UAAU;AAAA,IAC5E;AAAA,EACF;AACF;",
-  "names": []
-}

@@ -80,4 +80,3 @@ class ConnectorManager {
 0 && (module.exports = {
   ConnectorManager
 });
-//# sourceMappingURL=connector.manager.js.map

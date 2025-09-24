@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-runner-mail-source/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-runner-mail-source';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,+CAAd;",
-  "names": []
-}

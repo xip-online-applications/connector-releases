@@ -37,4 +37,3 @@ function generateOffsetIdentifier(sourceConfig) {
   generateKafkaTopic,
   generateOffsetIdentifier
 });
-//# sourceMappingURL=helper.functions.js.map

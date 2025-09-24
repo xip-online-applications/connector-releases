@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/semantic-trigger/semantic-trigger-record.interface.ts"],
-  "sourcesContent": ["import { SemanticTriggerInterface } from './semantic-trigger.interface';\n\nexport interface SemanticTriggerRecordInterface\n  extends SemanticTriggerInterface {\n  id: string;\n  tenantId: string;\n}\n\nexport const SemanticTriggerIdentifier = (\n  trigger: SemanticTriggerRecordInterface,\n) => `${trigger.tenantId}_${trigger.eventType}`;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,MAAM,4BAA4B,CACvC,YACG,GAAG,QAAQ,QAAQ,IAAI,QAAQ,SAAS;",
-  "names": []
-}

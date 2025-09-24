@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-runner-mail-sink/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-runner-mail-sink';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,6CAAd;",
-  "names": []
-}

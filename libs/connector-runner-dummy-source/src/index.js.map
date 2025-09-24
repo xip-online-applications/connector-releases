@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-runner-dummy-source/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-runner-dummy-source';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,gDAAd;",
-  "names": []
-}

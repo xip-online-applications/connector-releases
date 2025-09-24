@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/index.ts"],
-  "sourcesContent": ["export * from './action.interface';\nexport * from './offset.interface';\nexport * from './connector.interface';\nexport * from './workflow-definition.interface';\nexport * from './workflow-run';\nexport * from './workflow-drawing.interface';\nexport * from './trigger-types.interface';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,6BAAc,+BAAd;AACA,6BAAc,+BADd;AAEA,6BAAc,kCAFd;AAGA,6BAAc,4CAHd;AAIA,6BAAc,2BAJd;AAKA,6BAAc,yCALd;AAMA,6BAAc,sCANd;",
-  "names": []
-}

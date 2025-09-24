@@ -22,4 +22,3 @@ async function main() {
 main().catch((error) => {
   (0, import_handle_error.handleError)("Error while initializing the app", error);
 });
-//# sourceMappingURL=main.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/UpdateValuesMissingError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\nexport class UpdateValuesMissingError extends TypeORMError {\n  constructor() {\n    super(\n      `Cannot perform update query because update values are not defined. Call \"qb.set(...)\" method to specify updated values.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAEtB,MAAM,iCAAiC,iCAAa;AAAA,EACzD,cAAc;AACZ;AAAA,MACE;AAAA,IACF;AAAA,EACF;AACF;",
-  "names": []
-}

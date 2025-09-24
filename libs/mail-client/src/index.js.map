@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/mail-client/src/index.ts"],
-  "sourcesContent": ["export * from './lib/mail-client';\nexport * from './lib/mail-interface';\nexport * from './lib/types';\nexport * from './lib/mail-token';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,8BAAd;AACA,wBAAc,iCADd;AAEA,wBAAc,wBAFd;AAGA,wBAAc,6BAHd;",
-  "names": []
-}

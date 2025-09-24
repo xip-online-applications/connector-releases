@@ -133,4 +133,3 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
 0 && (module.exports = {
   ConnectorRunnerMailSink
 });
-//# sourceMappingURL=connector-runner-mail-sink.js.map

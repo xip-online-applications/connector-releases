@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/file-system-connector/src/lib/generic-active-file.active-file-handler.ts"],
-  "sourcesContent": ["import { ActiveFileHandlerInterface } from './file-handler.interface';\n\nexport class GenericActiveFileActiveFileHandler implements ActiveFileHandlerInterface {\n  constructor(\n    private readonly file: Buffer,\n  ) {\n  }\n\n  get(): Buffer {\n    return this.file;\n  }\n\n  close(): boolean {\n    return true;\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,MAAM,mCAAyE;AAAA,EACpF,YACmB,MACjB;AADiB;AAAA,EAEnB;AAAA,EAEA,MAAc;AACZ,WAAO,KAAK;AAAA,EACd;AAAA,EAEA,QAAiB;AACf,WAAO;AAAA,EACT;AACF;",
-  "names": []
-}

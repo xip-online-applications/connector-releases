@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/mail-client/src/lib/types.ts"],
-  "sourcesContent": ["export interface MailConfig {\n  host: string;\n  port: number;\n  username: string;\n  password?: string;\n  secure?: boolean;\n  tenantId?: string;\n  clientId?: string;\n  clientSecret?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

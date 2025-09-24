@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/PrimaryColumnCannotBeNullableError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\nexport class PrimaryColumnCannotBeNullableError extends TypeORMError {\n  constructor(object: Object, propertyName: string) {\n    super(\n      `Primary column ${\n        (<any>object.constructor).name\n      }#${propertyName} cannot be nullable. ` +\n        `Its not allowed for primary keys. Try to remove nullable option.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAEtB,MAAM,2CAA2C,iCAAa;AAAA,EACnE,YAAY,QAAgB,cAAsB;AAChD;AAAA,MACE,kBACQ,OAAO,YAAa,IAC5B,IAAI,YAAY;AAAA,IAElB;AAAA,EACF;AACF;",
-  "names": []
-}

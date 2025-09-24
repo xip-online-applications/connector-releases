@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-runner-factorynebula-source/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-runner-factorynebula-source';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,wDAAd;",
-  "names": []
-}

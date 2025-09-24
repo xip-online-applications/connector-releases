@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/event-server/create-event.interface.ts"],
-  "sourcesContent": ["export interface CreateEventInterface {\n  eventType: string;\n  payload: object;\n  testRun?: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

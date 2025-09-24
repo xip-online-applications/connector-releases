@@ -262,4 +262,3 @@ class MailClient {
 0 && (module.exports = {
   MailClient
 });
-//# sourceMappingURL=mail-client.js.map

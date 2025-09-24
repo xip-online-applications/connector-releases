@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/helper-functions/src/lib/workflow-parameter-parser.ts"],
-  "sourcesContent": ["import { MessageMapper, XodTriggerPayloadType } from '@xip-online-data/types';\nimport jsonata from 'jsonata';\n\nexport interface ActionData {\n  trigger: XodTriggerPayloadType;\n  [previousSteps: string]: unknown;\n}\n\nasync function getValueFromMessage(\n  message: ActionData,\n  selector: string,\n): Promise<unknown> {\n  const expression = jsonata(selector);\n  return expression.evaluate(message);\n}\n\nexport async function parseMessageToInput(\n  message: ActionData,\n  mapper: MessageMapper,\n): Promise<{\n  [key: string]: unknown;\n}> {\n  const requiredInputs = Object.keys(mapper);\n  const parsedInputs: { [key: string]: unknown } = {};\n\n  await Promise.all(\n    requiredInputs.map(async (key) => {\n      const value =\n        typeof mapper[key] === 'string' ? mapper[key] : mapper[key].selector;\n      parsedInputs[key] = await getValueFromMessage(message, value);\n    }),\n  );\n\n  return parsedInputs;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,qBAAoB;AAOpB,eAAe,oBACb,SACA,UACkB;AAClB,QAAM,iBAAa,eAAAA,SAAQ,QAAQ;AACnC,SAAO,WAAW,SAAS,OAAO;AACpC;AAEA,eAAsB,oBACpB,SACA,QAGC;AACD,QAAM,iBAAiB,OAAO,KAAK,MAAM;AACzC,QAAM,eAA2C,CAAC;AAElD,QAAM,QAAQ;AAAA,IACZ,eAAe,IAAI,OAAO,QAAQ;AAChC,YAAM,QACJ,OAAO,OAAO,GAAG,MAAM,WAAW,OAAO,GAAG,IAAI,OAAO,GAAG,EAAE;AAC9D,mBAAa,GAAG,IAAI,MAAM,oBAAoB,SAAS,KAAK;AAAA,IAC9D,CAAC;AAAA,EACH;AAEA,SAAO;AACT;",
-  "names": ["jsonata"]
-}

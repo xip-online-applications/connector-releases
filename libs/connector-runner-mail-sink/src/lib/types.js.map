@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-mail-sink/src/lib/types.ts"],
-  "sourcesContent": ["import { ActionConfig, isActionConfigType } from '@xip-online-data/types';\nimport {\n  MailConfig } from '@xip-online-data/mail-client';\n\nexport interface MailSinkConfig {\n  mailConfig: MailConfig;\n  action: ActionConfig;\n}\n\nexport function isYamlConfigType(obj: MailSinkConfig): obj is MailSinkConfig {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    isActionConfigType(obj.action) &&\n    obj.mailConfig !== undefined &&\n    obj.mailConfig !== null\n  );\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAAiD;AAS1C,SAAS,iBAAiB,KAA4C;AAC3E,SACE,QAAQ,UACR,QAAQ,YACR,iCAAmB,IAAI,MAAM,KAC7B,IAAI,eAAe,UACnB,IAAI,eAAe;AAEvB;",
-  "names": []
-}

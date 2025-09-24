@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CannotConnectAlreadyConnectedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to connect when he already connected.\n */\nexport class CannotConnectAlreadyConnectedError extends TypeORMError {\n  constructor(connectionName: string) {\n    super(\n      `Cannot create a \"${connectionName}\" connection because connection to the database already established.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,2CAA2C,iCAAa;AAAA,EACnE,YAAY,gBAAwB;AAClC;AAAA,MACE,oBAAoB,cAAc;AAAA,IACpC;AAAA,EACF;AACF;",
-  "names": []
-}
