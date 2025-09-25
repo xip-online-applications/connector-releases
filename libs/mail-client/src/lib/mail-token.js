@@ -36,7 +36,7 @@ async function getAccessToken(tenantId, clientId, clientSecret) {
   return new Promise((resolve, reject) => {
     const postData = import_querystring.default.stringify({
       client_id: clientId,
-      scope: "https://outlook.office365.com/.default",
+      scope: "https://graph.microsoft.com/.default",
       client_secret: clientSecret,
       grant_type: "client_credentials"
     });

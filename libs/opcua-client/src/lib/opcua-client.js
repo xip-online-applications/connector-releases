@@ -1,0 +1,328 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var opcua_client_exports = {};
+__export(opcua_client_exports, {
+  OpcuaClient: () => OpcuaClient
+});
+module.exports = __toCommonJS(opcua_client_exports);
+var import_logger = require("@transai/logger");
+var import_node_opcua = require("node-opcua");
+class OpcuaClient {
+  #opcuaConfig;
+  #client;
+  #logger;
+  #clientSession;
+  constructor(opcuaConfig) {
+    this.#logger = import_logger.Logger.getInstance();
+    this.#opcuaConfig = opcuaConfig;
+    this.#client = import_node_opcua.OPCUAClient.create({
+      endpointMustExist: false,
+      securityMode: this.#opcuaConfig.securityMode,
+      securityPolicy: this.#opcuaConfig.securityPolicy
+    });
+  }
+  async init() {
+    import_logger.Logger.getInstance().info(
+      `Initializing OPCUA: ${this.#opcuaConfig.endpointUrl}`
+    );
+    await this.connect();
+    import_logger.Logger.getInstance().info("OPCUA client initialized");
+  }
+  async connect() {
+    try {
+      this.#logger.info("Connecting to OPC UA server...");
+      await this.#client.connect(this.#opcuaConfig.endpointUrl);
+      this.#clientSession = await this.#client.createSession();
+      this.#logger.info("Connected to OPC UA server.");
+    } catch (error) {
+      this.#logger.error("Connection error:", error);
+    }
+  }
+  async writeValue(nodeId, value) {
+    let dataType;
+    if (typeof value === "number") {
+      dataType = "Double";
+    } else if (typeof value === "boolean") {
+      dataType = "Boolean";
+    } else {
+      dataType = "String";
+    }
+    try {
+      await this.getClientSession.write({
+        nodeId,
+        attributeId: import_node_opcua.AttributeIds.Value,
+        value: {
+          value: {
+            dataType,
+            value
+          }
+        }
+      });
+      this.#logger.info(`Wrote value "${value}" to node ${nodeId}`);
+    } catch (error) {
+      this.#logger.error("Write error:", error);
+    }
+  }
+  async readValue(nodeId) {
+    try {
+      const dataValue = await this.getClientSession.read({
+        nodeId,
+        attributeId: import_node_opcua.AttributeIds.Value
+      });
+      if (dataValue.statusCode === import_node_opcua.StatusCodes.BadNodeIdUnknown) {
+        this.#logger.error(`NodeId ${nodeId} is unknown.`);
+        return new import_node_opcua.DataValue({
+          value: new import_node_opcua.Variant({ dataType: "Null", value: null })
+        });
+      }
+      this.#logger.debug(`Read value from ${nodeId}: ${dataValue.toString()}`);
+      return dataValue;
+    } catch (error) {
+      this.#logger.error("Read error:", error);
+      throw error;
+    }
+  }
+  async subscribeToNode(nodeId, callback) {
+    const subscription = import_node_opcua.ClientSubscription.create(this.getClientSession, {
+      requestedPublishingInterval: 1e3,
+      requestedLifetimeCount: 10,
+      requestedMaxKeepAliveCount: 5,
+      maxNotificationsPerPublish: 10,
+      publishingEnabled: true,
+      priority: 10
+    });
+    const monitoredItem = await subscription.monitor(
+      { nodeId, attributeId: import_node_opcua.AttributeIds.Value },
+      { samplingInterval: 1e3, discardOldest: true, queueSize: 10 },
+      import_node_opcua.TimestampsToReturn.Both
+    );
+    monitoredItem.on("changed", (dataValue) => {
+      const { value, statusCode } = dataValue;
+      if (statusCode === import_node_opcua.StatusCodes.BadNodeIdUnknown) {
+        throw new Error("NodeId is unknown.");
+      }
+      this.#logger.debug(
+        `Subscription update from ${nodeId}: ${value.toString()}`
+      );
+      callback(nodeId, value);
+    });
+    this.#logger.info(`Subscribed to ${nodeId}`);
+  }
+  async disconnect() {
+    await this.getClientSession.close();
+    if ("disconnect" in this.#client) {
+      await this.#client.disconnect();
+    }
+    this.#logger.info("Disconnected from OPC UA server.");
+  }
+  get getClientSession() {
+    if (!this.#clientSession)
+      throw new Error("No active session.");
+    return this.#clientSession;
+  }
+  async callMethod(nodeId, methodName, args) {
+    if (!this.#clientSession) {
+      throw new Error("No active session. Please connect first.");
+    }
+    return this.#clientSession.call({
+      objectId: nodeId,
+      methodId: methodName,
+      inputArguments: args
+    });
+  }
+  async browseNode(nodeId, depth = 0) {
+    const indentation = " ".repeat(depth * 2);
+    try {
+      const nodeToRead = [
+        { nodeId, attributeId: import_node_opcua.AttributeIds.BrowseName },
+        { nodeId, attributeId: import_node_opcua.AttributeIds.DisplayName },
+        { nodeId, attributeId: import_node_opcua.AttributeIds.Description },
+        { nodeId, attributeId: import_node_opcua.AttributeIds.NodeClass },
+        { nodeId, attributeId: import_node_opcua.AttributeIds.DataType },
+        { nodeId, attributeId: import_node_opcua.AttributeIds.Value }
+      ];
+      const dataValues = await this.#clientSession.read(nodeToRead);
+      const browseName = dataValues[0]?.value?.value ?? "N/A";
+      const displayName = dataValues[1]?.value?.value ?? "N/A";
+      const description = dataValues[2]?.value?.value ?? "";
+      const nodeClass = import_node_opcua.NodeClass[dataValues[3]?.value?.value] ?? "Unknown";
+      const dataType = dataValues[4]?.value?.value ?? "N/A";
+      const value = dataValues[5]?.value?.value ?? "N/A";
+      this.#logger.info(`${indentation}${browseName} | NodeId: ${nodeId}`);
+      this.#logger.info(`${indentation}  DisplayName : ${displayName}`);
+      if (description) {
+        this.#logger.info(`${indentation}  Description : ${description}`);
+      }
+      this.#logger.info(`${indentation}  NodeClass   : ${nodeClass}`);
+      this.#logger.info(`${indentation}  DataType    : ${dataType}`);
+      this.#logger.info(
+        `${indentation}  Value       : ${JSON.stringify(value)}`
+      );
+      const browseResult = await this.#clientSession.browse({
+        nodeId,
+        referenceTypeId: null,
+        includeSubtypes: true,
+        browseDirection: import_node_opcua.BrowseDirection.Forward,
+        resultMask: 63
+        // all
+      });
+      if (browseResult.references?.length === 0 && depth === 0) {
+        this.#logger.warn(`${indentation}  No child nodes found.`);
+      }
+      await Promise.all(
+        (browseResult.references ?? []).map(
+          (ref) => this.browseNode(ref.nodeId.toString(), depth + 1)
+        )
+      );
+    } catch (error) {
+      this.#logger.error(
+        `${indentation}Failed to browse node ${nodeId}:`,
+        error
+      );
+    }
+  }
+  /**
+   * Parse DSL like:
+   * call nsu=http://bystronic.com/ByVisionCutting/;s=History -> GetRunPartHistory("...", "...", 0, 100)
+   */
+  parseDslWithNamespaceUri(dsl) {
+    const regex = /^call\s+nsu=([^;]+);(s|i)=([^ ]+)\s*->\s*(s|i)=([^(\s]+)\((.*)\)$/;
+    const match = dsl.match(regex);
+    if (!match)
+      throw new Error("Invalid DSL format");
+    const [
+      ,
+      namespaceUri,
+      objectIdType,
+      objectIdValue,
+      methodIdType,
+      methodIdValue,
+      argStr
+    ] = match;
+    const objectNodeId = `ns=0;${objectIdType}=${objectIdValue}`;
+    const methodNodeId = `ns=0;${methodIdType}=${methodIdValue}`;
+    const args = argStr.length ? argStr.split(",").map(this.parseArgument) : [];
+    return {
+      namespaceUri,
+      objectNodeId,
+      methodNodeId,
+      inputArguments: args
+    };
+  }
+  /**
+   * Infer the correct OPC UA Variant from a literal string
+   */
+  parseArgument(raw) {
+    const str = raw.trim();
+    const guidRegex = /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/;
+    if (/^".+"$/.test(str)) {
+      const val = str.slice(1, -1);
+      if (guidRegex.test(val)) {
+        return new import_node_opcua.Variant({
+          dataType: import_node_opcua.DataType.Guid,
+          value: val
+        });
+      }
+      if (/\d{4}-\d{2}-\d{2}T/.test(val)) {
+        return new import_node_opcua.Variant({
+          dataType: import_node_opcua.DataType.DateTime,
+          value: new Date(val)
+        });
+      }
+      return new import_node_opcua.Variant({
+        dataType: import_node_opcua.DataType.String,
+        value: val
+      });
+    }
+    if (/^\d+$/.test(str)) {
+      return new import_node_opcua.Variant({
+        dataType: import_node_opcua.DataType.Int32,
+        value: parseInt(str, 10)
+      });
+    }
+    if (/^\d+\.\d+$/.test(str)) {
+      return new import_node_opcua.Variant({
+        dataType: import_node_opcua.DataType.Double,
+        value: parseFloat(str)
+      });
+    }
+    if (str === "true" || str === "false") {
+      return new import_node_opcua.Variant({
+        dataType: import_node_opcua.DataType.Boolean,
+        value: str === "true"
+      });
+    }
+    throw new Error(`Unrecognized argument: ${str}`);
+  }
+  async resolveNamespaceIndex(namespaceUri) {
+    const nsArray = await this.#clientSession.read({
+      nodeId: "i=2255",
+      attributeId: import_node_opcua.AttributeIds.Value
+    });
+    const uris = nsArray.value.value;
+    const index = uris.indexOf(namespaceUri);
+    if (index === -1)
+      throw new Error(`Namespace URI not found: ${namespaceUri}`);
+    return index;
+  }
+  async callFromDsl(dsl) {
+    if (!this.#clientSession) {
+      throw new Error("No active session. Please connect first.");
+    }
+    const parsed = this.parseDslWithNamespaceUri(dsl);
+    this.#logger.debug(parsed);
+    const nsIndex = await this.resolveNamespaceIndex(parsed.namespaceUri);
+    this.#logger.debug("Resolved namespace index:", nsIndex);
+    const objectId = parsed.objectNodeId.replace("ns=0", `ns=${nsIndex}`);
+    const methodId = parsed.methodNodeId.replace("ns=0", `ns=${nsIndex}`);
+    this.#logger.debug("Resolved objectId:", objectId);
+    this.#logger.debug("Resolved methodId:", methodId);
+    return new Promise((resolve, reject) => {
+      this.#clientSession.call(
+        {
+          objectId,
+          methodId,
+          inputArguments: parsed.inputArguments
+        },
+        (err, result) => {
+          if (err) {
+            this.#logger.error("Call failed:", err.message);
+            reject(new Error(`Call failed: ${err.message}`));
+            return;
+          }
+          if (!result) {
+            this.#logger.warn("No result returned.");
+            reject(new Error("No result returned."));
+            return;
+          }
+          if (result.statusCode !== import_node_opcua.StatusCodes.Good) {
+            this.#logger.error(`Call failed: ${result.statusCode.name}`);
+            reject(new Error(`Call failed: ${result.statusCode.name}`));
+            return;
+          }
+          this.#logger.debug("Call succeeded:", result);
+          resolve(result);
+        }
+      );
+    });
+  }
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  OpcuaClient
+});

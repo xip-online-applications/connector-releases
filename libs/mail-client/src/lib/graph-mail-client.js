@@ -30,11 +30,16 @@ __export(graph_mail_client_exports, {
   GraphMailClient: () => GraphMailClient
 });
 module.exports = __toCommonJS(graph_mail_client_exports);
+var fs = __toESM(require("fs"));
 var https = __toESM(require("https"));
+var os = __toESM(require("os"));
+var path = __toESM(require("path"));
 var import_url = require("url");
 var import_logger = require("@transai/logger");
 var import_html_to_text = require("html-to-text");
+var import_mailparser = require("mailparser");
 var import_mail_token = require("./mail-token");
+var import_mail_attachments = require("./mail-attachments");
 class GraphMailClient {
   // e.g. https://graph.microsoft.com/v1.0/users/{user}
   constructor(config) {
@@ -110,6 +115,47 @@ class GraphMailClient {
       req.end();
     });
   }
+  async downloadMessageMime(folderId, messageId) {
+    const url = `${this.base}/mailFolders/${folderId}/messages/${messageId}/$value`;
+    return this.graphDownload(url);
+  }
+  async graphDownload(urlStr, extraHeaders) {
+    if (!this.token)
+      throw new Error("Graph token missing (call init())");
+    const url = new import_url.URL(urlStr);
+    const options = {
+      method: "GET",
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      protocol: url.protocol,
+      port: url.port || 443,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        ...extraHeaders || {}
+      }
+    };
+    return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        const chunks = [];
+        res.on("data", (d) => chunks.push(Buffer.from(d)));
+        res.on("end", () => {
+          const status = res.statusCode || 0;
+          if (status >= 200 && status < 300) {
+            resolve(Buffer.concat(chunks));
+          } else {
+            const raw = Buffer.concat(chunks).toString("utf-8");
+            reject(
+              new Error(
+                `Graph GET (download) ${url.pathname}${url.search} failed: ${status} ${raw}`
+              )
+            );
+          }
+        });
+      });
+      req.on("error", reject);
+      req.end();
+    });
+  }
   async getFolderId(displayName) {
     const wellKnown = displayName.toLowerCase();
     if ([
@@ -178,7 +224,7 @@ class GraphMailClient {
     const iso = new Date(fromEpochMs).toISOString();
     const $select = "id,internetMessageId,subject,receivedDateTime,body,bodyPreview,from,replyTo,toRecipients,ccRecipients,bccRecipients";
     const $orderby = "receivedDateTime asc";
-    const $filter = `receivedDateTime ge ${iso}`;
+    const $filter = `receivedDateTime gt ${iso}`;
     let url = `${this.base}/mailFolders/${folderId}/messages?$select=${encodeURIComponent($select)}&$orderby=${encodeURIComponent($orderby)}&$filter=${encodeURIComponent($filter)}&$top=25`;
     const out = [];
     while (url) {
@@ -211,18 +257,178 @@ class GraphMailClient {
     }
     return atts;
   }
+  // ---------------- EML TEST MODE SUPPORT ----------------
+  /** Returns attachment listing for a message (raw graph payload). */
+  async listAttachments(folderId, messageId) {
+    const url = `${this.base}/mailFolders/${folderId}/messages/${messageId}/attachments?$expand=microsoft.graph.itemAttachment/item&$top=50`;
+    const data = await this.graphRequest(url, "GET");
+    return data?.value || [];
+  }
+  /** Try to obtain an EML buffer from either fileAttachment (.eml / message/rfc822) or itemAttachment ($value). */
+  async tryGetEmlBuffer(folderId, messageId) {
+    const attachments = await this.listAttachments(folderId, messageId);
+    const fileEml = attachments.find(
+      (a) => a["@odata.type"] === "#microsoft.graph.fileAttachment" && ((a.contentType || "").toLowerCase() === "message/rfc822" || String(a.name || a.fileName || "").toLowerCase().endsWith(".eml"))
+    );
+    if (fileEml?.contentBytes) {
+      return Buffer.from(fileEml.contentBytes, "base64");
+    }
+    if (fileEml?.id) {
+      const url = `${this.base}/mailFolders/${folderId}/messages/${messageId}/attachments/${encodeURIComponent(fileEml.id)}/$value`;
+      return await this.graphDownload(url);
+    }
+    const item = attachments.find(
+      (a) => a["@odata.type"] === "#microsoft.graph.itemAttachment" && (a.item?.["@odata.type"] === "#microsoft.graph.message" || a.contentType === "message/rfc822")
+    );
+    if (item?.id) {
+      const url = `${this.base}/mailFolders/${folderId}/messages/${messageId}/attachments/${encodeURIComponent(item.id)}/$value`;
+      return await this.graphDownload(url);
+    }
+    return null;
+  }
+  /** Map a parsed EML into our MailMessage shape. */
+  static parsedEmlToMailMessage(parsed, receivedFallback) {
+    function extractAddrList(field) {
+      if (!field)
+        return void 0;
+      const pluck = (x) => {
+        if (!x || typeof x !== "object")
+          return [];
+        if ("address" in x && typeof x.address === "string" && x.address) {
+          return [x.address];
+        }
+        if ("group" in x && Array.isArray(x.group)) {
+          return x.group.flatMap(pluck);
+        }
+        return [];
+      };
+      if ("value" in field && Array.isArray(field.value)) {
+        const out2 = field.value.flatMap(pluck).filter(Boolean);
+        return out2.length ? out2 : void 0;
+      }
+      if (Array.isArray(field)) {
+        const out2 = field.flatMap(pluck).filter(Boolean);
+        return out2.length ? out2 : void 0;
+      }
+      const out = pluck(field).filter(Boolean);
+      return out.length ? out : void 0;
+    }
+    const received = parsed.date ?? receivedFallback;
+    const uid = (received instanceof Date ? received : new Date(received)).getTime();
+    const headersArr = [];
+    const headerLinesArr = [];
+    if (parsed.headers) {
+      for (const [key, value] of parsed.headers.entries()) {
+        headersArr.push({
+          key: String(key),
+          header: Array.isArray(value) ? value.join(", ") : String(value)
+        });
+      }
+    }
+    if (parsed.headerLines) {
+      for (const h of parsed.headerLines)
+        headerLinesArr.push({ key: h.key, line: h.line });
+    }
+    const toList = extractAddrList(parsed.to);
+    const ccList = extractAddrList(parsed.cc);
+    const bccList = extractAddrList(parsed.bcc);
+    const fromList = extractAddrList(parsed.from);
+    const replyToList = extractAddrList(parsed.replyTo);
+    const html = typeof parsed.html === "string" ? parsed.html : void 0;
+    const text = parsed.text || (html ? (0, import_html_to_text.htmlToText)(html) : "");
+    return {
+      uid,
+      attachments: parsed.attachments.map((attachment) => ({
+        text: attachment.contentType === "application/json" ? attachment.content.toString() : void 0,
+        contentType: attachment.contentType,
+        filename: attachment.filename
+      })),
+      headers: headersArr,
+      headerLines: headerLinesArr,
+      subject: parsed.subject || void 0,
+      references: parsed.references || void 0,
+      date: received instanceof Date ? received : new Date(received),
+      to: toList?.length ? toList : void 0,
+      from: fromList?.length ? fromList : void 0,
+      cc: ccList?.length ? ccList : void 0,
+      bcc: bccList?.length ? bccList : void 0,
+      messageId: parsed.messageId || void 0,
+      inReplyTo: parsed.inReplyTo || void 0,
+      replyTo: replyToList?.length ? replyToList : void 0,
+      text: (text || "").trim(),
+      html
+    };
+  }
+  /** Extract PDF attachments from a parsed EML as file paths (temp dir) for downstream processing. */
+  static extractPdfAttachments(parsed) {
+    const out = [];
+    if (!parsed.attachments?.length)
+      return out;
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "eml-pdfs-"));
+    for (const att of parsed.attachments) {
+      const ct = (att.contentType || "").toLowerCase();
+      const name = att.filename || "attachment";
+      if (ct === "application/pdf" || name.toLowerCase().endsWith(".pdf")) {
+        const target = path.join(tmpRoot, name);
+        fs.writeFileSync(target, att.content);
+        out.push({
+          contentType: att.contentType || "application/pdf",
+          filename: name,
+          path: target
+        });
+      }
+    }
+    return out;
+  }
   // -------- MailInterface methods --------
   async readMail(mailbox, lastSeenUid) {
     const messages = [];
     try {
       await this.init();
       const folderId = await this.getFolderId(mailbox);
-      const fromEpoch = Math.max(0, (lastSeenUid || 0) + 1);
+      const fromEpoch = Math.max(0, lastSeenUid || 0);
       const graphMsgs = await this.listMessages(folderId, fromEpoch);
       for (const gm of graphMsgs) {
-        const mm = GraphMailClient.toMailMessage(gm);
-        mm.attachments = await this.loadJsonAttachments(folderId, gm.id);
-        messages.push(mm);
+        const graphReceivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : Date.now();
+        if (graphReceivedMs <= lastSeenUid)
+          continue;
+        let mimeBuf = null;
+        try {
+          if (this.config.emlTestMode !== false) {
+            mimeBuf = await this.tryGetEmlBuffer(folderId, gm.id);
+          }
+          if (!mimeBuf) {
+            mimeBuf = await this.downloadMessageMime(folderId, gm.id);
+          }
+          const parsed = await (0, import_mailparser.simpleParser)(mimeBuf);
+          await (0, import_mail_attachments.addPdfJsonAttachments)(parsed);
+          let mm = GraphMailClient.parsedEmlToMailMessage(parsed, new Date(graphReceivedMs));
+          mm.uid = graphReceivedMs;
+          const attachments = [];
+          for (const att of parsed.attachments || []) {
+            const ct = (att.contentType || "").toLowerCase();
+            const fn = (att.filename || "attachment").toLowerCase();
+            const isJson = ct === "application/json" || fn.endsWith(".json");
+            if (!isJson)
+              continue;
+            const buf = Buffer.isBuffer(att.content) ? att.content : await new Promise((resolve, reject) => {
+              const chunks = [];
+              att.content?.on?.("data", (c) => chunks.push(Buffer.from(c)));
+              att.content?.once?.("end", () => resolve(Buffer.concat(chunks)));
+              att.content?.once?.("error", reject);
+            });
+            attachments.push({
+              filename: att.filename || "attachment.json",
+              contentType: "application/json",
+              content: buf.toString("utf-8")
+            });
+          }
+          mm.attachments = attachments;
+          messages.push(mm);
+        } catch (e) {
+          this.#logger.warn?.(`MIME parse failed for ${gm.id}: ${e?.message || String(e)}`);
+          continue;
+        }
       }
     } catch (err) {
       this.#logger.error(

@@ -1,0 +1,132 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var opcua_extractor_service_exports = {};
+__export(opcua_extractor_service_exports, {
+  OpcuaExtractorService: () => OpcuaExtractorService
+});
+module.exports = __toCommonJS(opcua_extractor_service_exports);
+var import_rxjs = require("rxjs");
+var import_handlebars = __toESM(require("handlebars"));
+var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
+var import_logger = require("@transai/logger");
+var import_helper = require("../helper.functions");
+var import_opcua_client = require("opcua-client");
+class OpcuaExtractorService {
+  #config;
+  #opcUaClient;
+  #opcUaResultHandler;
+  #offsetStore;
+  #handlebarsTemplate;
+  #processing = false;
+  #handlebarsInstance;
+  #logger;
+  #subscription;
+  constructor(opcUaCallConfig, opcUaConnectorConfig, apiResultHandler, offsetStore) {
+    this.#config = opcUaCallConfig;
+    this.#opcUaResultHandler = apiResultHandler;
+    this.#offsetStore = offsetStore;
+    if (!opcUaCallConfig.targetNamespaceUri) {
+      throw new Error("Namespace is not defined in opcUaConfig");
+    }
+    this.#logger = import_logger.Logger.getInstance();
+    this.#logger.debug(
+      `Opcua source service initialized: ${this.#config.name} with interval of ${this.#config.interval} seconds`
+    );
+    this.#opcUaClient = new import_opcua_client.OpcuaClient(opcUaConnectorConfig.opcuaConfig);
+    this.#handlebarsInstance = import_handlebars.default.create();
+    (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
+    this.#handlebarsInstance.registerHelper(
+      "formatISODate",
+      function(timestamp) {
+        const date = new Date(timestamp);
+        return date.toISOString();
+      }
+    );
+    if (this.#config.query) {
+      this.#handlebarsTemplate = this.#handlebarsInstance.compile(
+        this.#config.query,
+        { strict: true }
+      );
+      this.validateTemplate();
+    }
+    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).subscribe(
+      async () => {
+        await this.extract();
+      }
+    );
+  }
+  stop() {
+    this.#subscription?.unsubscribe();
+  }
+  validateTemplate() {
+    this.getQuery({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
+  }
+  getQuery(offset, limit) {
+    if (!this.#handlebarsTemplate) {
+      return "";
+    }
+    return this.#handlebarsTemplate({
+      ...offset,
+      limit
+    });
+  }
+  async extract() {
+    if (this.#processing) {
+      this.#logger.debug(
+        "Api source service is already processing: ",
+        this.#config.name
+      );
+      return;
+    }
+    const latestOffset = await this.#offsetStore.getOffset(
+      (0, import_helper.generateOffsetIdentifier)(this.#config)
+    );
+    this.#processing = true;
+    try {
+      const dsl = this.getQuery(latestOffset, this.#config.limit ?? 100);
+      const result = await this.#opcUaClient.callFromDsl(dsl).catch((error) => {
+        throw new Error(
+          `Error while extracting data from opcUa source service ${error.message}`
+        );
+      });
+      await this.#opcUaResultHandler.handleResult(
+        result,
+        this.#config,
+        this.#opcUaClient
+      );
+    } catch (error) {
+      import_logger.Logger.getInstance().debug(JSON.stringify(error));
+    } finally {
+      this.#processing = false;
+    }
+  }
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  OpcuaExtractorService
+});

@@ -41,6 +41,8 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["SQL_SINK"] = "sql-sink";
   ConfiguredConnectorTypes2["SQL_SOURCE"] = "sql-source";
   ConfiguredConnectorTypes2["MQTT"] = "mqtt";
+  ConfiguredConnectorTypes2["OPCUA_SOURCE"] = "opcua-source";
+  ConfiguredConnectorTypes2["OPCUA_SINK"] = "opcua-sink";
   ConfiguredConnectorTypes2["CUBE_QUERY_RUNNER"] = "cube-query-runner";
   ConfiguredConnectorTypes2["FACTORY_NEBULA_SOURCE"] = "factory-nebula-source";
   ConfiguredConnectorTypes2["IMAP_SOURCE"] = "imap-source";

@@ -38,6 +38,7 @@ var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
 var import_connector_runner_mail_source = require("@transai/connector-runner-mail-source");
 var import_connector_runner_mail_sink = require("@transai/connector-runner-mail-sink");
+var import_connector_runner_opcua_source = require("@transai/connector-runner-opcua-source");
 const getConnectorType = (connectorConfig) => {
   switch (connectorConfig.connectorType) {
     case import_types.ConfiguredConnectorTypes.API_SINK:
@@ -142,6 +143,13 @@ const getConnectorType = (connectorConfig) => {
         connectorConfig.config,
         connectorConfig.actions
       );
+    case import_types.ConfiguredConnectorTypes.OPCUA_SOURCE:
+      return new import_connector_runner_opcua_source.ConnectorRunnerOpcuaSource(
+        connectorConfig,
+        connectorConfig.config,
+        connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.OPCUA_SINK:
     default:
       throw new Error(
         `Unknown connector type ${connectorConfig.connectorType}`

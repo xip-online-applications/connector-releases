@@ -49,6 +49,7 @@ class ConnectorRuntime {
     this.IPC_CHANNEL = "connector-runtime";
     this.offsetStoreInstance = void 0;
     this.callbackFunction = void 0;
+    this.isValidConfig = () => true;
     this.init = () => Promise.resolve();
     this.exit = () => Promise.resolve();
     this.connectorConfig = void 0;
