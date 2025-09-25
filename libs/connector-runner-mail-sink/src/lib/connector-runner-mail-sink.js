@@ -31,7 +31,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_MAIL_SINK_CONFIG";
     this.init = async () => {
       if (this.mailClientInstance === void 0) {
-        this.mailClientInstance = new import_src.MailClient(this.config.mailConfig);
+        this.mailClientInstance = new import_src.GraphMailClient(this.config.mailConfig);
       }
       const jobCallbackFunction = (callbackFunction) => {
         return async (m) => {

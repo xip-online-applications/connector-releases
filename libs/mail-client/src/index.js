@@ -14,13 +14,13 @@ var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "defau
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var src_exports = {};
 module.exports = __toCommonJS(src_exports);
-__reExport(src_exports, require("./lib/mail-client"), module.exports);
+__reExport(src_exports, require("./lib/graph-mail-client"), module.exports);
 __reExport(src_exports, require("./lib/mail-interface"), module.exports);
 __reExport(src_exports, require("./lib/types"), module.exports);
 __reExport(src_exports, require("./lib/mail-token"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ...require("./lib/mail-client"),
+  ...require("./lib/graph-mail-client"),
   ...require("./lib/mail-interface"),
   ...require("./lib/types"),
   ...require("./lib/mail-token")

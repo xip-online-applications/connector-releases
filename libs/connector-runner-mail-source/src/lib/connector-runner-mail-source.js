@@ -22,7 +22,6 @@ __export(connector_runner_mail_source_exports, {
 module.exports = __toCommonJS(connector_runner_mail_source_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
 var import_mailsource_processor = require("./mail-processor/mailsource-processor.service");
-var import_types = require("./types");
 var import_mail_client = require("@xip-online-data/mail-client");
 class ConnectorRunnerMailSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
@@ -37,7 +36,7 @@ class ConnectorRunnerMailSource extends import_connector_runtime.ConnectorRuntim
       }
       this.#processors = await Promise.all(
         this.config.mailboxes.map(async (mailSourceConfig) => {
-          const mailClient = new import_mail_client.MailClient(this.config.mailConfig);
+          const mailClient = new import_mail_client.GraphMailClient(this.config.mailConfig);
           const processor = new import_mailsource_processor.MailsourceProcessorService(
             this.config,
             mailSourceConfig,
@@ -52,9 +51,6 @@ class ConnectorRunnerMailSource extends import_connector_runtime.ConnectorRuntim
     };
     this.exit = async () => {
       this.#processors.forEach((service) => service.stop());
-    };
-    this.isValidConfig = (config) => {
-      return (0, import_types.isYamlConfigType)(config);
     };
   }
   #processors;
