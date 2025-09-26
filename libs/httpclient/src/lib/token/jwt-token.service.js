@@ -31,6 +31,7 @@ __export(jwt_token_service_exports, {
 });
 module.exports = __toCommonJS(jwt_token_service_exports);
 var import_axios = __toESM(require("axios"));
+var import_logger = require("@transai/logger");
 class JwtTokenService {
   #options;
   #cacheService;
@@ -64,9 +65,14 @@ class JwtTokenService {
         ...tenantId ? { tenantId } : {}
       })
     };
+    import_logger.Logger.getInstance().debug(
+      `Fetching new token for audience ${audience} and tenant ${tenantId}`
+    );
     const { data } = await import_axios.default.request(requestConfig).catch((error) => {
+      import_logger.Logger.getInstance().error("Error fetching token", error);
       throw new Error("Error fetching token");
     });
+    import_logger.Logger.getInstance().debug(`Fetched new token for audience ${audience} and tenant ${tenantId}`, data);
     this.#cachedTokens[cacheKey] = {
       tenantId,
       audience,

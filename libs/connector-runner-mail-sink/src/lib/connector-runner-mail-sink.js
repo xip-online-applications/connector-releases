@@ -67,7 +67,6 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
               case "REPLY":
                 this.mailClientInstance.reply(
                   parsedBodyJson.from,
-                  parsedBodyJson.Malbox,
                   parsedBodyJson.messageId,
                   parsedBodyJson.mailBody,
                   true

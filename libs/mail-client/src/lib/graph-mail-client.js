@@ -38,8 +38,8 @@ var import_url = require("url");
 var import_logger = require("@transai/logger");
 var import_html_to_text = require("html-to-text");
 var import_mailparser = require("mailparser");
-var import_mail_token = require("./mail-token");
 var import_mail_attachments = require("./mail-attachments");
+var import_mail_token = require("./mail-token");
 class GraphMailClient {
   // e.g. https://graph.microsoft.com/v1.0/users/{user}
   constructor(config) {
@@ -402,7 +402,10 @@ class GraphMailClient {
           }
           const parsed = await (0, import_mailparser.simpleParser)(mimeBuf);
           await (0, import_mail_attachments.addPdfJsonAttachments)(parsed);
-          let mm = GraphMailClient.parsedEmlToMailMessage(parsed, new Date(graphReceivedMs));
+          const mm = GraphMailClient.parsedEmlToMailMessage(
+            parsed,
+            new Date(graphReceivedMs)
+          );
           mm.uid = graphReceivedMs;
           const attachments = [];
           for (const att of parsed.attachments || []) {
@@ -413,8 +416,14 @@ class GraphMailClient {
               continue;
             const buf = Buffer.isBuffer(att.content) ? att.content : await new Promise((resolve, reject) => {
               const chunks = [];
-              att.content?.on?.("data", (c) => chunks.push(Buffer.from(c)));
-              att.content?.once?.("end", () => resolve(Buffer.concat(chunks)));
+              att.content?.on?.(
+                "data",
+                (c) => chunks.push(Buffer.from(c))
+              );
+              att.content?.once?.(
+                "end",
+                () => resolve(Buffer.concat(chunks))
+              );
               att.content?.once?.("error", reject);
             });
             attachments.push({
@@ -426,7 +435,9 @@ class GraphMailClient {
           mm.attachments = attachments;
           messages.push(mm);
         } catch (e) {
-          this.#logger.warn?.(`MIME parse failed for ${gm.id}: ${e?.message || String(e)}`);
+          this.#logger.warn?.(
+            `MIME parse failed for ${gm.id}: ${e?.message || String(e)}`
+          );
           continue;
         }
       }
@@ -439,7 +450,7 @@ class GraphMailClient {
     messages.sort((a, b) => a.uid - b.uid);
     return messages;
   }
-  async reply(from, mailbox, messageIdHeader, mailBody, concept = true) {
+  async reply(from, messageIdHeader, mailBody, concept = true) {
     await this.init();
     const safeMsgId = messageIdHeader.replace(/'/g, "''");
     const searchUrl = `${this.base}/messages?$filter=${encodeURIComponent(
@@ -474,6 +485,25 @@ class GraphMailClient {
     }
     const sendUrl = `${this.base}/messages/${draftId}/send`;
     await this.graphRequest(sendUrl, "POST");
+  }
+  // inside GraphMailClient
+  async addCategory(messageId, category) {
+    await this.init();
+    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
+    await this.graphRequest(url, "PATCH", {
+      categories: [category]
+    });
+  }
+  // inside GraphMailClient
+  async removeCategory(messageId, category) {
+    await this.init();
+    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
+    const data = await this.graphRequest(url, "GET", void 0, {
+      Prefer: 'outlook.body-content-type="text"'
+    });
+    const current = data?.categories || [];
+    const updated = current.filter((c) => c !== category);
+    await this.graphRequest(url, "PATCH", { categories: updated });
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
