@@ -213,6 +213,10 @@ class ConnectorRuntime {
       (action) => action.identifier === message.actionIdentifier
     );
     if (actions.length === 0) {
+      this.log.debug(
+        `No action found for ${message.actionIdentifier}`,
+        actions
+      );
       throw new Error(
         `Action ${message.eventType} has ${actions.length} configurations. Expected 1`
       );
@@ -226,6 +230,10 @@ class ConnectorRuntime {
       return action.identifier === message.actionIdentifier && action.version === message.actionVersion;
     });
     if (actions.length !== 1) {
+      this.log.debug(
+        `No action found for ${message.actionIdentifier}`,
+        actions
+      );
       throw new Error(
         `Action ${message.eventType} has ${actions.length} configurations. Expected 1`
       );
