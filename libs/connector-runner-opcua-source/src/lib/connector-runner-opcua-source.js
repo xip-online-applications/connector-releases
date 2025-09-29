@@ -45,6 +45,7 @@ class ConnectorRunnerOpcuaSource extends import_connector_runtime.ConnectorRunti
         this.kafkaWrapper,
         store
       );
+      this.log.debug(`Initializing OPC UA Extractor Services...`, config);
       this.#opcuaExtractorServices = config.opcUaCalls.map(
         (opcUaCallConfig) => new import_opcua_extractor.OpcuaExtractorService(
           opcUaCallConfig,
