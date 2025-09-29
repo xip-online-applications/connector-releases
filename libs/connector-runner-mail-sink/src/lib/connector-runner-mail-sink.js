@@ -50,6 +50,9 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
           }
           try {
             const handleBars = action.config["parsedTemplates"];
+            this.log.debug(
+              `Apply templates on payload: ${JSON.stringify(message.payload)}`
+            );
             const parsedAction = handleBars.action({
               inputs: message.payload
             }).trim();
