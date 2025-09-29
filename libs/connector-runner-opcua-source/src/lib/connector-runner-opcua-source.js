@@ -32,6 +32,7 @@ class ConnectorRunnerOpcuaSource extends import_connector_runtime.ConnectorRunti
     this.kafkaWrapper = void 0;
     this.#opcuaExtractorServices = [];
     this.init = async () => {
+      this.#logger.debug(`Initializing OPC UA source connector ...`);
       const store = this.offsetStoreInstance;
       if (!store) {
         throw new Error(
@@ -39,7 +40,7 @@ class ConnectorRunnerOpcuaSource extends import_connector_runtime.ConnectorRunti
         );
       }
       const config = await this.getConfig();
-      this.log.debug(`Initializing OPC UA ...`, config);
+      this.#logger.debug(`Config loaded ...`, config);
       this.kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
       const opcUaResultHandler = new import_opcua_result.OpcUaResultHandler(
         config,
