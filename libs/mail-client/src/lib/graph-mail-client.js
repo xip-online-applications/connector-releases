@@ -433,6 +433,7 @@ class GraphMailClient {
             });
           }
           mm.attachments = attachments;
+          mm.originalMessageId = gm.id;
           messages.push(mm);
         } catch (e) {
           this.#logger.warn?.(
