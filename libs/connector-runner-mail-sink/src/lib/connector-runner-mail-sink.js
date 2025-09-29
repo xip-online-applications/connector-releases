@@ -50,7 +50,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
           }
           try {
             const handleBars = action.config["parsedTemplates"];
-            const parsedUrl = handleBars.url({
+            const parsedAction = handleBars.action({
               inputs: message.payload
             }).trim();
             const parsedBody = handleBars.body({
@@ -58,14 +58,14 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
             }).trim();
             if (message.testRun) {
               import_logger.Logger.getInstance().info(
-                `Test run for ${message.eventId} with payload ${parsedBody} to path ${parsedUrl}`
+                `Test run for ${message.eventId} with payload ${parsedBody} to action ${parsedAction}`
               );
               return callbackFunction(message);
             }
             const parsedBodyJson = JSON.parse(parsedBody);
-            switch (parsedBodyJson.actionType) {
+            switch (parsedAction) {
               case "REPLY":
-                this.mailClientInstance.reply(
+                await this.mailClientInstance.reply(
                   parsedBodyJson.from,
                   parsedBodyJson.messageId,
                   parsedBodyJson.mailBody,
@@ -76,13 +76,21 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
                 break;
               case "SEND":
                 break;
-              case "TAG_ADD":
+              case "CATEGORY_ADD":
+                await this.mailClientInstance.addCategory(
+                  parsedBodyJson.messageId,
+                  parsedBodyJson.category
+                );
                 break;
-              case "TAG_REMOVE":
+              case "CATEGORY_RMOVE":
+                await this.mailClientInstance.removeCategory(
+                  parsedBodyJson.messageId,
+                  parsedBodyJson.category
+                );
                 break;
               default:
                 throw new Error(
-                  `Unknown action type: ${parsedBodyJson.actionType}`
+                  `Unknown action type: ${parsedAction} in message ${message.eventId}`
                 );
             }
             const result = { success: true, data: "Not implemented yet" };
