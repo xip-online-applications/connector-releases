@@ -63,6 +63,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
               return callbackFunction(message);
             }
             const parsedBodyJson = JSON.parse(parsedBody);
+            this.log.debug(`Parsed action: ${parsedAction}, body: ${parsedBody}`);
             switch (parsedAction) {
               case "REPLY":
                 await this.mailClientInstance.reply(
