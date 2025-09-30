@@ -50,9 +50,6 @@ class OpcuaExtractorService {
     this.#config = opcUaCallConfig;
     this.#opcUaResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
-    if (!opcUaCallConfig.targetNamespaceUri) {
-      throw new Error("Namespace is not defined in opcUaConfig");
-    }
     this.#logger = import_logger.Logger.getInstance();
     this.#logger.debug(
       `Opcua source service initialized: ${this.#config.name} with interval of ${this.#config.interval} seconds`
