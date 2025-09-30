@@ -73,11 +73,11 @@ class OpcUaResultHandler {
             );
           });
           this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
-          if (!result2.outputArguments || result2.outputArguments.length === 0) {
+          if (!result2.outputArguments || result2.outputArguments.length === 0 || result2.outputArguments[0].value.length === 0) {
             await this.sendBatch([item], opcUaCallConfig);
             return;
           }
-          const jsonData2 = result2.outputArguments[1].value;
+          const jsonData2 = result2.outputArguments[0].value[0];
           const data2 = JSON.parse(jsonData2);
           this.#logger.debug(`Data to send: ${jsonData2}`);
           await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
