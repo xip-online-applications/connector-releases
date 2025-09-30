@@ -31,6 +31,7 @@ __export(opcua_extractor_service_exports, {
 });
 module.exports = __toCommonJS(opcua_extractor_service_exports);
 var import_rxjs = require("rxjs");
+var import_dayjs = __toESM(require("dayjs"));
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
 var import_logger = require("@transai/logger");
@@ -70,7 +71,12 @@ class OpcuaExtractorService {
         this.#config.query,
         { strict: true }
       );
-      this.validateTemplate();
+      try {
+        this.validateTemplate();
+      } catch (error) {
+        this.#logger.error("Error in query template", error);
+        throw error;
+      }
     }
     this.#logger.debug(`Starting OPCUA extractor for: ${this.#config.name}`);
     this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).subscribe(
@@ -83,7 +89,8 @@ class OpcuaExtractorService {
     this.#subscription?.unsubscribe();
   }
   validateTemplate() {
-    this.getQuery({ timestamp: 0, id: 0, rawTimestamp: 0 }, 0);
+    const oneWeekAgoISO = (0, import_dayjs.default)().subtract(1, "week").toISOString();
+    this.getQuery({ timestamp: 0, id: 0, rawTimestamp: oneWeekAgoISO }, 0);
   }
   getQuery(offset, limit) {
     if (!this.#handlebarsTemplate) {
