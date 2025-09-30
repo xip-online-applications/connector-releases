@@ -49,7 +49,7 @@ class OpcUaResultHandler {
   #logger;
   #handlebarsInstance;
   async handleResult(result, opcUaCallConfig) {
-    this.#logger.debug(`Handling result for ${opcUaCallConfig.name}`, result);
+    this.#logger.debug(`Handling result for ${opcUaCallConfig.name}`);
     if (!result.outputArguments || result.outputArguments.length === 0) {
       return;
     }
@@ -62,33 +62,44 @@ class OpcUaResultHandler {
         { strict: true }
       );
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
-      await Promise.all(
+      const messages = await Promise.all(
         data.map(async (item) => {
           const id = await expression.evaluate(item);
           const subQuery = this.getSubQuery(id);
           this.#logger.debug(`Processing sub-query: ${subQuery}`);
-          const result2 = await this.opcUaClient.callFromDsl(subQuery).catch((error) => {
+          let result2;
+          try {
+            result2 = await this.opcUaClient.callFromDsl(subQuery);
+          } catch (error) {
             throw new Error(
-              `Error while extracting data from opcUa source service ${error.message}`
+              `Error while extracting data from opcUa source service ${error?.message ?? error}`
             );
-          });
+          }
           this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
-          if (!result2.outputArguments || result2.outputArguments.length === 0) {
+          if (!result2?.outputArguments?.length) {
             this.#logger.debug(
               `No output arguments found for sub-query, sending original item`
             );
-            await this.sendBatch([item], opcUaCallConfig);
-            return;
+            return item;
           }
           this.#logger.debug(
             `Output arguments: ${JSON.stringify(result2.outputArguments)}`
           );
-          const jsonData2 = result2.outputArguments[0].value;
-          const data2 = JSON.parse(jsonData2)[0];
-          this.#logger.debug(`Data to send: ${jsonData2}`);
-          await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
+          const jsonValue = result2.outputArguments[0]?.value;
+          try {
+            const parsed = JSON.parse(jsonValue);
+            const merged = Array.isArray(parsed) && parsed.length > 0 ? { ...item, ...parsed[0] } : { ...item, ...parsed ?? {} };
+            this.#logger.debug(`Data to send: ${JSON.stringify(merged)}`);
+            return merged;
+          } catch (e) {
+            this.#logger.warn(
+              `Invalid JSON in OPC UA response; returning original item. ${e?.message ?? e}`
+            );
+            return item;
+          }
         })
       );
+      await this.sendBatch(messages, opcUaCallConfig);
       return;
     }
     await this.sendBatch(data, opcUaCallConfig);
@@ -114,6 +125,7 @@ class OpcUaResultHandler {
         const expression = (0, import_jsonata.default)(config.incrementalField);
         const value = await expression.evaluate(item);
         this.storeTimestamp(
+          value,
           config.incrementalField ? new Date(value) : /* @__PURE__ */ new Date(),
           config
         );
@@ -141,9 +153,9 @@ class OpcUaResultHandler {
     }
     return value;
   }
-  storeTimestamp(timestamp, config) {
+  storeTimestamp(raw, timestamp, config) {
     this.offsetStore.setOffset(
-      { timestamp: timestamp.getTime(), id: 0, rawTimestamp: 0 },
+      { timestamp: timestamp.getTime(), id: 0, rawTimestamp: raw },
       (0, import_helper.generateOffsetIdentifier)(config)
     );
   }
