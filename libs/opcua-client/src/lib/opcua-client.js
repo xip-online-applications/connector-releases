@@ -214,8 +214,8 @@ class OpcuaClient {
         methodIdValue,
         argStr
       ] = callMatch;
-      const objectNodeId = `${objectIdType}=${objectIdValue}`;
-      const methodNodeId = `${methodIdType}=${methodIdValue}`;
+      const objectNodeId = `ns=0;${objectIdType}=${objectIdValue}`;
+      const methodNodeId = `ns=0;${methodIdType}=${methodIdValue}`;
       const args = argStr.length ? argStr.split(",").map(this.parseArgument) : [];
       return {
         type: "call",
@@ -228,7 +228,7 @@ class OpcuaClient {
     const readMatch = dsl.match(readRegex);
     if (readMatch) {
       const [, namespaceUri, nodeIdType, nodeIdValue] = readMatch;
-      const nodeId = `${nodeIdType}=${nodeIdValue}`;
+      const nodeId = `ns=0;${nodeIdType}=${nodeIdValue}`;
       return {
         type: "read",
         namespaceUri,
