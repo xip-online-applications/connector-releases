@@ -60,7 +60,7 @@ class OpcuaExtractorService {
     this.#handlebarsInstance.registerHelper(
       "formatISODate",
       function(timestamp) {
-        const date = new Date(timestamp);
+        const date = timestamp ? new Date(timestamp) : /* @__PURE__ */ new Date();
         return date.toISOString();
       }
     );
