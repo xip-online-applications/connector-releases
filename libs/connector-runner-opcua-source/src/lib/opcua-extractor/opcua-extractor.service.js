@@ -34,7 +34,6 @@ var import_logger = require("@transai/logger");
 var import_dayjs = __toESM(require("dayjs"));
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
-var import_opcua_client = require("opcua-client");
 var import_rxjs = require("rxjs");
 var import_helper = require("../helper.functions");
 class OpcuaExtractorService {
@@ -47,7 +46,7 @@ class OpcuaExtractorService {
   #handlebarsInstance;
   #logger;
   #subscription;
-  constructor(opcUaCallConfig, opcUaConnectorConfig, apiResultHandler, offsetStore) {
+  constructor(opcUaCallConfig, opcUaClient, apiResultHandler, offsetStore) {
     this.#config = opcUaCallConfig;
     this.#opcUaResultHandler = apiResultHandler;
     this.#offsetStore = offsetStore;
@@ -55,7 +54,7 @@ class OpcuaExtractorService {
     this.#logger.debug(
       `Opcua source service initialized: ${this.#config.name} with interval of ${this.#config.interval} seconds`
     );
-    this.#opcUaClient = new import_opcua_client.OpcuaClient(opcUaConnectorConfig.opcuaConfig);
+    this.#opcUaClient = opcUaClient;
     this.#handlebarsInstance = import_handlebars.default.create();
     (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
     this.#handlebarsInstance.registerHelper(
@@ -79,13 +78,12 @@ class OpcuaExtractorService {
       }
     }
     this.#logger.debug(`Starting OPCUA extractor for: ${this.#config.name}`);
-    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).subscribe(
-      async () => {
-        await this.extract();
-      }
-    );
+    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).pipe((0, import_rxjs.filter)(() => !this.#processing)).subscribe(async () => {
+      await this.extract();
+    });
   }
   stop() {
+    this.#opcUaClient.disconnect();
     this.#subscription?.unsubscribe();
   }
   validateTemplate() {
@@ -117,23 +115,21 @@ class OpcuaExtractorService {
       (0, import_helper.generateOffsetIdentifier)(this.#config)
     );
     this.#processing = true;
+    await this.#opcUaClient.init();
     try {
       this.#logger.debug(`Building query for: ${this.#config.name}`);
-      const dsl = this.getQuery(latestOffset, this.#config.limit ?? 100);
-      this.#logger.debug(`Executing query: ${dsl}, for: ${this.#config.name}`);
-      await this.#opcUaClient.init();
-      const result = await this.#opcUaClient.callFromDsl(dsl).catch((error) => {
+      const opcUaQuery = this.getQuery(latestOffset, this.#config.limit ?? 100);
+      this.#logger.debug(
+        `Executing query: ${opcUaQuery}, for: ${this.#config.name}`
+      );
+      const result = await this.#opcUaClient.callFromDsl(opcUaQuery).catch((error) => {
         throw new Error(
           `Error while extracting data from opcUa source service ${error.message}`
         );
       });
-      await this.#opcUaResultHandler.handleResult(
-        result,
-        this.#config,
-        this.#opcUaClient
-      );
+      await this.#opcUaResultHandler.handleResult(result, this.#config);
     } catch (error) {
-      import_logger.Logger.getInstance().debug(JSON.stringify(error));
+      this.#logger.error(JSON.stringify(error));
     } finally {
       this.#logger.debug(`Disconnecting from OPCUA for: ${this.#config.name}`);
       await this.#opcUaClient.disconnect();

@@ -40,10 +40,10 @@ class OpcuaClient {
     import_logger.Logger.getInstance().info(
       `Initializing OPCUA: ${this.#opcuaConfig.endpointUrl}`
     );
-    await this.connect();
+    await this.#connect();
     import_logger.Logger.getInstance().info("OPCUA client initialized");
   }
-  async connect() {
+  async #connect() {
     try {
       this.#logger.info("Connecting to OPC UA server...");
       await this.#client.connect(this.#opcuaConfig.endpointUrl);

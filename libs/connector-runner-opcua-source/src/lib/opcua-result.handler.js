@@ -36,10 +36,11 @@ var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
 var import_jsonata = __toESM(require("jsonata"));
 var import_helper = require("./helper.functions");
 class OpcUaResultHandler {
-  constructor(config, kafkaService, offsetStore) {
+  constructor(config, kafkaService, offsetStore, opcUaClient) {
     this.config = config;
     this.kafkaService = kafkaService;
     this.offsetStore = offsetStore;
+    this.opcUaClient = opcUaClient;
     this.#handlebarsInstance = import_handlebars.default.create();
     this.#logger = import_logger.Logger.getInstance();
     (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
@@ -47,7 +48,7 @@ class OpcUaResultHandler {
   #handlebarsTemplate;
   #logger;
   #handlebarsInstance;
-  async handleResult(result, opcUaCallConfig, opcUaClient) {
+  async handleResult(result, opcUaCallConfig) {
     this.#logger.debug(`Handling result for ${opcUaCallConfig.name}`, result);
     if (!result.outputArguments || result.outputArguments.length === 0) {
       return;
@@ -65,7 +66,7 @@ class OpcUaResultHandler {
         const id = await expression.evaluate(item);
         const subQuery = this.getSubQuery(id);
         this.#logger.debug(`Processing sub-query: ${subQuery}`);
-        const result2 = await opcUaClient.callFromDsl(subQuery).catch((error) => {
+        const result2 = await this.opcUaClient.callFromDsl(subQuery).catch((error) => {
           throw new Error(
             `Error while extracting data from opcUa source service ${error.message}`
           );
