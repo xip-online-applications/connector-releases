@@ -64,6 +64,7 @@ class OpcuaExtractorService {
         return date.toISOString();
       }
     );
+    this.#logger.debug(`Compiling query template for: ${this.#config.name}`);
     if (this.#config.query) {
       this.#handlebarsTemplate = this.#handlebarsInstance.compile(
         this.#config.query,
@@ -71,6 +72,7 @@ class OpcuaExtractorService {
       );
       this.validateTemplate();
     }
+    this.#logger.debug(`Starting OPCUA extractor for: ${this.#config.name}`);
     this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).subscribe(
       async () => {
         await this.extract();
@@ -95,7 +97,7 @@ class OpcuaExtractorService {
   async extract() {
     if (this.#processing) {
       this.#logger.debug(
-        "Api source service is already processing: ",
+        "Upcua source service is already processing: ",
         this.#config.name
       );
       return;
@@ -105,7 +107,9 @@ class OpcuaExtractorService {
     );
     this.#processing = true;
     try {
+      this.#logger.debug(`Building query for: ${this.#config.name}`);
       const dsl = this.getQuery(latestOffset, this.#config.limit ?? 100);
+      this.#logger.debug(`Executing query: ${dsl}, for: ${this.#config.name}`);
       const result = await this.#opcUaClient.callFromDsl(dsl).catch((error) => {
         throw new Error(
           `Error while extracting data from opcUa source service ${error.message}`
