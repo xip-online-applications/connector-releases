@@ -30,13 +30,13 @@ __export(opcua_extractor_service_exports, {
   OpcuaExtractorService: () => OpcuaExtractorService
 });
 module.exports = __toCommonJS(opcua_extractor_service_exports);
-var import_rxjs = require("rxjs");
+var import_logger = require("@transai/logger");
 var import_dayjs = __toESM(require("dayjs"));
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
-var import_logger = require("@transai/logger");
-var import_helper = require("../helper.functions");
 var import_opcua_client = require("opcua-client");
+var import_rxjs = require("rxjs");
+var import_helper = require("../helper.functions");
 class OpcuaExtractorService {
   #config;
   #opcUaClient;
@@ -90,6 +90,10 @@ class OpcuaExtractorService {
   }
   validateTemplate() {
     const oneWeekAgoISO = (0, import_dayjs.default)().subtract(1, "week").toISOString();
+    const offset = { timestamp: 0, id: 0, rawTimestamp: oneWeekAgoISO };
+    this.#logger.debug(
+      `Validating template with offset: ${JSON.stringify(offset)}`
+    );
     this.getQuery({ timestamp: 0, id: 0, rawTimestamp: oneWeekAgoISO }, 0);
   }
   getQuery(offset, limit) {
