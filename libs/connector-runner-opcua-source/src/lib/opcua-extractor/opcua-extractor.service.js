@@ -61,7 +61,7 @@ class OpcuaExtractorService {
     this.#handlebarsInstance.registerHelper(
       "formatISODate",
       function(timestamp) {
-        const date = timestamp ? new Date(timestamp) : /* @__PURE__ */ new Date();
+        const date = timestamp === "now" ? /* @__PURE__ */ new Date() : new Date(timestamp);
         return date.toISOString();
       }
     );
