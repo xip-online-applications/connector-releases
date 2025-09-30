@@ -79,6 +79,7 @@ class OpcUaResultHandler {
           }
           const jsonData2 = result2.outputArguments[1].value;
           const data2 = JSON.parse(jsonData2);
+          this.#logger.debug(`Data to send: ${jsonData2}`);
           await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
         })
       );
