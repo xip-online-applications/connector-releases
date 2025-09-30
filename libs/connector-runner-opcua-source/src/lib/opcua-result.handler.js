@@ -73,12 +73,18 @@ class OpcUaResultHandler {
             );
           });
           this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
-          if (!result2.outputArguments || result2.outputArguments.length === 0 || result2.outputArguments[0].value.length === 0) {
+          if (!result2.outputArguments || result2.outputArguments.length === 0) {
+            this.#logger.debug(
+              `No output arguments found for sub-query, sending original item`
+            );
             await this.sendBatch([item], opcUaCallConfig);
             return;
           }
-          const jsonData2 = result2.outputArguments[0].value[0];
-          const data2 = JSON.parse(jsonData2);
+          this.#logger.debug(
+            `Output arguments: ${JSON.stringify(result2.outputArguments)}`
+          );
+          const jsonData2 = result2.outputArguments[0].value;
+          const data2 = JSON.parse(jsonData2)[0];
           this.#logger.debug(`Data to send: ${jsonData2}`);
           await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
         })
