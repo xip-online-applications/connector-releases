@@ -50,7 +50,7 @@ class KafkaService {
     const topic = (0, import_helper.generateKafkaTopic)(config);
     return this.kafkaSourceService.send(kafkaPayload, topic);
   }
-  async sendMetric(records, config, queryConfig, metadata = {}) {
+  async sendMetric(records, config, metadata = {}) {
     const kafkaPayload = records.map((body) => {
       return {
         type: "SOURCE",
@@ -68,7 +68,7 @@ class KafkaService {
       };
     });
     const topic = (0, import_helper.generateKafkaTopic)(config);
-    return await this.kafkaSourceService.send(kafkaPayload, topic);
+    return this.kafkaSourceService.send(kafkaPayload, topic);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

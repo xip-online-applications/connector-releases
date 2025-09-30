@@ -116,7 +116,11 @@ class OpcUaResultHandler {
     if (list && Array.isArray(list)) {
       this.#logger.debug(`Found ${list.length} records`);
       if (config.type === "metric") {
-        await this.kafkaService.sendMetric(list, this.config, config);
+        await this.kafkaService.sendMetric(
+          list,
+          this.config,
+          config.metadata ?? {}
+        );
       } else {
         await this.kafkaService.sendDocuments(list, this.config, config);
       }
@@ -125,7 +129,7 @@ class OpcUaResultHandler {
         const expression = (0, import_jsonata.default)(config.incrementalField);
         const value = await expression.evaluate(item);
         this.storeTimestamp(
-          value,
+          config.incrementalField ? value : "",
           config.incrementalField ? new Date(value) : /* @__PURE__ */ new Date(),
           config
         );
