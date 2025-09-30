@@ -201,28 +201,41 @@ class OpcuaClient {
    * call nsu=http://bystronic.com/ByVisionCutting/;s=History -> GetRunPartHistory("...", "...", 0, 100)
    */
   parseDslWithNamespaceUri(dsl) {
-    const regex = /^call\s+nsu=([^;]+);(s|i)=([^ ]+)\s*->\s*(s|i)=([^(\s]+)\((.*)\)$/;
-    const match = dsl.match(regex);
-    if (!match)
-      throw new Error("Invalid DSL format");
-    const [
-      ,
-      namespaceUri,
-      objectIdType,
-      objectIdValue,
-      methodIdType,
-      methodIdValue,
-      argStr
-    ] = match;
-    const objectNodeId = `ns=0;${objectIdType}=${objectIdValue}`;
-    const methodNodeId = `ns=0;${methodIdType}=${methodIdValue}`;
-    const args = argStr.length ? argStr.split(",").map(this.parseArgument) : [];
-    return {
-      namespaceUri,
-      objectNodeId,
-      methodNodeId,
-      inputArguments: args
-    };
+    const callRegex = /^call\s+nsu=([^;]+);(s|i)=([^ ]+)\s*->\s*(s|i)=([^(\s]+)\((.*)\)$/;
+    const readRegex = /^read\s+nsu=([^;]+);(s|i)=([^ ]+)$/;
+    const callMatch = dsl.match(callRegex);
+    if (callMatch) {
+      const [
+        ,
+        namespaceUri,
+        objectIdType,
+        objectIdValue,
+        methodIdType,
+        methodIdValue,
+        argStr
+      ] = callMatch;
+      const objectNodeId = `${objectIdType}=${objectIdValue}`;
+      const methodNodeId = `${methodIdType}=${methodIdValue}`;
+      const args = argStr.length ? argStr.split(",").map(this.parseArgument) : [];
+      return {
+        type: "call",
+        namespaceUri,
+        objectNodeId,
+        methodNodeId,
+        inputArguments: args
+      };
+    }
+    const readMatch = dsl.match(readRegex);
+    if (readMatch) {
+      const [, namespaceUri, nodeIdType, nodeIdValue] = readMatch;
+      const nodeId = `${nodeIdType}=${nodeIdValue}`;
+      return {
+        type: "read",
+        namespaceUri,
+        nodeId
+      };
+    }
+    throw new Error("Invalid DSL format");
   }
   /**
    * Infer the correct OPC UA Variant from a literal string

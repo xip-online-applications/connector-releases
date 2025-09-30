@@ -70,6 +70,7 @@ class OpcUaResultHandler {
             `Error while extracting data from opcUa source service ${error.message}`
           );
         });
+        this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
         if (!result2.outputArguments || result2.outputArguments.length === 0) {
           await this.sendBatch([item], opcUaCallConfig);
           return;
