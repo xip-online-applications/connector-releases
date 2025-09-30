@@ -41,22 +41,21 @@ class OpcUaResultHandler {
     this.kafkaService = kafkaService;
     this.offsetStore = offsetStore;
     this.#handlebarsInstance = import_handlebars.default.create();
+    this.#logger = import_logger.Logger.getInstance();
     (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
   }
   #handlebarsTemplate;
+  #logger;
   #handlebarsInstance;
   async handleResult(result, opcUaCallConfig, opcUaClient) {
-    import_logger.Logger.getInstance().debug(
-      `Handling result for ${opcUaCallConfig.name}`,
-      result
-    );
+    this.#logger.debug(`Handling result for ${opcUaCallConfig.name}`, result);
     if (!result.outputArguments || result.outputArguments.length === 0) {
       return;
     }
     const jsonData = result.outputArguments[1].value;
     const data = JSON.parse(jsonData);
-    if (data.isArray() && opcUaCallConfig.identifierSelector && opcUaCallConfig.subQuery) {
-      import_logger.Logger.getInstance().debug(`Processing sub-query for results`);
+    if (Array.isArray(data) && opcUaCallConfig.identifierSelector && opcUaCallConfig.subQuery) {
+      this.#logger.debug(`Processing sub-query for results`);
       this.#handlebarsTemplate = this.#handlebarsInstance?.compile(
         opcUaCallConfig.subQuery,
         { strict: true }
@@ -65,7 +64,7 @@ class OpcUaResultHandler {
       data.map(async (item) => {
         const id = await expression.evaluate(item);
         const subQuery = this.getSubQuery(id);
-        import_logger.Logger.getInstance().debug(`Processing sub-query: ${subQuery}`);
+        this.#logger.debug(`Processing sub-query: ${subQuery}`);
         const result2 = await opcUaClient.callFromDsl(subQuery).catch((error) => {
           throw new Error(
             `Error while extracting data from opcUa source service ${error.message}`
@@ -93,7 +92,7 @@ class OpcUaResultHandler {
   }
   async sendBatch(list, config) {
     if (list && Array.isArray(list)) {
-      import_logger.Logger.getInstance().debug(`Found ${list.length} records`);
+      this.#logger.debug(`Found ${list.length} records`);
       if (config.type === "metric") {
         await this.kafkaService.sendMetric(list, this.config, config);
       } else {
@@ -109,9 +108,7 @@ class OpcUaResultHandler {
         );
       }
     } else {
-      import_logger.Logger.getInstance().debug(
-        `No records found, skipping. ${JSON.stringify(list)}`
-      );
+      this.#logger.debug(`No records found, skipping. ${JSON.stringify(list)}`);
     }
   }
   serializeVariantValue(value) {
