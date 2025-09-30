@@ -121,7 +121,7 @@ class OpcuaExtractorService {
       this.#logger.debug(`Building query for: ${this.#config.name}`);
       const dsl = this.getQuery(latestOffset, this.#config.limit ?? 100);
       this.#logger.debug(`Executing query: ${dsl}, for: ${this.#config.name}`);
-      await this.#opcUaClient.connect();
+      await this.#opcUaClient.init();
       const result = await this.#opcUaClient.callFromDsl(dsl).catch((error) => {
         throw new Error(
           `Error while extracting data from opcUa source service ${error.message}`
@@ -135,6 +135,7 @@ class OpcuaExtractorService {
     } catch (error) {
       import_logger.Logger.getInstance().debug(JSON.stringify(error));
     } finally {
+      this.#logger.debug(`Disconnecting from OPCUA for: ${this.#config.name}`);
       await this.#opcUaClient.disconnect();
       this.#processing = false;
     }
