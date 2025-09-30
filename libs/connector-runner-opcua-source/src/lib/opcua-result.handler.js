@@ -46,20 +46,26 @@ class OpcUaResultHandler {
   #handlebarsTemplate;
   #handlebarsInstance;
   async handleResult(result, opcUaCallConfig, opcUaClient) {
+    import_logger.Logger.getInstance().debug(
+      `Handling result for ${opcUaCallConfig.name}`,
+      result
+    );
     if (!result.outputArguments || result.outputArguments.length === 0) {
       return;
     }
     const jsonData = result.outputArguments[1].value;
     const data = JSON.parse(jsonData);
-    this.#handlebarsTemplate = this.#handlebarsInstance?.compile(
-      opcUaCallConfig.subQuery,
-      { strict: true }
-    );
     if (data.isArray() && opcUaCallConfig.identifierSelector && opcUaCallConfig.subQuery) {
+      import_logger.Logger.getInstance().debug(`Processing sub-query for results`);
+      this.#handlebarsTemplate = this.#handlebarsInstance?.compile(
+        opcUaCallConfig.subQuery,
+        { strict: true }
+      );
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
       data.map(async (item) => {
         const id = await expression.evaluate(item);
         const subQuery = this.getSubQuery(id);
+        import_logger.Logger.getInstance().debug(`Processing sub-query: ${subQuery}`);
         const result2 = await opcUaClient.callFromDsl(subQuery).catch((error) => {
           throw new Error(
             `Error while extracting data from opcUa source service ${error.message}`
