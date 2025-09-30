@@ -62,24 +62,26 @@ class OpcUaResultHandler {
         { strict: true }
       );
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
-      data.map(async (item) => {
-        const id = await expression.evaluate(item);
-        const subQuery = this.getSubQuery(id);
-        this.#logger.debug(`Processing sub-query: ${subQuery}`);
-        const result2 = await this.opcUaClient.callFromDsl(subQuery).catch((error) => {
-          throw new Error(
-            `Error while extracting data from opcUa source service ${error.message}`
-          );
-        });
-        this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
-        if (!result2.outputArguments || result2.outputArguments.length === 0) {
-          await this.sendBatch([item], opcUaCallConfig);
-          return;
-        }
-        const jsonData2 = result2.outputArguments[1].value;
-        const data2 = JSON.parse(jsonData2);
-        await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
-      });
+      await Promise.all(
+        data.map(async (item) => {
+          const id = await expression.evaluate(item);
+          const subQuery = this.getSubQuery(id);
+          this.#logger.debug(`Processing sub-query: ${subQuery}`);
+          const result2 = await this.opcUaClient.callFromDsl(subQuery).catch((error) => {
+            throw new Error(
+              `Error while extracting data from opcUa source service ${error.message}`
+            );
+          });
+          this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
+          if (!result2.outputArguments || result2.outputArguments.length === 0) {
+            await this.sendBatch([item], opcUaCallConfig);
+            return;
+          }
+          const jsonData2 = result2.outputArguments[1].value;
+          const data2 = JSON.parse(jsonData2);
+          await this.sendBatch([{ ...item, ...data2 }], opcUaCallConfig);
+        })
+      );
       return;
     }
     await this.sendBatch(data, opcUaCallConfig);
