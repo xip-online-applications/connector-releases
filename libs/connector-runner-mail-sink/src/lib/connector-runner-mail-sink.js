@@ -65,9 +65,12 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
               );
               return callbackFunction(message);
             }
-            const parsedParamsJson = JSON.parse(parsedParams);
             this.log.debug(
               `Parsed action: ${parsedAction}, parameters: ${parsedParams}`
+            );
+            const parsedParamsJson = JSON.parse(parsedParams);
+            this.log.debug(
+              `Parsed params json: ${JSON.stringify(parsedParamsJson)}`
             );
             switch (parsedAction) {
               case "REPLY":
