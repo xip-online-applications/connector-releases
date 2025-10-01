@@ -79,6 +79,7 @@ class GraphMailClient {
       headers: {
         Authorization: `Bearer ${this.token}`,
         "Content-Type": "application/json",
+        Accept: "application/json",
         ...payload ? { "Content-Length": String(payload.length) } : {},
         ...extraHeaders || {}
       }
@@ -93,15 +94,20 @@ class GraphMailClient {
           if (status >= 200 && status < 300) {
             if (!raw)
               return resolve(void 0);
-            try {
-              resolve(JSON.parse(raw));
-            } catch {
-              resolve(void 0);
+            const ct = (res.headers["content-type"] || "").toString().split(";")[0].trim();
+            if (ct === "application/json") {
+              try {
+                return resolve(JSON.parse(raw));
+              } catch {
+                return resolve(void 0);
+              }
+            } else {
+              return resolve(raw);
             }
           } else if (status === 204) {
-            resolve(void 0);
+            return resolve(void 0);
           } else {
-            reject(
+            return reject(
               new Error(
                 `Graph ${method} ${url.pathname}${url.search} failed: ${status} ${raw}`
               )
@@ -472,9 +478,13 @@ class GraphMailClient {
     const combined = `${mailBody}
 
 > ${quoted.split("\n").join("\n> ")}`;
+    const safeCombined = combined.replace(
+      /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,
+      ""
+    );
     const updateUrl = `${this.base}/messages/${draftId}`;
     await this.graphRequest(updateUrl, "PATCH", {
-      body: { contentType: "Text", content: combined },
+      body: { contentType: "Text", content: safeCombined },
       from: { emailAddress: { address: from } }
     });
     if (concept) {
