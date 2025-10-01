@@ -68,6 +68,7 @@ class OpcUaResultHandler {
         data.map(async (item) => {
           this.#logger.debug(`Processing item: ${JSON.stringify(item)}`);
           const id = await expression.evaluate(item);
+          this.#logger.debug(`Extracted id: ${id}`);
           const subQuery = this.getSubQuery(id);
           this.#logger.debug(`Processing sub-query: ${subQuery}`);
           let result2;
