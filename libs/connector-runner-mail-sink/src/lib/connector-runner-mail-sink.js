@@ -21,9 +21,9 @@ __export(connector_runner_mail_sink_exports, {
 });
 module.exports = __toCommonJS(connector_runner_mail_sink_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_logger = require("@transai/logger");
-var import_src = require("../../../mail-client/src");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
+var import_mail_client = require("@xip-online-data/mail-client");
 class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, mailSinkConfig, actionConfigs, injectedMailClientInstance) {
     super(connector, mailSinkConfig, actionConfigs);
@@ -31,7 +31,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_MAIL_SINK_CONFIG";
     this.init = async () => {
       if (this.mailClientInstance === void 0) {
-        this.mailClientInstance = new import_src.GraphMailClient(this.config.mailConfig);
+        this.mailClientInstance = new import_mail_client.GraphMailClient(this.config.mailConfig);
       }
       const jobCallbackFunction = (callbackFunction) => {
         return async (m) => {
@@ -56,23 +56,25 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
             const parsedAction = handleBars.action({
               inputs: message.payload
             }).trim();
-            const parsedBody = handleBars.body({
+            const parsedParams = handleBars.params({
               inputs: message.payload
             }).trim();
             if (message.testRun) {
               import_logger.Logger.getInstance().info(
-                `Test run for ${message.eventId} with payload ${parsedBody} to action ${parsedAction}`
+                `Test run for ${message.eventId} with payload ${parsedParams} to action ${parsedAction}`
               );
               return callbackFunction(message);
             }
-            const parsedBodyJson = JSON.parse(parsedBody);
-            this.log.debug(`Parsed action: ${parsedAction}, body: ${parsedBody}`);
+            const parsedParamsJson = JSON.parse(parsedParams);
+            this.log.debug(
+              `Parsed action: ${parsedAction}, body: ${parsedParams}`
+            );
             switch (parsedAction) {
               case "REPLY":
                 await this.mailClientInstance.reply(
-                  parsedBodyJson.from,
-                  parsedBodyJson.messageId,
-                  parsedBodyJson.mailBody,
+                  parsedParamsJson.from,
+                  parsedParamsJson.messageId,
+                  parsedParamsJson.mailBody,
                   true
                 );
                 break;
@@ -82,14 +84,14 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
                 break;
               case "CATEGORY_ADD":
                 await this.mailClientInstance.addCategory(
-                  parsedBodyJson.messageId,
-                  parsedBodyJson.category
+                  parsedParamsJson.messageId,
+                  parsedParamsJson.category
                 );
                 break;
               case "CATEGORY_RMOVE":
                 await this.mailClientInstance.removeCategory(
-                  parsedBodyJson.messageId,
-                  parsedBodyJson.category
+                  parsedParamsJson.messageId,
+                  parsedParamsJson.category
                 );
                 break;
               default:
