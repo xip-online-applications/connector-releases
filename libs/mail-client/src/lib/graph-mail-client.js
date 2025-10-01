@@ -386,7 +386,6 @@ class GraphMailClient {
     }
     return out;
   }
-  // -------- MailInterface methods --------
   async readMail(mailbox, lastSeenUid) {
     const messages = [];
     try {
@@ -457,18 +456,13 @@ class GraphMailClient {
     messages.sort((a, b) => a.uid - b.uid);
     return messages;
   }
-  async reply(from, messageIdHeader, mailBody, concept = true) {
+  async reply(from, messageId, mailBody, concept = true) {
     await this.init();
-    const safeMsgId = messageIdHeader.replace(/'/g, "''");
-    const searchUrl = `${this.base}/messages?$filter=${encodeURIComponent(
-      `internetMessageId eq '${safeMsgId}'`
-    )}&$top=1`;
-    const res = await this.graphRequest(searchUrl, "GET");
-    const orig = res?.value?.[0];
-    if (!orig)
-      throw new Error(
-        `Original message not found for Message-ID ${messageIdHeader}`
-      );
+    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
+    const orig = await this.graphRequest(url, "GET");
+    if (!orig) {
+      throw new Error(`Original message not found for id ${messageId}`);
+    }
     const createUrl = `${this.base}/messages/${orig.id}/createReply`;
     const draft = await this.graphRequest(createUrl, "POST");
     const draftId = draft?.id;
