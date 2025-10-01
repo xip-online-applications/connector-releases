@@ -56,14 +56,17 @@ class OpcUaResultHandler {
     const jsonData = result.outputArguments[1].value;
     const data = JSON.parse(jsonData);
     if (Array.isArray(data) && opcUaCallConfig.identifierSelector && opcUaCallConfig.subQuery) {
-      this.#logger.debug(`Processing sub-query for results`);
+      this.#logger.debug(`Processing sub-queries for results`);
       this.#handlebarsTemplate = this.#handlebarsInstance?.compile(
         opcUaCallConfig.subQuery,
         { strict: true }
       );
+      this.#logger.debug(`Compiling sub-query template ...`);
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
+      this.#logger.debug(`Interating over results ...`);
       const messages = await Promise.all(
         data.map(async (item) => {
+          this.#logger.debug(`Processing item: ${JSON.stringify(item)}`);
           const id = await expression.evaluate(item);
           const subQuery = this.getSubQuery(id);
           this.#logger.debug(`Processing sub-query: ${subQuery}`);
