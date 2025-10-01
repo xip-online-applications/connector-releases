@@ -64,45 +64,44 @@ class OpcUaResultHandler {
       this.#logger.debug(`Compiling sub-query template ...`);
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
       this.#logger.debug(`Interating over results ...`);
-      const messages = await Promise.all(
-        data.map(async (item) => {
-          this.#logger.debug(`Processing item: ${JSON.stringify(item)}`);
-          const id = await expression.evaluate(item);
-          this.#logger.debug(`Extracted id: ${id}`);
-          const subQuery = this.getSubQuery(id);
-          this.#logger.debug(`Processing sub-query: ${subQuery}`);
-          let result2;
-          try {
-            result2 = await this.opcUaClient.callFromDsl(subQuery);
-          } catch (error) {
-            throw new Error(
-              `Error while extracting data from opcUa source service ${error?.message ?? error}`
-            );
-          }
-          this.#logger.debug(`Sub-query result: ${JSON.stringify(result2)}`);
-          if (!result2?.outputArguments?.length) {
-            this.#logger.debug(
-              `No output arguments found for sub-query, sending original item`
-            );
-            return item;
-          }
-          this.#logger.debug(
-            `Output arguments: ${JSON.stringify(result2.outputArguments)}`
+      const messages = [];
+      for (let idx = 0; idx < data.length; idx++) {
+        const item = data[idx];
+        this.#logger.debug({ item }, "Processing item");
+        const id = await expression.evaluate(item);
+        this.#logger.debug({ id }, "Extracted id");
+        const subQuery = this.getSubQuery(id);
+        this.#logger.debug({ subQuery }, "Processing sub-query");
+        let result2;
+        try {
+          result2 = await this.opcUaClient.callFromDsl(subQuery);
+        } catch (error) {
+          throw new Error(
+            `Error while extracting data from opcUa source service ${error?.message ?? error}`
           );
-          const jsonValue = result2.outputArguments[0]?.value;
-          try {
-            const parsed = JSON.parse(jsonValue);
-            const merged = Array.isArray(parsed) && parsed.length > 0 ? { ...item, ...parsed[0] } : { ...item, ...parsed ?? {} };
-            this.#logger.debug(`Data to send: ${JSON.stringify(merged)}`);
-            return merged;
-          } catch (e) {
-            this.#logger.warn(
-              `Invalid JSON in OPC UA response; returning original item. ${e?.message ?? e}`
-            );
-            return item;
-          }
-        })
-      );
+        }
+        this.#logger.debug({ result: result2 }, "Sub-query result");
+        if (!result2?.outputArguments?.length) {
+          this.#logger.debug(
+            "No output arguments found for sub-query, sending original item"
+          );
+          messages.push(item);
+          continue;
+        }
+        const jsonValue = result2.outputArguments[0]?.value;
+        try {
+          const parsed = JSON.parse(jsonValue);
+          const merged = Array.isArray(parsed) && parsed.length > 0 ? { ...item, ...parsed[0] } : { ...item, ...parsed ?? {} };
+          this.#logger.debug({ merged }, "Data to send");
+          messages.push(merged);
+        } catch (e) {
+          this.#logger.warn(
+            { err: e, jsonPreview: String(jsonValue).slice(0, 200) },
+            "Invalid JSON in OPC UA response; returning original item"
+          );
+          messages.push(item);
+        }
+      }
       await this.sendBatch(messages, opcUaCallConfig);
       return;
     }
