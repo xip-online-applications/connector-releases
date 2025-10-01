@@ -468,18 +468,12 @@ class GraphMailClient {
     const draftId = draft?.id;
     if (!draftId)
       throw new Error("Failed to create reply draft");
-    const quoted = orig.body?.contentType === "HTML" ? (0, import_html_to_text.htmlToText)(orig.body.content) : orig.body?.content || "";
-    const combined = `${mailBody}
-
-> ${quoted.split("\n").join("\n> ")}`;
-    const safeCombined = combined.replace(
-      /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,
-      ""
-    );
-    this.#logger.debug("Reply draft body:", safeCombined);
     const updateUrl = `${this.base}/messages/${draftId}`;
     await this.graphRequest(updateUrl, "PATCH", {
-      body: { contentType: "Text", content: safeCombined },
+      body: {
+        contentType: "html",
+        content: `${mailBody}<br/>${orig.body?.content}`
+      },
       from: { emailAddress: { address: from } }
     });
     if (concept) {
