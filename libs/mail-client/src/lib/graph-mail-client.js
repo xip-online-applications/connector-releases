@@ -438,7 +438,7 @@ class GraphMailClient {
             });
           }
           mm.attachments = attachments;
-          mm.originalMessageId = gm.id;
+          mm.originalMessageId = gm.internetMessageId;
           messages.push(mm);
         } catch (e) {
           this.#logger.warn?.(
@@ -458,7 +458,7 @@ class GraphMailClient {
   }
   async reply(from, messageId, mailBody, concept = true) {
     await this.init();
-    const orig = await this.getOriginalMessage(messageId);
+    const orig = await this.getMessage(messageId);
     const createUrl = `${this.base}/messages/${orig.id}/createReply`;
     const draft = await this.graphRequest(createUrl, "POST");
     const draftId = draft?.id;
@@ -486,7 +486,7 @@ class GraphMailClient {
   async addCategory(messageId, category) {
     this.#logger.debug(`Adding category ${category} to message ${messageId}`);
     await this.init();
-    const orig = await this.getOriginalMessage(messageId);
+    const orig = await this.getMessage(messageId);
     const url = `${this.base}/messages/${encodeURIComponent(orig.id)}`;
     await this.graphRequest(url, "PATCH", {
       categories: [category]
@@ -495,7 +495,7 @@ class GraphMailClient {
   // inside GraphMailClient
   async removeCategory(messageId, category) {
     await this.init();
-    const orig = await this.getOriginalMessage(messageId);
+    const orig = await this.getMessage(messageId);
     const url = `${this.base}/messages/${encodeURIComponent(orig.id)}`;
     const data = await this.graphRequest(url, "GET", void 0, {
       Prefer: 'outlook.body-content-type="text"'
@@ -504,7 +504,7 @@ class GraphMailClient {
     const updated = current.filter((c) => c !== category);
     await this.graphRequest(url, "PATCH", { categories: updated });
   }
-  async getOriginalMessage(messageId) {
+  async getMessage(messageId) {
     const filter = `internetMessageId eq '${messageId}'`;
     const searchUrl = `${this.base}/messages?$filter=${encodeURIComponent(filter)}`;
     const searchResult = await this.graphRequest(searchUrl, "GET");
