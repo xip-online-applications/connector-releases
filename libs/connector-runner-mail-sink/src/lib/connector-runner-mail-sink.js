@@ -49,10 +49,10 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
             return (0, import_kafka_base_service.BadRequest)("Unknown error occured")(message);
           }
           try {
-            const handleBars = action.config["parsedTemplates"];
             this.log.debug(
-              `Apply templates on payload: ${JSON.stringify(message.payload)}`
+              `Apply templates on payload: ${JSON.stringify(message.payload)}, action: ${JSON.stringify(action)}`
             );
+            const handleBars = action.config["parsedTemplates"];
             const parsedAction = handleBars.action({
               inputs: message.payload
             }).trim();
@@ -67,7 +67,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
             }
             const parsedParamsJson = JSON.parse(parsedParams);
             this.log.debug(
-              `Parsed action: ${parsedAction}, body: ${parsedParams}`
+              `Parsed action: ${parsedAction}, parameters: ${parsedParams}`
             );
             switch (parsedAction) {
               case "REPLY":

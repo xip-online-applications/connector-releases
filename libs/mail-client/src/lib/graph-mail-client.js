@@ -500,6 +500,7 @@ class GraphMailClient {
   }
   // inside GraphMailClient
   async addCategory(messageId, category) {
+    this.#logger.debug(`Adding category ${category} to message ${messageId}`);
     await this.init();
     const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
     await this.graphRequest(url, "PATCH", {
