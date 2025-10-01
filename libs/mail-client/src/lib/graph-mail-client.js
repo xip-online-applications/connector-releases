@@ -458,11 +458,7 @@ class GraphMailClient {
   }
   async reply(from, messageId, mailBody, concept = true) {
     await this.init();
-    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
-    const orig = await this.graphRequest(url, "GET");
-    if (!orig) {
-      throw new Error(`Original message not found for id ${messageId}`);
-    }
+    const orig = await this.getOriginalMessage(messageId);
     const createUrl = `${this.base}/messages/${orig.id}/createReply`;
     const draft = await this.graphRequest(createUrl, "POST");
     const draftId = draft?.id;
@@ -490,7 +486,8 @@ class GraphMailClient {
   async addCategory(messageId, category) {
     this.#logger.debug(`Adding category ${category} to message ${messageId}`);
     await this.init();
-    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
+    const orig = await this.getOriginalMessage(messageId);
+    const url = `${this.base}/messages/${encodeURIComponent(orig.id)}`;
     await this.graphRequest(url, "PATCH", {
       categories: [category]
     });
@@ -498,13 +495,29 @@ class GraphMailClient {
   // inside GraphMailClient
   async removeCategory(messageId, category) {
     await this.init();
-    const url = `${this.base}/messages/${encodeURIComponent(messageId)}`;
+    const orig = await this.getOriginalMessage(messageId);
+    const url = `${this.base}/messages/${encodeURIComponent(orig.id)}`;
     const data = await this.graphRequest(url, "GET", void 0, {
       Prefer: 'outlook.body-content-type="text"'
     });
     const current = data?.categories || [];
     const updated = current.filter((c) => c !== category);
     await this.graphRequest(url, "PATCH", { categories: updated });
+  }
+  async getOriginalMessage(messageId) {
+    const filter = `internetMessageId eq '${messageId}'`;
+    const searchUrl = `${this.base}/messages?$filter=${encodeURIComponent(filter)}`;
+    const searchResult = await this.graphRequest(searchUrl, "GET");
+    const found = searchResult.value?.[0];
+    if (!found) {
+      throw new Error(`Original message not found for id ${messageId}`);
+    }
+    const url = `${this.base}/messages/${found.id}`;
+    const orig = await this.graphRequest(url, "GET");
+    if (!orig) {
+      throw new Error(`Original message not found for id ${messageId}`);
+    }
+    return orig;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
