@@ -113,8 +113,10 @@ class OpcUaResultHandler {
     });
   }
   async sendBatch(list, config) {
+    this.#logger.debug(
+      `Sending ${JSON.stringify(list)} with config ${JSON.stringify(config)}`
+    );
     if (list && Array.isArray(list)) {
-      this.#logger.debug(`Found ${list.length} records`);
       if (config.type === "metric") {
         await this.kafkaService.sendMetric(
           list,

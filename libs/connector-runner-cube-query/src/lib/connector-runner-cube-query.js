@@ -59,9 +59,17 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
           tenantIdentifier: this.connector.tenantIdentifier
         });
       };
-      const cubeApi = (0, import_core.default)(getAuth0CubeJwtToken, {
+      let cubeApi = (0, import_core.default)(getAuth0CubeJwtToken, {
         apiUrl: this.config.cubeConfig.apiUrl
       });
+      setInterval(
+        async () => {
+          cubeApi = (0, import_core.default)(getAuth0CubeJwtToken, {
+            apiUrl: this.config.cubeConfig.apiUrl
+          });
+        },
+        10 * 60 * 1e3
+      );
       const mainCallbackFunction = (callbackFunction) => {
         return async (m) => {
           if (m.type !== "JOB") {
