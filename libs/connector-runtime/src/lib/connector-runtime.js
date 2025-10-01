@@ -142,7 +142,10 @@ class ConnectorRuntime {
     import_handlebars.default.registerHelper("isTrue", function(value) {
       return value === true || value === "true";
     });
-    import_handlebars.default.registerHelper("json", (v) => JSON.stringify(v));
+    import_handlebars.default.registerHelper(
+      "jsonEscape",
+      (v) => JSON.stringify(v).slice(1, -1)
+    );
     for (const action of this.actionConfigs) {
       if (action.config["templates"] !== void 0) {
         const templates = action.config["templates"];
