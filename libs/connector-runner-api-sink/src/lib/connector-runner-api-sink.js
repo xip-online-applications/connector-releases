@@ -64,7 +64,7 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
               return callbackFunction(message);
             }
             import_logger.Logger.getInstance().info(
-              `Sending request to ${parsedUrl}: ${parsedBody}`
+              `Sending request to ${parsedUrl}: ${JSON.stringify(parsedBody)}`
             );
             const result = await this.httpClient.post(parsedUrl, parsedBody);
             if (result.success) {

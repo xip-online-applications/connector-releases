@@ -459,6 +459,12 @@ class GraphMailClient {
   async reply(from, messageId, mailBody, concept = true) {
     await this.init();
     const orig = await this.getMessage(messageId);
+    const origFrom = orig.from?.emailAddress?.address || "";
+    const origTo = orig.toRecipients?.map((r) => r.emailAddress?.address).filter(Boolean).join("; ") || "";
+    const origSubject = orig.subject || "";
+    const origDate = orig.sentDateTime ? new Date(orig.sentDateTime).toLocaleString() : "";
+    const separator = `<br><hr style="border:none;border-top:solid #b1b1b1 1px;height:1px;margin:16px 0 8px 0;" /><br>From: ${origFrom}<br>Sent: ${origDate}<br>To: ${origTo}<br>Subject: ${origSubject}<br><br>`;
+    const origBody = orig.body?.content || "";
     const createUrl = `${this.base}/messages/${orig.id}/createReply`;
     const draft = await this.graphRequest(createUrl, "POST");
     const draftId = draft?.id;
@@ -468,7 +474,7 @@ class GraphMailClient {
     await this.graphRequest(updateUrl, "PATCH", {
       body: {
         contentType: "html",
-        content: `${mailBody}<br/>${orig.body?.content}`
+        content: `${mailBody}${separator}${origBody}`
       },
       from: { emailAddress: { address: from } }
     });

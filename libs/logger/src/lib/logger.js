@@ -31,8 +31,8 @@ __export(logger_exports, {
   Logger: () => Logger
 });
 module.exports = __toCommonJS(logger_exports);
-var winston = __toESM(require("winston"));
 var import_node_process = __toESM(require("node:process"));
+var winston = __toESM(require("winston"));
 var LogLevels = /* @__PURE__ */ ((LogLevels2) => {
   LogLevels2["error"] = "error";
   LogLevels2["warn"] = "warn";
@@ -120,7 +120,7 @@ class Logger {
       );
       func(message.join(" "), ...meta);
     } catch (error) {
-      this.logger.error(error);
+      console.error("unknown error in log, function", error);
     }
   }
   static #getLogLevel = (givenLevel) => {

@@ -55,6 +55,9 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
         cacheService
       );
       const getAuth0CubeJwtToken = async () => {
+        this.log.debug(
+          `Getting Auth0 Cube JWT Token for tenant ${this.connector.tenantIdentifier}`
+        );
         return tokenService.getToken({
           tenantIdentifier: this.connector.tenantIdentifier
         });
@@ -80,7 +83,9 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
             }
             const config = action.config;
             const { payload } = message;
-            this.log.debug("Received payload for Cube query:", payload);
+            this.log.debug(
+              `Received payload for Cube query: ${JSON.stringify(payload)}`
+            );
             const payloadKeys = Object.keys(payload);
             if (payload && payloadKeys.length > 0) {
               const parsedQuery = (0, import_helper_functions.replacePlaceholdersInConfig)(

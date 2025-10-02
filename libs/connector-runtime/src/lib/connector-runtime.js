@@ -146,6 +146,7 @@ class ConnectorRuntime {
       "jsonEscape",
       (v) => JSON.stringify(v).slice(1, -1)
     );
+    import_handlebars.default.registerHelper("json", (v) => JSON.stringify(v));
     for (const action of this.actionConfigs) {
       if (action.config["templates"] !== void 0) {
         const templates = action.config["templates"];
