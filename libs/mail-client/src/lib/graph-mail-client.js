@@ -494,8 +494,13 @@ class GraphMailClient {
     await this.init();
     const orig = await this.getMessage(messageId);
     const url = `${this.base}/messages/${encodeURIComponent(orig.id)}`;
+    const data = await this.graphRequest(url, "GET", void 0, {
+      Prefer: 'outlook.body-content-type="text"'
+    });
+    const current = data?.categories || [];
+    const updated = current.includes(category) ? current : [...current, category];
     await this.graphRequest(url, "PATCH", {
-      categories: [category]
+      categories: updated
     });
   }
   // inside GraphMailClient
