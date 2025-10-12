@@ -91,7 +91,7 @@ class ConnectorRunnerMailSink extends import_connector_runtime.ConnectorRuntime 
                   parsedParamsJson.category
                 );
                 break;
-              case "CATEGORY_RMOVE":
+              case "CATEGORY_REMOVE":
                 await this.mailClientInstance.removeCategory(
                   parsedParamsJson.messageId,
                   parsedParamsJson.category

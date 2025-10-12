@@ -40,6 +40,7 @@ var import_html_to_text = require("html-to-text");
 var import_mailparser = require("mailparser");
 var import_mail_attachments = require("./mail-attachments");
 var import_mail_token = require("./mail-token");
+const OVERLAP_MS = 6 * 60 * 60 * 1e3;
 class GraphMailClient {
   // e.g. https://graph.microsoft.com/v1.0/users/{user}
   constructor(config) {
@@ -199,7 +200,6 @@ class GraphMailClient {
   }
   static toMailMessage(m) {
     const received = m.receivedDateTime ? new Date(m.receivedDateTime) : /* @__PURE__ */ new Date();
-    const uid = received.getTime();
     const html = m.body?.contentType === "HTML" ? m.body.content : void 0;
     const text = m.body?.contentType === "Text" ? m.body.content : html ? (0, import_html_to_text.htmlToText)(html) : m.bodyPreview || "";
     const hdr = m.internetMessageHeaders || [];
@@ -210,7 +210,8 @@ class GraphMailClient {
       (h) => h.name.toLowerCase() === "references"
     )?.value;
     return {
-      uid,
+      // uid is filled by caller based on lastModifiedDateTime
+      uid: 0,
       attachments: [],
       subject: m.subject,
       references,
@@ -226,12 +227,12 @@ class GraphMailClient {
       html
     };
   }
-  async listMessages(folderId, fromEpochMs) {
+  async listMessages(folderId, fromEpochMs, limit) {
     const iso = new Date(fromEpochMs).toISOString();
-    const $select = "id,internetMessageId,subject,receivedDateTime,body,bodyPreview,from,replyTo,toRecipients,ccRecipients,bccRecipients";
-    const $orderby = "receivedDateTime asc";
-    const $filter = `receivedDateTime gt ${iso}`;
-    let url = `${this.base}/mailFolders/${folderId}/messages?$select=${encodeURIComponent($select)}&$orderby=${encodeURIComponent($orderby)}&$filter=${encodeURIComponent($filter)}&$top=25`;
+    const $select = "id,internetMessageId,subject,receivedDateTime,lastModifiedDateTime,body,bodyPreview,from,replyTo,toRecipients,ccRecipients,bccRecipients,internetMessageHeaders";
+    const $orderby = "lastModifiedDateTime asc";
+    const $filter = `lastModifiedDateTime ge ${iso}`;
+    let url = `${this.base}/mailFolders/${folderId}/messages?$select=${encodeURIComponent($select)}&$orderby=${encodeURIComponent($orderby)}&$filter=${encodeURIComponent($filter)}&$top=${limit}`;
     const out = [];
     while (url) {
       const page = await this.graphRequest(url, "GET");
@@ -320,7 +321,6 @@ class GraphMailClient {
       return out.length ? out : void 0;
     }
     const received = parsed.date ?? receivedFallback;
-    const uid = (received instanceof Date ? received : new Date(received)).getTime();
     const headersArr = [];
     const headerLinesArr = [];
     if (parsed.headers) {
@@ -343,7 +343,8 @@ class GraphMailClient {
     const html = typeof parsed.html === "string" ? parsed.html : void 0;
     const text = parsed.text || (html ? (0, import_html_to_text.htmlToText)(html) : "");
     return {
-      uid,
+      uid: 0,
+      // filled by caller
       attachments: parsed.attachments.map((attachment) => ({
         text: attachment.contentType === "application/json" ? attachment.content.toString() : void 0,
         contentType: attachment.contentType,
@@ -386,32 +387,39 @@ class GraphMailClient {
     }
     return out;
   }
-  async readMail(mailbox, lastSeenUid) {
+  async readMail(mailbox, lastSeenUid, limit) {
     const messages = [];
     try {
       await this.init();
       const folderId = await this.getFolderId(mailbox);
-      const fromEpoch = Math.max(0, lastSeenUid || 0);
-      const graphMsgs = await this.listMessages(folderId, fromEpoch);
+      const fromEpoch = Math.max(0, (lastSeenUid || 0) - OVERLAP_MS);
+      const graphMsgs = await this.listMessages(folderId, fromEpoch, limit);
+      const seenIds = /* @__PURE__ */ new Set();
       for (const gm of graphMsgs) {
-        const graphReceivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : Date.now();
-        if (graphReceivedMs <= lastSeenUid)
+        const graphModifiedMs = gm.lastModifiedDateTime ? new Date(gm.lastModifiedDateTime).getTime() : gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : Date.now();
+        if (graphModifiedMs <= lastSeenUid)
           continue;
+        if (seenIds.has(gm.id))
+          continue;
+        seenIds.add(gm.id);
         let mimeBuf = null;
         try {
           if (this.config.emlTestMode !== false) {
+            this.#logger.info("EML test mode");
             mimeBuf = await this.tryGetEmlBuffer(folderId, gm.id);
           }
           if (!mimeBuf) {
+            this.#logger.info("Production mode");
             mimeBuf = await this.downloadMessageMime(folderId, gm.id);
           }
           const parsed = await (0, import_mailparser.simpleParser)(mimeBuf);
+          this.#logger.info(`parsed subject: ${parsed.subject}`);
           await (0, import_mail_attachments.addPdfJsonAttachments)(parsed);
           const mm = GraphMailClient.parsedEmlToMailMessage(
             parsed,
-            new Date(graphReceivedMs)
+            new Date(graphModifiedMs)
           );
-          mm.uid = graphReceivedMs;
+          mm.uid = graphModifiedMs;
           const attachments = [];
           for (const att of parsed.attachments || []) {
             const ct = (att.contentType || "").toLowerCase();

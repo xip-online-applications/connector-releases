@@ -20,9 +20,9 @@ __export(mailsource_processor_service_exports, {
   MailsourceProcessorService: () => MailsourceProcessorService
 });
 module.exports = __toCommonJS(mailsource_processor_service_exports);
+var import_logger = require("@transai/logger");
 var import_rxjs = require("rxjs");
 var import_uuid = require("uuid");
-var import_logger = require("@transai/logger");
 var import_helper = require("../helper.functions");
 class MailsourceProcessorService {
   constructor(mailSourceConfig, config, kafkaService, mailClient, offsetStore) {
@@ -86,7 +86,6 @@ class MailsourceProcessorService {
           }
         ];
       }
-      this.#logger.info("payload", JSON.stringify(kafkaPayload, null, 2));
       await this.#kafkaService.send(
         kafkaPayload,
         (0, import_helper.generateKafkaTopic)(this.#mailSourceConfig, this.#mailboxConfig)
@@ -120,14 +119,27 @@ class MailsourceProcessorService {
   #subscription;
   #offsetStore;
   async init() {
-    this.#subscription = (0, import_rxjs.interval)(
-      this.#mailboxConfig.interval * 1e3
-    ).subscribe(async () => {
-      await this.process().catch((error) => {
-        this.#logger.error(
-          `Error while processing message from mailsource processor service ${error.message}`
+    this.#subscription = (0, import_rxjs.interval)(this.#mailboxConfig.interval * 1e3).pipe(
+      (0, import_rxjs.tap)(async () => {
+        await this.process().catch((error) => {
+          this.#logger.error(
+            `Error while processing message from mailsource processor service ${error.message}`
+          );
+        });
+      }),
+      // timeout({ each: this.#mailboxConfig.interval * 5 * 1000 }),
+      (0, import_rxjs.timeout)({ each: 1 * 1e3 })
+    ).subscribe({
+      next: () => {
+        this.#logger.debug(
+          `Mailsource processor service subscription triggered: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
         );
-      });
+      },
+      error: (err) => {
+        this.#logger.error(
+          `Error in mailsource processor service subscription: ${err.message}`
+        );
+      }
     });
   }
   stop() {
@@ -158,7 +170,8 @@ class MailsourceProcessorService {
     this.#logger.info("Last message ID", lastMessageId);
     const messages = await this.#mailClient.readMail(
       config.mailbox,
-      lastMessageId
+      lastMessageId,
+      config.limit ?? 10
     );
     if (this.#mailboxConfig.type === "metric") {
       await this.sendMetricsToKafka(messages);
@@ -171,12 +184,15 @@ class MailsourceProcessorService {
       );
       return;
     }
-    this.#logger.info("New last message ID", messages[messages.length - 1].uid);
+    this.#logger.info(
+      `Processed ${messages.length} messages, new last message ID`,
+      messages[messages.length - 1].uid
+    );
     this.storeId(messages[messages.length - 1].uid ?? 0);
   }
   storeId(id) {
     this.#offsetStore.setOffset(
-      { timestamp: 0, id, rawTimestamp: 0 },
+      { timestamp: 0, id, rawTimestamp: (/* @__PURE__ */ new Date()).toISOString() },
       (0, import_helper.generateOffsetIdentifier)(this.#mailboxConfig)
     );
   }
