@@ -119,27 +119,14 @@ class MailsourceProcessorService {
   #subscription;
   #offsetStore;
   async init() {
-    this.#subscription = (0, import_rxjs.interval)(this.#mailboxConfig.interval * 1e3).pipe(
-      (0, import_rxjs.tap)(async () => {
-        await this.process().catch((error) => {
-          this.#logger.error(
-            `Error while processing message from mailsource processor service ${error.message}`
-          );
-        });
-      }),
-      // timeout({ each: this.#mailboxConfig.interval * 5 * 1000 }),
-      (0, import_rxjs.timeout)({ each: 1 * 1e3 })
-    ).subscribe({
-      next: () => {
-        this.#logger.debug(
-          `Mailsource processor service subscription triggered: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
-        );
-      },
-      error: (err) => {
+    this.#subscription = (0, import_rxjs.interval)(
+      this.#mailboxConfig.interval * 1e3
+    ).subscribe(async () => {
+      await this.process().catch((error) => {
         this.#logger.error(
-          `Error in mailsource processor service subscription: ${err.message}`
+          `Error while processing message from mailsource processor service ${error.message}`
         );
-      }
+      });
     });
   }
   stop() {
