@@ -30,8 +30,20 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
     this.initialized = false;
     this.init = async () => {
       if (!this.initialized) {
-        await this.producer.connect();
-        await this.consumer.connect();
+        await this.producer.connect().catch((error) => {
+          import_logger.Logger.getInstance().error(
+            `[RDKAFKA BASE SERVICE] Error connecting producer: ${error.message}`,
+            error
+          );
+          throw error;
+        });
+        await this.consumer.connect().catch((error) => {
+          import_logger.Logger.getInstance().error(
+            `[RDKAFKA BASE SERVICE] Error connecting consumer: ${error.message}`,
+            error
+          );
+          throw error;
+        });
       }
       const topics = this.baseYamlConfig.kafka.consumerTopics ?? [];
       if (topics.length > 0 || this.connectorTopic) {
@@ -51,7 +63,13 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         await Promise.all(
           topicsToSubscribeTo.map(async (topic) => {
             import_logger.Logger.getInstance().info("Subscribing to", topic);
-            await this.consumer.subscribe({ topic });
+            await this.consumer.subscribe({ topic }).catch((error) => {
+              import_logger.Logger.getInstance().error(
+                `[RDKAFKA BASE SERVICE] Error subscribing to topic ${topic}: ${error.message}`,
+                error
+              );
+              throw error;
+            });
           })
         );
         if (this.baseYamlConfig.kafka.autoCommitThreshold) {
@@ -62,6 +80,12 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         await this.consumer.run({
           partitionsConsumedConcurrently: this.baseYamlConfig.kafka.partitionsConsumedConcurrently ?? 1,
           eachMessage: this.consume
+        }).catch((error) => {
+          import_logger.Logger.getInstance().error(
+            `[RDKAFKA BASE SERVICE] Error running consumer: ${error.message}`,
+            error
+          );
+          throw error;
         });
       }
       this.initialized = true;
@@ -134,6 +158,12 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
             value: JSON.stringify(returnMessage)
           }
         ]
+      }).catch((error) => {
+        import_logger.Logger.getInstance().error(
+          `[RDKAFKA BASE SERVICE] Error sending message to topic ${topic}: ${error.message}`,
+          error
+        );
+        throw error;
       });
     };
   }

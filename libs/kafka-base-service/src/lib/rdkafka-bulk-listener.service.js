@@ -51,10 +51,10 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
       await this.consumer.run({
         partitionsConsumedConcurrently: this.baseYamlConfig.kafka.partitionsConsumedConcurrently ?? 1,
         eachBatchAutoResolve: true,
-        eachBatch: this.consumeBatch
+        eachBatch: this.#consumeBatch
       });
     };
-    this.consumeBatch = async ({
+    this.#consumeBatch = async ({
       batch,
       resolveOffset
     }) => {
@@ -68,36 +68,53 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
       );
       if (this.bulkApplicable(messages)) {
         try {
-          await this.callbackFunction(messages);
+          await this.callbackFunction(messages).catch((error) => {
+            import_logger.Logger.getInstance().error(
+              `Error in callback function for bulk processing, ${JSON.stringify(error)}`
+            );
+            throw error;
+          });
           const { offset } = batch.messages[batch.messages.length - 1];
           resolveOffset(offset);
         } catch (error) {
           import_logger.Logger.getInstance().error(
-            "Error in callback function. Continue as single batch",
-            error
+            `Error in callback function. Continue as single batch ${JSON.stringify(error)}`
           );
-          await this.consumeBatchAsSingle(batch.messages, resolveOffset);
+          import_logger.Logger.getInstance().error(
+            `${messages.map((m) => m.value?.toString()).join(",\n")}`
+          );
+          await this.#consumeBatchAsSingle(batch.messages, resolveOffset);
         }
       } else {
         import_logger.Logger.getInstance().debug(
           "Batch processing not applicable. Continue as single batch"
         );
-        await this.consumeBatchAsSingle(batch.messages, resolveOffset);
+        await this.#consumeBatchAsSingle(batch.messages, resolveOffset);
       }
     };
-    this.consumeBatchAsSingle = async (messages, resolveOffset) => {
+    this.#consumeBatchAsSingle = async (messages, resolveOffset) => {
       for (const message of messages) {
         try {
           const parsedMessage = JSON.parse(message.value?.toString() ?? "{}");
-          await this.callbackFunction([parsedMessage]);
+          await this.callbackFunction([parsedMessage]).catch((error) => {
+            import_logger.Logger.getInstance().error(
+              `Error in callback function for single message processing, ${JSON.stringify(
+                error
+              )}`
+            );
+            throw error;
+          });
           resolveOffset(message.offset);
         } catch (error) {
           import_logger.Logger.getInstance().error("Error in callback function", error);
+          import_logger.Logger.getInstance().error(`${message.value?.toString()}`);
           resolveOffset(message.offset);
         }
       }
     };
   }
+  #consumeBatch;
+  #consumeBatchAsSingle;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

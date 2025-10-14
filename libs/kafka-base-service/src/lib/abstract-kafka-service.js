@@ -26,7 +26,6 @@ var import_kafkajs = require("kafkajs");
 var import_rxjs = require("rxjs");
 var import_kafkajs_msk_iam_authentication_mechanism = require("@jm18457/kafkajs-msk-iam-authentication-mechanism");
 var import_node = require("@sentry/node");
-var import_tracer = require("@xip-online-data/tracer");
 var import_logger = require("@transai/logger");
 var import_in_memory = require("./in-memory.message-monitor");
 var import_redis = require("./redis.message-monitor");
@@ -84,7 +83,6 @@ class AbstractKafkaService {
     };
     this.checkForNewTopics = async () => {
       const regexTopicsOnServer = await this.getNumberOfRegexTopics();
-      import_tracer.Tracer.init().get().gauge("kafka.topics", regexTopicsOnServer);
       return regexTopicsOnServer !== this.numberOfSubscribedRegexTopics;
     };
     this.getNumberOfRegexTopics = async () => {

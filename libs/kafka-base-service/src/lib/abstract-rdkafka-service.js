@@ -49,7 +49,7 @@ const oauthBearerTokenProvider = (awsSasl) => async () => {
       })
     });
     import_logger.Logger.getInstance().info(
-      `Token using ENV variables lifetime ${authTokenResponse2.expiryTime}`
+      `Token using Default Credentials Provider ${authTokenResponse2.expiryTime} - ${authTokenResponse2.expiryTime - Date.now()}ms`
     );
     return {
       principal,
@@ -62,10 +62,12 @@ const oauthBearerTokenProvider = (awsSasl) => async () => {
   );
   const authTokenResponse = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthToken)({
     region: awsSasl?.region ?? "eu-west-1",
-    awsRoleSessionName: principal
+    awsRoleSessionName: principal,
+    logger: import_logger.Logger.getInstance(),
+    awsDebugCreds: true
   });
   import_logger.Logger.getInstance().info(
-    `Token using Default Credentials Provider ${authTokenResponse.expiryTime}`
+    `Token using Default Credentials Provider ${authTokenResponse.expiryTime} - ${authTokenResponse.expiryTime - Date.now()}ms`
   );
   return {
     principal,

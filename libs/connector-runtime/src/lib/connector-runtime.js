@@ -30,17 +30,16 @@ __export(connector_runtime_exports, {
   ConnectorRuntime: () => ConnectorRuntime
 });
 module.exports = __toCommonJS(connector_runtime_exports);
+var process = __toESM(require("node:process"));
+var import_logger = require("@transai/logger");
+var import_handle_error = require("@xip-online-data/handle-error");
+var import_helper_functions = require("@xip-online-data/helper-functions");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
+var import_parse_yaml = require("@xip-online-data/parse-yaml");
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
-var import_handle_error = require("@xip-online-data/handle-error");
-var import_parse_yaml = require("@xip-online-data/parse-yaml");
-var import_helper_functions = require("@xip-online-data/helper-functions");
-var process = __toESM(require("node:process"));
-var import_rxjs = require("rxjs");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
-var import_logger = require("@transai/logger");
 var import_moment_timezone = __toESM(require("moment-timezone"));
-var import_offset_store2 = require("./offset-store/offset-store.service");
+var import_rxjs = require("rxjs");
 var import_cloud_offset_store = require("./offset-store/cloud-offset-store.service");
 class ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs) {
@@ -50,7 +49,6 @@ class ConnectorRuntime {
     this.IPC_CHANNEL = "connector-runtime";
     this.offsetStoreInstance = void 0;
     this.callbackFunction = void 0;
-    this.isValidConfig = () => true;
     this.init = () => Promise.resolve();
     this.exit = () => Promise.resolve();
     this.connectorConfig = void 0;
@@ -63,13 +61,13 @@ class ConnectorRuntime {
     const tmpdir = process.env["TRANSAI_TMP_DIR"];
     if (tmpdir) {
       this.log.debug(
-        `Connector ID: ${connector.identifier} - ${tmpdir}, using offset store ${process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? "API" : "FILE"}`
+        `Connector ID: ${connector.identifier} - ${tmpdir}, using offset store API`
       );
-      const offsetStore = process.env["USE_MANAGEMENT_API_OFFSET"] === "true" ? new import_cloud_offset_store.CloudOffsetStoreService(
+      const offsetStore = new import_cloud_offset_store.CloudOffsetStoreService(
         tmpdir,
         apiConfig,
         this.CONNECTOR_IDENTIFIER
-      ) : new import_offset_store2.OffsetStoreService(tmpdir, apiConfig);
+      );
       offsetStore.init().then(() => {
         this.log.debug("Offset store initialized. write start time");
         offsetStore.writeFile(this.CONNECTOR_IDENTIFIER, {
@@ -219,7 +217,7 @@ class ConnectorRuntime {
       );
     }
     return actions.sort((a, b) => {
-      return a.updatedAt > b.updatedAt ? -1 : 1;
+      return a.createdAt > b.createdAt ? -1 : 1;
     })[0];
   }
   getSpecificActionConfig(message) {
@@ -244,13 +242,12 @@ class ConnectorRuntime {
     );
     await this.init();
     if (this.callbackFunction !== void 0) {
-      if (this.config.action?.timeSensitive) {
-        this.log.debug("Action expiration validator enabled");
-        this.callbackFunction = (0, import_helper_functions.expirationValidator)(this.callbackFunction);
-      } else {
-        this.log.debug("Action expiration validator disabled");
-      }
-      this.kafkaServiceInstance.setCallbackFunction(this.callbackFunction);
+      this.kafkaServiceInstance.setCallbackFunction(
+        (0, import_helper_functions.expirationValidatorInLine)(
+          this.config.action?.timeSensitive === true,
+          this.callbackFunction
+        )
+      );
     }
     await this.kafkaServiceInstance.init();
   }

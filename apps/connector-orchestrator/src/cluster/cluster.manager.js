@@ -23,7 +23,6 @@ module.exports = __toCommonJS(cluster_manager_exports);
 var import_logger = require("@transai/logger");
 var import_rxjs = require("rxjs");
 var import_check_two_arrays = require("../util/check-two-arrays");
-var import_log_level = require("../util/log-level");
 class ClusterManager {
   constructor(node, managementApiClient) {
     this.#enabledConnectors = [];
@@ -209,10 +208,7 @@ class ClusterManager {
     };
     this.#node = node;
     this.#managementApiClient = managementApiClient;
-    this.#logger = import_logger.Logger.getInstance(
-      "connector-orchestrator",
-      (0, import_log_level.getLogLevel)(this.#node)
-    );
+    this.#logger = import_logger.Logger.getInstance();
   }
   #node;
   #managementApiClient;
