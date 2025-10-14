@@ -27,34 +27,41 @@ class ConnectorRunnerDummySink extends import_connector_runtime.ConnectorRuntime
   constructor() {
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_DUMMY_SINK_CONFIG";
-    this.getConfig = async () => ({
-      processIdentifier: this.CONNECTOR_IDENTIFIER,
-      tenantIdentifier: "dummy-tenant",
-      datasourceIdentifier: "dummy-source",
-      kafka: {
-        brokers: ["localhost:9092"],
-        groupId: "dummy-sink",
-        clientId: "dummy-sink",
-        consumerTopics: [
-          {
-            pattern: "_source_",
-            flags: "i"
-          }
-        ]
-      },
-      debug: false
-    });
     this.init = async () => {
-      const config = this.config;
-      const failProbability = config.failProbability || 0;
+      const failProbability = this.config.failProbability || 0;
       if (failProbability > 0) {
         import_logger.Logger.getInstance().debug("Fail probability set to", failProbability);
       }
       const dummyProcessFailed = () => {
         return Math.random() < failProbability;
       };
-      const mainCallbackFunction = (callbackFunction) => {
-        return async (message) => {
+      const jobCallbackFunction = (callbackFunction) => {
+        return async (m) => {
+          if (m.type !== "JOB") {
+            return callbackFunction(m);
+          }
+          const message = m;
+          let action;
+          try {
+            action = this.getActionConfig(message);
+          } catch (error) {
+            if (error instanceof Error) {
+              return (0, import_kafka_base_service.BadRequest)(`No action found: ${error.message}`)(message);
+            }
+            return (0, import_kafka_base_service.BadRequest)("Unknown error occured")(message);
+          }
+          import_logger.Logger.getInstance().info(
+            `Dummy process for job: ${message.eventId}, ${message.actionIdentifier}, version: ${message.actionVersion}. Action: ${action.name}, ${action.version}`
+          );
+          return callbackFunction(message);
+        };
+      };
+      const actionCallbackFunction = (callbackFunction) => {
+        return async (m) => {
+          if (m.type !== "ACTION") {
+            return callbackFunction(m);
+          }
+          const message = m;
           import_logger.Logger.getInstance().info(
             "Received message: ",
             message.testRun ? "(test run)" : "",
@@ -68,7 +75,9 @@ class ConnectorRunnerDummySink extends import_connector_runtime.ConnectorRuntime
           return callbackFunction(message);
         };
       };
-      this.callbackFunction = mainCallbackFunction(this.emitEventType((0, import_kafka_base_service.Ok)()));
+      this.callbackFunction = jobCallbackFunction(
+        actionCallbackFunction(this.emitEventType((0, import_kafka_base_service.Ok)()))
+      );
     };
   }
 }

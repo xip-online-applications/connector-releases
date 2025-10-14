@@ -23,7 +23,6 @@ module.exports = __toCommonJS(connector_runner_api_source_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
 var import_api_result = require("./api-result.handler");
 var import_api_extractor = require("./api-extractor/api-extractor.service");
-var import_types = require("./types");
 var import_kafka = require("./kafka/kafka.service");
 var import_token_manager = require("./token-manager/token-manager");
 class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime {
@@ -67,9 +66,6 @@ class ConnectorRunnerApiSource extends import_connector_runtime.ConnectorRuntime
     this.exit = async () => {
       this.#apiExtractorServices.forEach((service) => service.stop());
       this.#apiExtractorServices = [];
-    };
-    this.isValidConfig = (config) => {
-      return (0, import_types.isApiSourceConfigType)(config);
     };
   }
   #apiExtractorServices;

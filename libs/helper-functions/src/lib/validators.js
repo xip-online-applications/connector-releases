@@ -17,24 +17,31 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var validators_exports = {};
 __export(validators_exports, {
-  expirationValidator: () => expirationValidator
+  expirationValidatorInLine: () => expirationValidatorInLine
 });
 module.exports = __toCommonJS(validators_exports);
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
-function expirationValidator(callbackFunction) {
-  return async (message) => {
-    if (!isExpired(message)) {
-      return (0, import_kafka_base_service.BadRequest)("Action Duration has expired")(message);
-    }
-    return callbackFunction(message);
-  };
-}
-function isExpired(message) {
+var import_logger = require("@transai/logger");
+const isValid = (message) => {
   const now = /* @__PURE__ */ new Date();
-  const actionDuration = new Date(message.ttl);
-  return now < actionDuration;
-}
+  const upperBound = new Date(message.ttl);
+  return now < upperBound;
+};
+const expirationValidatorInLine = (validateForAction, callbackFunction) => {
+  return async (message) => {
+    if (!validateForAction && message.type === "ACTION") {
+      return callbackFunction(message);
+    }
+    if (isValid(message)) {
+      return callbackFunction(message);
+    }
+    import_logger.Logger.getInstance().warn(
+      `Action/Job Duration has expired ${message.eventId}`
+    );
+    return (0, import_kafka_base_service.BadRequest)("Job Duration has expired")(message);
+  };
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  expirationValidator
+  expirationValidatorInLine
 });

@@ -46,6 +46,7 @@ __reExport(management_api_exports, require("./event-origin.interface"), module.e
 __reExport(management_api_exports, require("./workflow"), module.exports);
 __reExport(management_api_exports, require("./semantic-trigger"), module.exports);
 __reExport(management_api_exports, require("./chart.interface"), module.exports);
+__reExport(management_api_exports, require("./dashboard.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/datasets.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/dataset.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/dataset-record.interface"), module.exports);
@@ -97,6 +98,7 @@ __reExport(management_api_exports, require("./pagination"), module.exports);
   ...require("./workflow"),
   ...require("./semantic-trigger"),
   ...require("./chart.interface"),
+  ...require("./dashboard.interface"),
   ...require("./dataset/datasets.interface"),
   ...require("./dataset/dataset.interface"),
   ...require("./dataset/dataset-record.interface"),

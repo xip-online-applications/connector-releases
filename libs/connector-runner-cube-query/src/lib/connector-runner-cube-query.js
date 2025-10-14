@@ -30,11 +30,11 @@ __export(connector_runner_cube_query_exports, {
   ConnectorRunnerCubeQuery: () => ConnectorRunnerCubeQuery
 });
 module.exports = __toCommonJS(connector_runner_cube_query_exports);
-var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_core = __toESM(require("@cubejs-client/core"));
-var import_httpclient = require("@xip-online-data/httpclient");
+var import_connector_runtime = require("@transai/connector-runtime");
 var import_helper_functions = require("@xip-online-data/helper-functions");
+var import_httpclient = require("@xip-online-data/httpclient");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -55,6 +55,9 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
         cacheService
       );
       const getAuth0CubeJwtToken = async () => {
+        this.log.debug(
+          `Getting Auth0 Cube JWT Token for tenant ${this.connector.tenantIdentifier}`
+        );
         return tokenService.getToken({
           tenantIdentifier: this.connector.tenantIdentifier
         });
@@ -80,6 +83,9 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
             }
             const config = action.config;
             const { payload } = message;
+            this.log.debug(
+              `Received payload for Cube query: ${JSON.stringify(payload)}`
+            );
             const payloadKeys = Object.keys(payload);
             if (payload && payloadKeys.length > 0) {
               const parsedQuery = (0, import_helper_functions.replacePlaceholdersInConfig)(
@@ -98,6 +104,7 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
                 return (0, import_kafka_base_service.BadRequest)(errorMessage)(message);
               }
               const result = queryResult.serialize().loadResponse.results;
+              this.log.info("Cube query executed successfully", result);
               if (result.length > 0) {
                 const response = {
                   ...message,

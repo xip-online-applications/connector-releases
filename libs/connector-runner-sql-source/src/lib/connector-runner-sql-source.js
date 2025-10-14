@@ -21,7 +21,6 @@ __export(connector_runner_sql_source_exports, {
 });
 module.exports = __toCommonJS(connector_runner_sql_source_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_types = require("./types");
 var import_query_result = require("./query-result.handler");
 var import_kafka = require("./kafka/kafka.service");
 var import_datasource_extractor = require("./datasource-extractor/datasource-extractor.service");
@@ -58,9 +57,6 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
     };
     this.exit = async () => {
       this.extractors.forEach((service) => service.stop());
-    };
-    this.isValidConfig = (config) => {
-      return (0, import_types.isSqlSourceRunnerConfigType)(config);
     };
   }
 }

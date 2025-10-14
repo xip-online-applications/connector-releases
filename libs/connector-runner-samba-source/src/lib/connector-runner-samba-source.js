@@ -21,7 +21,6 @@ __export(connector_runner_samba_source_exports, {
 });
 module.exports = __toCommonJS(connector_runner_samba_source_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_types = require("./types");
 var import_samba_filesource_processor = require("./filesource-processor/samba-filesource-processor.service");
 class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
@@ -41,9 +40,6 @@ class ConnectorRunnerSambaSource extends import_connector_runtime.ConnectorRunti
     this.exit = async () => {
       this.#processors.forEach((service) => service.stop());
       this.#processors = [];
-    };
-    this.isValidConfig = (config) => {
-      return (0, import_types.isSambaSourceConnectorConfigType)(config);
     };
   }
   #processors;

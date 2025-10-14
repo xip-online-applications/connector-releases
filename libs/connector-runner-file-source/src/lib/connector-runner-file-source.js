@@ -23,7 +23,6 @@ module.exports = __toCommonJS(connector_runner_file_source_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
 var import_sftp_client = require("@xip-online-data/sftp-client");
 var import_filesource_processor = require("./filesource-processor/filesource-processor.service");
-var import_types = require("./types");
 class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntime {
   constructor() {
     super(...arguments);
@@ -52,9 +51,6 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
     };
     this.exit = async () => {
       this.#processors.forEach((service) => service.stop());
-    };
-    this.isValidConfig = (config) => {
-      return (0, import_types.isYamlConfigType)(config);
     };
   }
   #processors;
