@@ -171,6 +171,7 @@ class ClusterManager {
         this.#orchestratorConfig = fullOrchestratorConfig.config;
         if (this.#orchestratorConfig.datadogApiKey) {
           this.#logger.setDatadogTransport({
+            apiKey: this.#orchestratorConfig.datadogApiKey,
             service: "cluster-manager",
             source: "connector-orchestrator"
           });
