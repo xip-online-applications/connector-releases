@@ -34,8 +34,7 @@ class ConnectorRunnerDummySource extends import_connector_runtime.ConnectorRunti
         brokers: ["localhost:9092"],
         groupId: "dummy-source",
         clientId: "dummy-source"
-      },
-      debug: false
+      }
     });
     this.init = async () => {
       this.#generator = new import_dummy_data_generator.DummyDataGeneratorService(

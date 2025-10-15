@@ -45,6 +45,7 @@ __reExport(management_api_exports, require("./cube-dataset.interface"), module.e
 __reExport(management_api_exports, require("./event-origin.interface"), module.exports);
 __reExport(management_api_exports, require("./workflow"), module.exports);
 __reExport(management_api_exports, require("./semantic-trigger"), module.exports);
+__reExport(management_api_exports, require("./connector-orchestrator-config.interface"), module.exports);
 __reExport(management_api_exports, require("./chart.interface"), module.exports);
 __reExport(management_api_exports, require("./dashboard.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/datasets.interface"), module.exports);
@@ -97,6 +98,7 @@ __reExport(management_api_exports, require("./pagination"), module.exports);
   ...require("./event-origin.interface"),
   ...require("./workflow"),
   ...require("./semantic-trigger"),
+  ...require("./connector-orchestrator-config.interface"),
   ...require("./chart.interface"),
   ...require("./dashboard.interface"),
   ...require("./dataset/datasets.interface"),

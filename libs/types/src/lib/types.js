@@ -45,6 +45,8 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["FACTORY_NEBULA_SOURCE"] = "factory-nebula-source";
   ConfiguredConnectorTypes2["IMAP_SOURCE"] = "imap-source";
   ConfiguredConnectorTypes2["IMAP_SINK"] = "imap-sink";
+  ConfiguredConnectorTypes2["OPCUA_SOURCE"] = "opcua-source";
+  ConfiguredConnectorTypes2["OPCUA_SINK"] = "opcua-sink";
   return ConfiguredConnectorTypes2;
 })(ConfiguredConnectorTypes || {});
 function isTopicRegex(obj) {

@@ -29,25 +29,22 @@ class AbstractMessageMonitor {
   processMessage(callbackFunction) {
     return async (message) => {
       if (await this.isProcessed(message)) {
-        if (this.baseConfig.debug) {
-          import_logger.Logger.getInstance().debug(
-            `Message ${message.eventId} already processed`
-          );
-        }
+        import_logger.Logger.getInstance().debug(
+          `Message ${message.eventId} already processed`
+        );
         return (0, import_factories.BadRequest)(`Message ${message.eventId} already processed`)(
           message
         );
       }
-      if (this.baseConfig.debug) {
-        import_logger.Logger.getInstance().debug(`Processing message ${message.eventId}`);
-      }
+      import_logger.Logger.getInstance().debug(`Processing message ${message.eventId}`);
       const result = await callbackFunction(message);
       if (result.success) {
         await this.addProcessedMessage(message);
-      } else if (this.baseConfig.debug)
+      } else {
         import_logger.Logger.getInstance().debug(
           `Message ${message.eventId} FAILED to process: ${result.message}. Not storing in processed messages list.`
         );
+      }
       return result;
     };
   }

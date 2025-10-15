@@ -17,7 +17,7 @@ async function main() {
   if (node.cluster.isPrimary) {
     import_logger.Logger.getInstance(
       `[${node.process.pid}] connector-orchestrator`
-    ).addDatadogTransport({
+    ).setDatadogTransport({
       service: "cluster-manager",
       source: "connector-orchestrator"
     });
@@ -26,9 +26,13 @@ async function main() {
     const connectorData = JSON.parse(
       node.process.env.CONNECTOR
     );
+    const orchestratorConfig = JSON.parse(
+      node.process.env.ORCHESTRATOR_CONFIG
+    );
     import_logger.Logger.getInstance(
       `[${node.process.pid}] ${connectorData.identifier}`
-    ).addDatadogTransport({
+    ).setDatadogTransport({
+      apiKey: orchestratorConfig.datadogApiKey,
       service: "connector-manager",
       source: "connector-orchestrator",
       tags: {

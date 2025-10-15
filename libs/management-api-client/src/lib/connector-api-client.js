@@ -23,7 +23,7 @@ module.exports = __toCommonJS(connector_api_client_exports);
 var import_management_api_client = require("./management-api-client");
 class ConnectorApiClient extends import_management_api_client.AbstractManagementApiClient {
   getActiveConnectors() {
-    return this.get("/v1/connectors", {
+    return this.get("/v1/connectors/with-config", {
       enabled: true
     });
   }

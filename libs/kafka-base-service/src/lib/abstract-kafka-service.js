@@ -20,16 +20,16 @@ __export(abstract_kafka_service_exports, {
   AbstractKafkaService: () => AbstractKafkaService
 });
 module.exports = __toCommonJS(abstract_kafka_service_exports);
-var import_types = require("@xip-online-data/types");
-var import_uuid = require("uuid");
-var import_kafkajs = require("kafkajs");
-var import_rxjs = require("rxjs");
 var import_kafkajs_msk_iam_authentication_mechanism = require("@jm18457/kafkajs-msk-iam-authentication-mechanism");
 var import_node = require("@sentry/node");
 var import_logger = require("@transai/logger");
+var import_types = require("@xip-online-data/types");
+var import_kafkajs = require("kafkajs");
+var import_rxjs = require("rxjs");
+var import_uuid = require("uuid");
 var import_in_memory = require("./in-memory.message-monitor");
-var import_redis = require("./redis.message-monitor");
 var import_kafkajs_logger = require("./kafkajs-logger");
+var import_redis = require("./redis.message-monitor");
 class AbstractKafkaService {
   constructor(baseYamlConfig, connectorTopic) {
     this.baseYamlConfig = baseYamlConfig;
@@ -217,28 +217,24 @@ class AbstractKafkaService {
   }
   getCorrespondingMonitor() {
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "in-memory") {
-      if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Using in-memory message monitor");
+      import_logger.Logger.getInstance().debug("Using in-memory message monitor");
       return new import_in_memory.InMemoryMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
       );
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "redis") {
-      if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Using Redis message monitor");
+      import_logger.Logger.getInstance().debug("Using Redis message monitor");
       return new import_redis.RedisMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
       );
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "disabled") {
-      if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug("Message monitor disabled");
+      import_logger.Logger.getInstance().debug("Message monitor disabled");
       return void 0;
     }
-    if (this.baseYamlConfig.debug)
-      import_logger.Logger.getInstance().debug("No setting, Message monitor disabled");
+    import_logger.Logger.getInstance().debug("No setting, Message monitor disabled");
     return void 0;
   }
 }

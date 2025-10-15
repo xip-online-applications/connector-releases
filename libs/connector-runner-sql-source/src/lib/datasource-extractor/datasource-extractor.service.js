@@ -30,11 +30,11 @@ __export(datasource_extractor_service_exports, {
   DatasourceExtractorService: () => DatasourceExtractorService
 });
 module.exports = __toCommonJS(datasource_extractor_service_exports);
+var import_logger = require("@transai/logger");
 var import_datasource = require("@xip-online-data/datasource");
+var import_handle_error = require("@xip-online-data/handle-error");
 var import_handlebars = __toESM(require("handlebars"));
 var import_rxjs = require("rxjs");
-var import_handle_error = require("@xip-online-data/handle-error");
-var import_logger = require("@transai/logger");
 class DatasourceExtractorService {
   #datasourceInstance;
   get #datasource() {
@@ -91,13 +91,12 @@ class DatasourceExtractorService {
         this.#queryConfig.runAfterEvents
       );
       this.#ipcBus.subscribe((values) => {
-        if (this.#config.debug)
-          import_logger.Logger.getInstance().debug(
-            "[SQL source] received values: ",
-            values,
-            this.#queryConfig.queryName,
-            this.#queryConfig.runAfterEvents
-          );
+        import_logger.Logger.getInstance().debug(
+          "[SQL source] received values: ",
+          values,
+          this.#queryConfig.queryName,
+          this.#queryConfig.runAfterEvents
+        );
         if (values.some((v) => this.#queryConfig.runAfterEvents.includes(v))) {
           import_logger.Logger.getInstance().debug(
             `${this.#queryConfig.queryIdentifier} Execute based on finished events: Finished Events ${values}, Run after ${this.#queryConfig.runAfterEvents}`

@@ -94,13 +94,14 @@ class Logger {
     }
     return Logger.instance;
   }
-  addDatadogTransport(context) {
-    if (!import_node_process.default.env["DATADOG_API_KEY"]) {
+  setDatadogTransport(context) {
+    const apiKey = context?.apiKey ?? import_node_process.default.env["DATADOG_API_KEY"];
+    if (!apiKey) {
       this.debug("DATADOG_API_KEY is not set, cannot add Datadog transport");
       return this;
     }
     const searchParams = new URLSearchParams({
-      "dd-api-key": context?.apiKey ?? import_node_process.default.env["DATADOG_API_KEY"],
+      "dd-api-key": apiKey,
       ddsource: context?.source ?? import_node_process.default.env["DD_SOURCE"] ?? "nodejs",
       service: context?.service ?? import_node_process.default.env["DD_SERVICE"] ?? "unknown",
       env: context?.env ?? import_node_process.default.env["DD_ENV"] ?? "prod"
