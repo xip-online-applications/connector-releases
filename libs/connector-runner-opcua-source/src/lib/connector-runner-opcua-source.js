@@ -40,17 +40,31 @@ class ConnectorRunnerOpcuaSource extends import_connector_runtime.ConnectorRunti
       }
       const config = await this.getConfig();
       const kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
+      const opcUaClient = new import_opcua_client.OpcuaClient(this.config.opcuaConfig);
+      try {
+        await opcUaClient.init();
+        const session = opcUaClient.getClientSession;
+        const namespaceArray = await session.readNamespaceArray();
+        this.#logger.info("Available namespaces:");
+        namespaceArray.forEach((ns, i) => {
+          this.#logger.info(`${i}: ${ns}`);
+        });
+      } catch (error) {
+        this.#logger.error("Error initializing OPC UA Client", error);
+      } finally {
+        opcUaClient.disconnect();
+      }
       config.opcUaCalls.forEach((opcUaCallConfig) => {
-        const opcUaClient = new import_opcua_client.OpcuaClient(this.config.opcuaConfig);
+        const opcUaClient2 = new import_opcua_client.OpcuaClient(this.config.opcuaConfig);
         const opcUaResultHandler = new import_opcua_result.OpcUaResultHandler(
           config,
           kafkaWrapper,
           store,
-          opcUaClient
+          opcUaClient2
         );
         return new import_opcua_extractor.OpcuaExtractorService(
           opcUaCallConfig,
-          opcUaClient,
+          opcUaClient2,
           opcUaResultHandler,
           store
         );

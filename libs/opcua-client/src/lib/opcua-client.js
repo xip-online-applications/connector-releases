@@ -47,6 +47,7 @@ class OpcuaClient {
     try {
       this.#logger.info("Connecting to OPC UA server...");
       await this.#client.connect(this.#opcuaConfig.endpointUrl);
+      this.#logger.info("Connected to OPC UA server.");
       if (this.#opcuaConfig.username && this.#opcuaConfig.password) {
         const userIdentity = {
           type: import_node_opcua.UserTokenType.UserName,
@@ -54,15 +55,11 @@ class OpcuaClient {
           password: this.#opcuaConfig.password
         };
         this.#clientSession = await this.#client.createSession(userIdentity);
+        this.#logger.info("Authenticated session created.");
       } else {
         this.#clientSession = await this.#client.createSession();
+        this.#logger.info("Anonymous session created.");
       }
-      const namespaceArray = await this.#clientSession.readNamespaceArray();
-      this.#logger.info("Available namespaces:");
-      namespaceArray.forEach((ns, i) => {
-        this.#logger.info(`${i}: ${ns}`);
-      });
-      this.#logger.info("Connected to OPC UA server.");
     } catch (error) {
       this.#logger.error("Connection error:", error);
     }
