@@ -376,7 +376,7 @@ class OpcuaClient {
       }))
     );
     const nodeKeys = nodes.map((nodeId) => {
-      const match = nodeId.match(/(?:s|i)=([^,\s]+)/);
+      const match = nodeId.match(/ns=\d+;(?:s|i)=([^,\s]+)/);
       return match ? match[1] : nodeId;
     });
     const results = [];
