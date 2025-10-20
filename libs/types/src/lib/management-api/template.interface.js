@@ -21,16 +21,16 @@ __export(template_interface_exports, {
 });
 module.exports = __toCommonJS(template_interface_exports);
 var import_zod = require("zod");
-var import_datasets = require("./dataset/datasets.interface");
-var import_semantic_triggers = require("./semantic-trigger/semantic-triggers.interface");
+var import_index = require("./index");
 const TemplateSchema = import_zod.z.object({
   identifier: import_zod.z.string().min(1),
   version: import_zod.z.string().min(1),
   name: import_zod.z.string().min(1),
   prefix: import_zod.z.string().min(1),
   description: import_zod.z.string().min(1),
-  datasets: import_datasets.DatasetsSchema,
-  semanticTriggers: import_semantic_triggers.SemanticTriggersSchema
+  datasets: import_index.DatasetsSchema,
+  semanticTriggers: import_index.SemanticTriggersSchema,
+  connectors: import_index.ConnectorsSchema.optional()
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

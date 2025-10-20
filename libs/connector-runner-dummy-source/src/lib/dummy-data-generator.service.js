@@ -20,8 +20,8 @@ __export(dummy_data_generator_service_exports, {
   DummyDataGeneratorService: () => DummyDataGeneratorService
 });
 module.exports = __toCommonJS(dummy_data_generator_service_exports);
-var import_rxjs = require("rxjs");
 var import_logger = require("@transai/logger");
+var import_rxjs = require("rxjs");
 var import_kafka_message = require("./kafka-message.factory");
 class DummyDataGeneratorService {
   static #EVENT = "event.source-sink.kafka";
@@ -48,9 +48,7 @@ class DummyDataGeneratorService {
       import_logger.Logger.getInstance().debug("Api source service is already processing");
       return;
     }
-    if (this.#config.debug) {
-      import_logger.Logger.getInstance().debug("Generating dummy data");
-    }
+    import_logger.Logger.getInstance().debug("Generating dummy data");
     this.#processing = true;
     try {
       const [messages, topic] = (0, import_kafka_message.buildKafkaMessage)(
@@ -68,9 +66,7 @@ class DummyDataGeneratorService {
         DummyDataGeneratorService.#EVENT,
         10
       );
-      if (this.#config.debug) {
-        import_logger.Logger.getInstance().debug("Sending messages", messages.length, topic);
-      }
+      import_logger.Logger.getInstance().debug("Sending messages", messages.length, topic);
       const x = 3;
       const random = Math.floor(Math.random() * x) + 1;
       await this.#kafkaSourceService.send(messages, topic);

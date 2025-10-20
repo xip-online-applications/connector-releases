@@ -20,8 +20,8 @@ __export(rdkafka_base_service_exports, {
   RdKafkaBaseService: () => RdKafkaBaseService
 });
 module.exports = __toCommonJS(rdkafka_base_service_exports);
-var import_types = require("@xip-online-data/types");
 var import_logger = require("@transai/logger");
+var import_types = require("@xip-online-data/types");
 var import_abstract_rdkafka_service = require("./abstract-rdkafka-service");
 class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
   constructor() {
@@ -100,19 +100,17 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         }, 5e3);
         try {
           let callbackIdentifier = `${message.tenantIdentifier}_${message.eventType}`;
-          if (this.baseYamlConfig.debug)
-            import_logger.Logger.getInstance().debug(
-              `Received message from topic ${callbackIdentifier}: ${JSON.stringify(message)}`
-            );
+          import_logger.Logger.getInstance().debug(
+            `Received message from topic ${callbackIdentifier}: ${JSON.stringify(message)}`
+          );
           if (!this.callbackWrappers.has(callbackIdentifier)) {
             callbackIdentifier = RdKafkaBaseService.DEFAULT_CALLBACK_EVENT_TYPE;
           }
           const callbackWrapper = this.callbackWrappers.get(callbackIdentifier);
           if (!callbackWrapper) {
-            if (this.baseYamlConfig.debug)
-              import_logger.Logger.getInstance().debug(
-                `Callback function for topic ${callbackIdentifier} not set`
-              );
+            import_logger.Logger.getInstance().debug(
+              `Callback function for topic ${callbackIdentifier} not set`
+            );
             return;
           }
           for (const callback of callbackWrapper) {
@@ -147,10 +145,9 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         timestamp: (/* @__PURE__ */ new Date()).getTime()
       };
       const topic = `${message.tenantIdentifier}${this.processedTopic}`;
-      if (this.baseYamlConfig.debug)
-        import_logger.Logger.getInstance().debug(
-          `Sending message to logs topic ${topic} ${JSON.stringify(returnMessage)}`
-        );
+      import_logger.Logger.getInstance().debug(
+        `Sending message to logs topic ${topic} ${JSON.stringify(returnMessage)}`
+      );
       await this.producer.send({
         topic,
         messages: [

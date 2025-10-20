@@ -30,11 +30,11 @@ __export(api_extractor_service_exports, {
   ApiExtractorService: () => ApiExtractorService
 });
 module.exports = __toCommonJS(api_extractor_service_exports);
-var import_rxjs = require("rxjs");
+var import_logger = require("@transai/logger");
 var import_axios = __toESM(require("axios"));
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
-var import_logger = require("@transai/logger");
+var import_rxjs = require("rxjs");
 var import_helper = require("../helper.functions");
 class ApiExtractorService {
   #config;
@@ -112,10 +112,9 @@ class ApiExtractorService {
     const latestOffset = await this.#offsetStore.getOffset(
       (0, import_helper.generateOffsetIdentifier)(this.#apiConfig)
     );
-    if (this.#config.debug)
-      import_logger.Logger.getInstance().debug(
-        `Latest offset for ${this.#apiConfig.name}: ${JSON.stringify(latestOffset)}`
-      );
+    import_logger.Logger.getInstance().debug(
+      `Latest offset for ${this.#apiConfig.name}: ${JSON.stringify(latestOffset)}`
+    );
     const body = this.getBody(latestOffset, this.#apiConfig.batchSize ?? 10);
     const url = this.getUrl(latestOffset, this.#apiConfig.batchSize ?? 10);
     import_logger.Logger.getInstance().debug(

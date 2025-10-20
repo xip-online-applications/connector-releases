@@ -210,8 +210,8 @@ class GraphMailClient {
       (h) => h.name.toLowerCase() === "references"
     )?.value;
     return {
-      // uid is filled by caller based on lastModifiedDateTime
-      uid: 0,
+      deltaTimestamp: (/* @__PURE__ */ new Date()).getTime(),
+      deltaId: "",
       attachments: [],
       subject: m.subject,
       references,
@@ -343,8 +343,8 @@ class GraphMailClient {
     const html = typeof parsed.html === "string" ? parsed.html : void 0;
     const text = parsed.text || (html ? (0, import_html_to_text.htmlToText)(html) : "");
     return {
-      uid: 0,
-      // filled by caller
+      deltaTimestamp: (/* @__PURE__ */ new Date()).getTime(),
+      deltaId: "",
       attachments: parsed.attachments.map((attachment) => ({
         text: attachment.contentType === "application/json" ? attachment.content.toString() : void 0,
         contentType: attachment.contentType,
@@ -387,17 +387,26 @@ class GraphMailClient {
     }
     return out;
   }
-  async readMail(mailbox, lastSeenUid, limit) {
+  async readMail(mailbox, lastSeenTimestamp, lastSeenId, limit) {
+    function isAfterCursor(t, id, lastTime, lastId) {
+      if (t > lastTime)
+        return true;
+      if (t < lastTime)
+        return false;
+      if (!lastId)
+        return true;
+      return id > lastId;
+    }
     const messages = [];
     try {
       await this.init();
       const folderId = await this.getFolderId(mailbox);
-      const fromEpoch = Math.max(0, (lastSeenUid || 0) - OVERLAP_MS);
+      const fromEpoch = Math.max(0, (lastSeenTimestamp || 0) - OVERLAP_MS);
       const graphMsgs = await this.listMessages(folderId, fromEpoch, limit);
       const seenIds = /* @__PURE__ */ new Set();
       for (const gm of graphMsgs) {
-        const graphModifiedMs = gm.lastModifiedDateTime ? new Date(gm.lastModifiedDateTime).getTime() : gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : Date.now();
-        if (graphModifiedMs <= lastSeenUid)
+        const receivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : gm.sentDateTime ? new Date(gm.sentDateTime).getTime() : 0;
+        if (!isAfterCursor(receivedMs, gm.id, lastSeenTimestamp || 0, lastSeenId))
           continue;
         if (seenIds.has(gm.id))
           continue;
@@ -417,9 +426,10 @@ class GraphMailClient {
           await (0, import_mail_attachments.addPdfJsonAttachments)(parsed);
           const mm = GraphMailClient.parsedEmlToMailMessage(
             parsed,
-            new Date(graphModifiedMs)
+            new Date(receivedMs)
           );
-          mm.uid = graphModifiedMs;
+          mm.deltaTimestamp = receivedMs;
+          mm.deltaId = gm.id;
           const attachments = [];
           for (const att of parsed.attachments || []) {
             const ct = (att.contentType || "").toLowerCase();
@@ -461,7 +471,11 @@ class GraphMailClient {
       );
       throw err;
     }
-    messages.sort((a, b) => a.uid - b.uid);
+    messages.sort((a, b) => {
+      if (a.deltaTimestamp !== b.deltaTimestamp)
+        return a.deltaTimestamp - b.deltaTimestamp;
+      return a.deltaId.localeCompare(b.deltaId);
+    });
     return messages;
   }
   async reply(from, messageId, mailBody, concept = true) {

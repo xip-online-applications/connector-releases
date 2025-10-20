@@ -15,19 +15,15 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var template_implementation_overrides_interface_exports = {};
-__export(template_implementation_overrides_interface_exports, {
-  TemplateImplementationOverridesSchema: () => TemplateImplementationOverridesSchema
+var connectors_interface_exports = {};
+__export(connectors_interface_exports, {
+  ConnectorsSchema: () => ConnectorsSchema
 });
-module.exports = __toCommonJS(template_implementation_overrides_interface_exports);
+module.exports = __toCommonJS(connectors_interface_exports);
 var import_zod = require("zod");
-var import_index = require("./index");
-const TemplateImplementationOverridesSchema = import_zod.z.object({
-  datasets: import_index.DatasetsSchema.optional(),
-  semanticTriggers: import_index.SemanticTriggersSchema.optional(),
-  connectors: import_index.ConnectorsSchema.optional()
-});
+var import__ = require("../index");
+const ConnectorsSchema = import_zod.z.record(import__.ConnectorSchema.or(import_zod.z.boolean()));
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  TemplateImplementationOverridesSchema
+  ConnectorsSchema
 });

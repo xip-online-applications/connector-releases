@@ -55,10 +55,7 @@ class ConnectorRuntime {
     this.connectorConfig = void 0;
     this.messageSubject = new import_rxjs.Subject();
     this.CONNECTOR_IDENTIFIER = connector.identifier;
-    this.log = import_logger.Logger.getInstance(
-      connector.identifier,
-      apiConfig.debug ? import_logger.LogLevels.debug : import_logger.LogLevels.info
-    );
+    this.log = import_logger.Logger.getInstance(connector.identifier);
     const tmpdir = process.env["TRANSAI_TMP_DIR"];
     if (tmpdir) {
       this.log.debug(

@@ -30,10 +30,10 @@ __export(api_result_handler_exports, {
   ApiResultHandler: () => ApiResultHandler
 });
 module.exports = __toCommonJS(api_result_handler_exports);
-var import_html_entities = require("html-entities");
 var import_logger = require("@transai/logger");
-var import_helper = require("./helper.functions");
+var import_html_entities = require("html-entities");
 var import_jsonata = __toESM(require("jsonata"));
+var import_helper = require("./helper.functions");
 class ApiResultHandler {
   constructor(config, kafkaService, offsetStore) {
     this.config = config;
@@ -44,17 +44,16 @@ class ApiResultHandler {
   #logger;
   async handleResult(result, apiConfig) {
     this.#logger.debug("Handling result for API:", apiConfig.name);
-    this.#logger.debug(result);
     const parsedContent = JSON.parse((0, import_html_entities.decode)(result.data));
     const keys = Object.keys(parsedContent);
     if (keys.length === 0) {
       return;
     }
-    if (keys.length === 1) {
+    if (apiConfig.listField) {
+      await this.sendBatch(parsedContent, apiConfig);
+    } else if (keys.length === 1) {
       import_logger.Logger.getInstance().debug("Handling Betech way", apiConfig.name, keys);
       await this.handleBetechWay(result, apiConfig);
-    } else if (apiConfig.listField) {
-      await this.sendBatch(parsedContent, apiConfig);
     } else {
       await this.handleSingleRecord(parsedContent, apiConfig);
     }
@@ -90,8 +89,9 @@ class ApiResultHandler {
     }
   }
   async sendBatch(parsedContent, apiConfig) {
-    const list = parsedContent[apiConfig.listField ?? ""];
-    if (list && Array.isArray(list)) {
+    const expression = (0, import_jsonata.default)(apiConfig.listField ?? "");
+    const list = await expression.evaluate(parsedContent);
+    if (list && Array.isArray(list) && list.length > 0) {
       import_logger.Logger.getInstance().debug(
         `Found ${list.length} records in list field ${apiConfig.listField}`
       );
@@ -100,17 +100,7 @@ class ApiResultHandler {
       } else {
         await this.kafkaService.sendDocuments(list, this.config, apiConfig);
       }
-      const item = list[list.length - 1];
-      let lastupdatedstring = void 0;
-      if (apiConfig.incrementalField) {
-        const expr = (0, import_jsonata.default)(apiConfig.incrementalField);
-        lastupdatedstring = await expr.evaluate(item);
-        this.#logger.debug(`Found last updated string: ${lastupdatedstring} using expression ${apiConfig.incrementalField}`);
-      }
-      this.storeTimestamp(
-        lastupdatedstring ? new Date(lastupdatedstring) : /* @__PURE__ */ new Date(),
-        apiConfig
-      );
+      await this.storeTimestamp(list[list.length - 1], apiConfig);
     } else {
       import_logger.Logger.getInstance().debug(
         `No records found in list field ${apiConfig.listField}, skipping. ${JSON.stringify(parsedContent)}`
@@ -139,12 +129,34 @@ class ApiResultHandler {
       );
     }
     if (success) {
-      this.storeTimestamp(/* @__PURE__ */ new Date(), apiConfig);
+      await this.storeTimestamp(parsedContent, apiConfig);
     }
   }
-  storeTimestamp(timestamp, apiConfig) {
+  async storeTimestamp(item, apiConfig) {
+    let lastupdatedstring = "";
+    let lastid = "";
+    if (apiConfig.incrementalField) {
+      const expr = (0, import_jsonata.default)(apiConfig.incrementalField);
+      lastupdatedstring = await expr.evaluate(item);
+      this.#logger.debug(
+        `Found last updated string: ${lastupdatedstring} using expression ${apiConfig.incrementalField}`
+      );
+    }
+    if (apiConfig.keyField) {
+      const expr = (0, import_jsonata.default)(apiConfig.keyField);
+      lastid = await expr.evaluate(item);
+      this.#logger.debug(
+        `Found last id: ${lastid} using expression ${apiConfig.keyField}`
+      );
+    }
+    const date = lastupdatedstring === "" ? /* @__PURE__ */ new Date() : new Date(lastupdatedstring);
     this.offsetStore.setOffset(
-      { timestamp: timestamp.getTime(), id: 0, rawTimestamp: 0 },
+      {
+        timestamp: date.getTime(),
+        date: date.toDateString(),
+        id: lastid,
+        rawTimestamp: lastupdatedstring
+      },
       (0, import_helper.generateOffsetIdentifier)(apiConfig)
     );
   }

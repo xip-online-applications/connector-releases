@@ -61,8 +61,6 @@ function wrapAsync(hbs = import_handlebars.default, debug = false) {
   }
   hbs.registerHelper = (nameOrMap, helper) => {
     if (typeof nameOrMap === "string" && helper) {
-      if (debug)
-        console.log(`[wrapAsync] wrapping helper "${nameOrMap}"`);
       origRegisterHelper(nameOrMap, wrapHelper(helper));
       return;
     }
@@ -70,8 +68,6 @@ function wrapAsync(hbs = import_handlebars.default, debug = false) {
       const map = nameOrMap;
       const wrapped = {};
       for (const [n, fn] of Object.entries(map)) {
-        if (debug)
-          console.log(`[wrapAsync] wrapping helper "${n}" (map)`);
         wrapped[n] = wrapHelper(fn);
       }
       origRegisterHelper(wrapped);
@@ -87,13 +83,7 @@ function wrapAsync(hbs = import_handlebars.default, debug = false) {
     const toPromise = (v) => v && typeof v.then === "function" ? Promise.resolve(v) : Promise.resolve(v);
     return toPromise(out0).then((out1) => {
       if (ctx.promises.length === 0) {
-        if (debug)
-          console.log("[wrapAsync] no async helpers, returning out1");
         return String(out1);
-      }
-      if (debug) {
-        console.log("[wrapAsync] awaiting", ctx.promises.length, "promises");
-        console.log("[wrapAsync] first pass out (raw):", String(out1));
       }
       return Promise.all(ctx.promises).then((results) => {
         let s = String(out1);
@@ -103,23 +93,17 @@ function wrapAsync(hbs = import_handlebars.default, debug = false) {
             return r.toString();
           return String(r ?? "");
         });
-        if (debug)
-          console.log("[wrapAsync] after replace:", s);
         return s;
       });
     });
   }
   hbs.compile = function(...args) {
-    const tmpl = origCompile(...args);
-    if (debug)
-      console.log("[wrapAsync] compile patched");
+    const tmpl = origCompile.apply(this, args);
     return (data) => renderWithAsync(tmpl, data);
   };
   if (origTemplate) {
     hbs.template = function(...args) {
       const tmpl = origTemplate(...args);
-      if (debug)
-        console.log("[wrapAsync] template patched");
       return (data) => renderWithAsync(tmpl, data);
     };
   }

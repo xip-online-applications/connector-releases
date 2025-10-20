@@ -21,9 +21,9 @@ __export(connector_runner_file_copy_exports, {
 });
 module.exports = __toCommonJS(connector_runner_file_copy_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
-var import_file_system_connector = require("@xip-online-data/file-system-connector");
 var import_logger = require("@transai/logger");
+var import_file_system_connector = require("@xip-online-data/file-system-connector");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_file_handler = require("./file-handler.factory");
 class ConnectorRunnerFileCopy extends import_connector_runtime.ConnectorRuntime {
   constructor() {

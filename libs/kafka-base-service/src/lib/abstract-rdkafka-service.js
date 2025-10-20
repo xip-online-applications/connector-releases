@@ -20,13 +20,13 @@ __export(abstract_rdkafka_service_exports, {
   AbstractRdKafkaService: () => AbstractRdKafkaService
 });
 module.exports = __toCommonJS(abstract_rdkafka_service_exports);
-var import_types = require("@xip-online-data/types");
-var import_uuid = require("uuid");
 var import_kafka_javascript = require("@confluentinc/kafka-javascript");
-var import_rxjs = require("rxjs");
 var import_node = require("@sentry/node");
 var import_logger = require("@transai/logger");
+var import_types = require("@xip-online-data/types");
 var import_aws_msk_iam_sasl_signer_js = require("aws-msk-iam-sasl-signer-js");
+var import_rxjs = require("rxjs");
+var import_uuid = require("uuid");
 var import_in_memory = require("./in-memory.message-monitor");
 var import_redis = require("./redis.message-monitor");
 const getAwsCredentials = (awsSasl) => () => {
@@ -231,28 +231,24 @@ class AbstractRdKafkaService {
   }
   getCorrespondingMonitor() {
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "in-memory") {
-      if (this.baseYamlConfig.debug)
-        this.logger.debug("Using in-memory message monitor");
+      this.logger.debug("Using in-memory message monitor");
       return new import_in_memory.InMemoryMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
       );
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "redis") {
-      if (this.baseYamlConfig.debug)
-        this.logger.debug("Using Redis message monitor");
+      this.logger.debug("Using Redis message monitor");
       return new import_redis.RedisMessageMonitor(
         this.baseYamlConfig.kafka.messageMonitor,
         this.baseYamlConfig
       );
     }
     if (this.baseYamlConfig.kafka.messageMonitor?.type === "disabled") {
-      if (this.baseYamlConfig.debug)
-        this.logger.debug("Message monitor disabled");
+      this.logger.debug("Message monitor disabled");
       return void 0;
     }
-    if (this.baseYamlConfig.debug)
-      this.logger.debug("No setting, Message monitor disabled");
+    this.logger.debug("No setting, Message monitor disabled");
     return void 0;
   }
 }

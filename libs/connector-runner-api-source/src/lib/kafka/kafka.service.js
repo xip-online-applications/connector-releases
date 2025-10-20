@@ -20,20 +20,25 @@ __export(kafka_service_exports, {
   KafkaService: () => KafkaService
 });
 module.exports = __toCommonJS(kafka_service_exports);
+var import_logger = require("@transai/logger");
 var import_uuid = require("uuid");
 var import_helper = require("../helper.functions");
-var import_logger = require("@transai/logger");
 const getMetadataFromObject = (obj, metadata) => {
   try {
     return Object.keys(metadata).reduce((acc, key) => {
       const requiredVal = metadata[key];
-      if (obj[requiredVal]) {
+      if (requiredVal in obj) {
         acc[key] = obj[requiredVal];
       }
       return acc;
     }, {});
   } catch (e) {
-    import_logger.Logger.getInstance().debug("Error while getting metadata from object", e, obj, metadata);
+    import_logger.Logger.getInstance().debug(
+      "Error while getting metadata from object",
+      e,
+      obj,
+      metadata
+    );
     return {};
   }
 };
@@ -43,7 +48,10 @@ class KafkaService {
   }
   async sendDocuments(records, config, apiConfig, metadata = {}) {
     const kafkaPayload = records.map((record) => {
-      const additionalMetadata = getMetadataFromObject(record, apiConfig.metadata ?? {});
+      const additionalMetadata = getMetadataFromObject(
+        record,
+        apiConfig.metadata ?? {}
+      );
       return {
         type: "SOURCE",
         eventId: (0, import_uuid.v4)(),
@@ -69,7 +77,10 @@ class KafkaService {
   }
   async sendMetric(records, config, apiConfig, metadata = {}) {
     const kafkaPayload = records.map((body) => {
-      const additionalMetadata = getMetadataFromObject(body, apiConfig.metadata ?? {});
+      const additionalMetadata = getMetadataFromObject(
+        body,
+        apiConfig.metadata ?? {}
+      );
       return {
         type: "SOURCE",
         eventId: (0, import_uuid.v4)(),
@@ -87,7 +98,7 @@ class KafkaService {
       };
     });
     const topic = (0, import_helper.generateKafkaTopic)(config);
-    return await this.kafkaSourceService.send(kafkaPayload, topic);
+    return this.kafkaSourceService.send(kafkaPayload, topic);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

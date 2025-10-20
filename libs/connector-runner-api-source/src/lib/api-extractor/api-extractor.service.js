@@ -30,14 +30,14 @@ __export(api_extractor_service_exports, {
   ApiExtractorService: () => ApiExtractorService
 });
 module.exports = __toCommonJS(api_extractor_service_exports);
-var import_rxjs = require("rxjs");
 var import_logger = require("@transai/logger");
+var import_helper_functions = require("@xip-online-data/helper-functions");
 var import_handlebars = __toESM(require("handlebars"));
 var import_handlebars_helpers = __toESM(require("handlebars-helpers"));
 var import_html_entities = require("html-entities");
 var import_jsonata = __toESM(require("jsonata"));
+var import_rxjs = require("rxjs");
 var import_helper = require("../helper.functions");
-var import_asyncHelpers = require("../../../../helper-functions/src/lib/asyncHelpers");
 class ApiExtractorService {
   #api;
   #config;
@@ -65,7 +65,7 @@ class ApiExtractorService {
       `Api source service initialized: ${this.#apiConfig.name} with interval of ${this.#apiConfig.interval} seconds`
     );
     const handlebars = import_handlebars.default.create();
-    this.#handlebarsInstance = (0, import_asyncHelpers.wrapAsync)(handlebars, true);
+    this.#handlebarsInstance = (0, import_helper_functions.wrapAsync)(handlebars, true);
     (0, import_handlebars_helpers.default)({ handlebars: this.#handlebarsInstance });
     this.#handlebarsInstance?.registerHelper(
       "formatISODate",
@@ -74,13 +74,10 @@ class ApiExtractorService {
         return date.toISOString();
       }
     );
-    this.#handlebarsInstance.registerHelper(
-      "jsonata",
-      function(exprStr) {
-        const expr = (0, import_jsonata.default)(exprStr);
-        return expr.evaluate(this);
-      }
-    );
+    this.#handlebarsInstance.registerHelper("jsonata", (exprStr) => {
+      const expr = (0, import_jsonata.default)(exprStr);
+      return expr.evaluate(this);
+    });
     if (apiConfig.body) {
       this.#handlebarsInstance?.compile(apiConfig.body, {
         strict: true
@@ -96,18 +93,6 @@ class ApiExtractorService {
     this.#urlTemplate = this.#handlebarsInstance?.compile(apiConfig.url, {
       strict: true
     });
-    this.#logger.debug(
-      "HB instance id",
-      this.#handlebarsInstance.__ASYNC_WRAPPED__,
-      import_handlebars.default.VERSION
-    );
-    this.#logger.debug(
-      "Has jsonata helper?",
-      typeof this.#handlebarsInstance.helpers?.jsonata
-    );
-    for (const [name, fn] of Object.entries(import_handlebars.default.helpers)) {
-      this.#logger.debug(name, "wrapped?", !!fn.__ASYNC_WRAPPED__);
-    }
     this.#subscriptions.push(
       (0, import_rxjs.interval)(this.#apiConfig.interval * 1e3).subscribe(async () => {
         await this.extract();
@@ -130,10 +115,9 @@ class ApiExtractorService {
       const latestOffset = await this.#offsetStore.getOffset(
         (0, import_helper.generateOffsetIdentifier)(this.#apiConfig)
       );
-      if (this.#config.debug)
-        import_logger.Logger.getInstance().debug(
-          `Latest offset for ${this.#apiConfig.name}: ${JSON.stringify(latestOffset)}`
-        );
+      import_logger.Logger.getInstance().debug(
+        `Latest offset for ${this.#apiConfig.name}: ${JSON.stringify(latestOffset)}`
+      );
       const body = await this.getBody(
         latestOffset,
         this.#apiConfig.batchSize ?? 10
@@ -153,7 +137,11 @@ class ApiExtractorService {
           const resultList = await selector.evaluate(parsedContent);
           for (const row of resultList) {
             const detailUrl = await this.getDetailUrl(row);
-            const detailResult = await this.#api.executeApi(detailUrl);
+            const detailResult = await this.#api.executeApi(detailUrl).catch((error) => {
+              throw new Error(
+                `Error while extracting data from api source service ${error.message}`
+              );
+            });
             await this.#apiResultHandler.handleResult(
               detailResult,
               this.#apiConfig
@@ -163,7 +151,6 @@ class ApiExtractorService {
           await this.#apiResultHandler.handleResult(result, this.#apiConfig);
         }
       } catch (error) {
-        this.#logger.debug(error);
         this.#logger.debug(
           `Error while extracting data from api source service: ${JSON.stringify(error)}`
         );
@@ -187,9 +174,7 @@ class ApiExtractorService {
     if (!this.#urlTemplate)
       return "";
     const maybe = this.#urlTemplate({ ...offset, limit });
-    this.#logger.debug("template() returned thenable?", !!maybe?.then);
     const out = await maybe;
-    this.#logger.debug("rendered url (type):", typeof out, out);
     return String(out);
   }
   async getDetailUrl(item) {

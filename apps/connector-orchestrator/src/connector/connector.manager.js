@@ -21,10 +21,9 @@ __export(connector_manager_exports, {
 });
 module.exports = __toCommonJS(connector_manager_exports);
 var import_logger = require("@transai/logger");
-var import_log_level = require("../util/log-level");
 var import_connector_type = require("./connector-type");
 class ConnectorManager {
-  constructor(node) {
+  constructor(node, connectorData) {
     this.start = async () => {
       this.#logger.info(
         `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} started`
@@ -64,13 +63,8 @@ class ConnectorManager {
       await connector.start();
     };
     this.#node = node;
-    this.#connectorData = JSON.parse(
-      this.#node.process.env.CONNECTOR
-    );
-    this.#logger = import_logger.Logger.getInstance(
-      `${this.#connectorData.identifier} - ${this.#node.process.pid}`,
-      (0, import_log_level.getLogLevel)(this.#node)
-    );
+    this.#connectorData = connectorData;
+    this.#logger = import_logger.Logger.getInstance();
   }
   #node;
   #connectorData;

@@ -39,7 +39,6 @@ class ConnectorRunnerOpcuaSource extends import_connector_runtime.ConnectorRunti
         );
       }
       const config = await this.getConfig();
-      this.#logger.debug(`Config loaded ...`, config);
       const kafkaWrapper = new import_kafka.KafkaService(this.kafkaService);
       config.opcUaCalls.forEach((opcUaCallConfig) => {
         const opcUaClient = new import_opcua_client.OpcuaClient(this.config.opcuaConfig);

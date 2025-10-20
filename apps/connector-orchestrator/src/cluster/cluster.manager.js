@@ -23,9 +23,10 @@ module.exports = __toCommonJS(cluster_manager_exports);
 var import_logger = require("@transai/logger");
 var import_rxjs = require("rxjs");
 var import_check_two_arrays = require("../util/check-two-arrays");
-var import_log_level = require("../util/log-level");
 class ClusterManager {
   constructor(node, managementApiClient) {
+    // As a backup we use eu-west-1 as default region
+    this.#DEFAULT_AWS_REGION = "eu-west-1";
     this.#enabledConnectors = [];
     this.#startedConnectorProcesses = [];
     this.start = () => {
@@ -39,7 +40,8 @@ class ClusterManager {
           `Starting process type: ${connector.connectorType}, Identifier: ${connector.identifier}`
         );
         const newProcess = this.#node.cluster.fork({
-          CONNECTOR: JSON.stringify(connector)
+          CONNECTOR: JSON.stringify(connector),
+          ORCHESTRATOR_CONFIG: JSON.stringify(this.#orchestratorConfig)
         });
         newProcess.on("message", (message) => {
           broadcastMessage(message);
@@ -112,12 +114,12 @@ class ClusterManager {
         this.#logger.info(
           `Stopping process for connector ${connector.identifier}, ${connector.connectorType}`
         );
-        const process = this.#startedConnectorProcesses.find(
+        const process2 = this.#startedConnectorProcesses.find(
           (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
         );
-        if (process) {
+        if (process2) {
           try {
-            process.worker.kill();
+            process2.worker.kill();
             this.#logger.info(
               `${connector.identifier} - ${connector.connectorType} Process killed`
             );
@@ -159,22 +161,42 @@ class ClusterManager {
         this.#logger.info(
           "Last updated timestamp has changed. Check for new or changed connectors"
         );
-        const newEnabledConnectors = await this.#managementApiClient.getActiveConnectors().catch((error) => {
+        const fullOrchestratorConfig = await this.#managementApiClient.getActiveConnectors().catch((error) => {
           this.#logger.error("Error while getting active connectors", error);
-          return this.#enabledConnectors;
+          return null;
         });
-        this.#logger.info(
-          `received ${newEnabledConnectors.length} enabled connectors`
+        if (fullOrchestratorConfig === null) {
+          return;
+        }
+        this.#orchestratorConfig = fullOrchestratorConfig.config;
+        if (this.#orchestratorConfig.datadogApiKey) {
+          this.#logger.setDatadogTransport({
+            apiKey: this.#orchestratorConfig.datadogApiKey,
+            service: "cluster-manager",
+            source: "connector-orchestrator"
+          });
+        }
+        let defaultTenantIdentifier = process.env["TENANT_IDENTIFIER"] ?? null;
+        if (defaultTenantIdentifier === "") {
+          defaultTenantIdentifier = null;
+        }
+        const newConnectors = (fullOrchestratorConfig.connectors ?? this.#enabledConnectors).map(
+          (connector) => this.#buildConnectorConfiguration(
+            connector,
+            fullOrchestratorConfig,
+            defaultTenantIdentifier
+          )
         );
+        this.#logger.info(`received ${newConnectors.length} enabled connectors`);
         const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
           this.#enabledConnectors,
-          newEnabledConnectors
+          newConnectors
         );
         const toRemove = comparisonResult.onlyInA;
         const toAdd = comparisonResult.onlyInB;
         toRemove.forEach(stopProcess);
         toAdd.forEach(startProcess);
-        this.#enabledConnectors = [...newEnabledConnectors];
+        this.#enabledConnectors = [...newConnectors];
         this.#lastUpdatedTimestamp = newLastUpdatedTimestamp;
       };
       let mutex = false;
@@ -207,19 +229,44 @@ class ClusterManager {
         })
       );
     };
+    this.#buildConnectorConfiguration = (connector, fullOrchestratorConfig, defaultTenantIdentifier) => {
+      const tenantIdentifier = defaultTenantIdentifier ?? connector.tenantIdentifier;
+      return {
+        ...connector,
+        tenantIdentifier,
+        config: {
+          ...connector.config,
+          tenantIdentifier,
+          processIdentifier: connector.config.processIdentifier ?? `${tenantIdentifier}-${connector.identifier}`,
+          kafka: {
+            ...connector.config.kafka ?? {},
+            brokers: connector.config.kafka?.brokers ?? fullOrchestratorConfig.config.kafkaBrokers,
+            groupId: connector.config.kafka?.groupId ?? `${tenantIdentifier}-${connector.identifier}-group`,
+            clientId: connector.config.kafka?.clientId ?? `${tenantIdentifier}-${connector.identifier}-client`,
+            useConfluentLibrary: connector.config.kafka?.useConfluentLibrary ?? true,
+            sasl: {
+              region: connector.config.kafka?.sasl?.region ?? process.env["AWS_REGION"] ?? fullOrchestratorConfig.config.awsRegion ?? this.#DEFAULT_AWS_REGION,
+              accessKeyId: connector.config.kafka?.sasl?.accessKeyId ?? process.env["AWS_ACCESS_KEY_ID"] ?? fullOrchestratorConfig.config.awsAccessKeyId,
+              secretAccessKey: connector.config.kafka?.sasl?.secretAccessKey ?? process.env["AWS_SECRET_ACCESS_KEY"] ?? fullOrchestratorConfig.config.awsSecretAccessKey,
+              mechanism: "aws"
+            }
+          }
+        }
+      };
+    };
     this.#node = node;
     this.#managementApiClient = managementApiClient;
-    this.#logger = import_logger.Logger.getInstance(
-      "connector-orchestrator",
-      (0, import_log_level.getLogLevel)(this.#node)
-    );
+    this.#logger = import_logger.Logger.getInstance();
   }
+  #DEFAULT_AWS_REGION;
   #node;
   #managementApiClient;
   #logger;
   #lastUpdatedTimestamp;
+  #orchestratorConfig;
   #enabledConnectors;
   #startedConnectorProcesses;
+  #buildConnectorConfiguration;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

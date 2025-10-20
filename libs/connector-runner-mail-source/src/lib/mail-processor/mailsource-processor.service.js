@@ -21,12 +21,14 @@ __export(mailsource_processor_service_exports, {
 });
 module.exports = __toCommonJS(mailsource_processor_service_exports);
 var import_logger = require("@transai/logger");
+var import_handle_error = require("@xip-online-data/handle-error");
 var import_rxjs = require("rxjs");
 var import_uuid = require("uuid");
 var import_helper = require("../helper.functions");
 class MailsourceProcessorService {
   constructor(mailSourceConfig, config, kafkaService, mailClient, offsetStore) {
     this.#processing = false;
+    this.#processingTries = 0;
     this.sendMetricsToKafka = async (contents) => {
       let kafkaPayload;
       if (Array.isArray(contents)) {
@@ -111,6 +113,7 @@ class MailsourceProcessorService {
     this.#offsetStore = offsetStore;
   }
   #processing;
+  #processingTries;
   #mailboxConfig;
   #mailSourceConfig;
   #kafkaService;
@@ -134,16 +137,23 @@ class MailsourceProcessorService {
   }
   async process() {
     if (this.#processing) {
+      if (this.#processingTries > 10) {
+        (0, import_handle_error.handleError)("Exceeded processingTries. Exit");
+        return;
+      }
       this.#logger.debug(
         `Mailsource processor service is already processing: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
       );
+      this.#processingTries += 1;
       return;
     }
     this.#processing = true;
+    this.#processingTries = 0;
     try {
       await this.processMailbox(this.#mailboxConfig);
     } finally {
       this.#processing = false;
+      this.#processingTries = 0;
     }
   }
   async processMailbox(config) {
@@ -153,10 +163,12 @@ class MailsourceProcessorService {
     const lastOffset = await this.#offsetStore.getOffset(
       (0, import_helper.generateOffsetIdentifier)(this.#mailboxConfig)
     );
-    const lastMessageId = lastOffset?.id || 0;
+    const lastMessageId = lastOffset?.id || "";
+    const lastMessageTimestamp = lastOffset?.timestamp || 0;
     this.#logger.info("Last message ID", lastMessageId);
     const messages = await this.#mailClient.readMail(
       config.mailbox,
+      lastMessageTimestamp,
       lastMessageId,
       config.limit ?? 10
     );
@@ -171,15 +183,14 @@ class MailsourceProcessorService {
       );
       return;
     }
-    this.#logger.info(
-      `Processed ${messages.length} messages, new last message ID`,
-      messages[messages.length - 1].uid
+    this.storeId(
+      messages[messages.length - 1].deltaTimestamp,
+      messages[messages.length - 1].deltaId
     );
-    this.storeId(messages[messages.length - 1].uid ?? 0);
   }
-  storeId(id) {
+  storeId(timestamp, id) {
     this.#offsetStore.setOffset(
-      { timestamp: 0, id, rawTimestamp: (/* @__PURE__ */ new Date()).toISOString() },
+      { timestamp, id, rawTimestamp: (/* @__PURE__ */ new Date()).toISOString() },
       (0, import_helper.generateOffsetIdentifier)(this.#mailboxConfig)
     );
   }

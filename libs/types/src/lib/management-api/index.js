@@ -38,20 +38,26 @@ __export(management_api_exports, {
 module.exports = __toCommonJS(management_api_exports);
 __reExport(management_api_exports, require("./type-enums"), module.exports);
 __reExport(management_api_exports, require("./action-definition.interface"), module.exports);
-__reExport(management_api_exports, require("./template-implementation.interface"), module.exports);
-__reExport(management_api_exports, require("./template.interface"), module.exports);
 __reExport(management_api_exports, require("./tenant.interface"), module.exports);
 __reExport(management_api_exports, require("./cube-dataset.interface"), module.exports);
 __reExport(management_api_exports, require("./event-origin.interface"), module.exports);
 __reExport(management_api_exports, require("./workflow"), module.exports);
 __reExport(management_api_exports, require("./semantic-trigger"), module.exports);
+__reExport(management_api_exports, require("./connector-orchestrator-config.interface"), module.exports);
 __reExport(management_api_exports, require("./chart.interface"), module.exports);
+__reExport(management_api_exports, require("./dashboard.interface"), module.exports);
+__reExport(management_api_exports, require("./semantic-trigger"), module.exports);
 __reExport(management_api_exports, require("./dataset/datasets.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/dataset.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/dataset-record.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/collection.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/filters.interface"), module.exports);
 __reExport(management_api_exports, require("./dataset/filter.interface"), module.exports);
+__reExport(management_api_exports, require("./connector/connector.interface"), module.exports);
+__reExport(management_api_exports, require("./connector/connectors.interface"), module.exports);
+__reExport(management_api_exports, require("./template.interface"), module.exports);
+__reExport(management_api_exports, require("./template-implementation.interface"), module.exports);
+__reExport(management_api_exports, require("./template-implementation-overrides.interface"), module.exports);
 var import_filter_group = require("./dataset/filter-group.interface");
 var import_dimensions = require("./dataset/dimensions.interface");
 var import_dimension = require("./dataset/dimension.interface");
@@ -89,19 +95,25 @@ __reExport(management_api_exports, require("./pagination"), module.exports);
   WhenItemsInterface,
   ...require("./type-enums"),
   ...require("./action-definition.interface"),
-  ...require("./template-implementation.interface"),
-  ...require("./template.interface"),
   ...require("./tenant.interface"),
   ...require("./cube-dataset.interface"),
   ...require("./event-origin.interface"),
   ...require("./workflow"),
   ...require("./semantic-trigger"),
+  ...require("./connector-orchestrator-config.interface"),
   ...require("./chart.interface"),
+  ...require("./dashboard.interface"),
+  ...require("./semantic-trigger"),
   ...require("./dataset/datasets.interface"),
   ...require("./dataset/dataset.interface"),
   ...require("./dataset/dataset-record.interface"),
   ...require("./dataset/collection.interface"),
   ...require("./dataset/filters.interface"),
   ...require("./dataset/filter.interface"),
+  ...require("./connector/connector.interface"),
+  ...require("./connector/connectors.interface"),
+  ...require("./template.interface"),
+  ...require("./template-implementation.interface"),
+  ...require("./template-implementation-overrides.interface"),
   ...require("./pagination")
 });

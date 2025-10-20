@@ -38,12 +38,11 @@ var LogLevels = /* @__PURE__ */ ((LogLevels2) => {
   LogLevels2["warn"] = "warn";
   LogLevels2["info"] = "info";
   LogLevels2["http"] = "http";
-  LogLevels2["verbose"] = "verbose";
   LogLevels2["debug"] = "debug";
-  LogLevels2["silly"] = "silly";
   return LogLevels2;
 })(LogLevels || {});
 class Logger {
+  #datadogTransport;
   constructor(identifier, loglevel = "info" /* info */) {
     this.logger = winston.createLogger({
       level: loglevel,
@@ -95,6 +94,38 @@ class Logger {
     }
     return Logger.instance;
   }
+  setDatadogTransport(context) {
+    const apiKey = context?.apiKey ?? import_node_process.default.env["DATADOG_API_KEY"];
+    if (!apiKey) {
+      this.debug("DATADOG_API_KEY is not set, cannot add Datadog transport");
+      return this;
+    }
+    const searchParams = new URLSearchParams({
+      "dd-api-key": apiKey,
+      ddsource: context?.source ?? import_node_process.default.env["DD_SOURCE"] ?? "nodejs",
+      service: context?.service ?? import_node_process.default.env["DD_SERVICE"] ?? "unknown",
+      env: context?.env ?? import_node_process.default.env["DD_ENV"] ?? "prod"
+    });
+    if (context?.tags) {
+      searchParams.append(
+        "ddtags",
+        Object.entries(context.tags).map(([key, value]) => `${key}:${value}`).join(",")
+      );
+    }
+    const httpTransportOptions = {
+      host: `http-intake.logs.${import_node_process.default.env["DD_SITE"] ?? "datadoghq.eu"}`,
+      path: `/api/v2/logs?${searchParams.toString()}`,
+      ssl: true,
+      batch: true,
+      format: winston.format.json()
+    };
+    if (this.#datadogTransport) {
+      this.logger.remove(this.#datadogTransport);
+    }
+    this.#datadogTransport = new winston.transports.Http(httpTransportOptions);
+    this.logger.add(this.#datadogTransport);
+    return this;
+  }
   info(...args) {
     this.#logFunction(this.logger.info, ...args);
   }
@@ -109,9 +140,6 @@ class Logger {
   }
   verbose(...args) {
     this.#logFunction(this.logger.verbose, ...args);
-  }
-  silly(...args) {
-    this.#logFunction(this.logger.silly, ...args);
   }
   #logFunction(func, ...meta) {
     try {

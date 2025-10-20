@@ -33,9 +33,9 @@ __export(helper_functions_exports, {
   makeNodeRequest: () => makeNodeRequest
 });
 module.exports = __toCommonJS(helper_functions_exports);
+var http = __toESM(require("node:http"));
 var http2 = __toESM(require("node:http2"));
 var https = __toESM(require("node:https"));
-var http = __toESM(require("node:http"));
 function generateCollectionName(connectorConfig, sinkConfig) {
   return `${connectorConfig.datasourceIdentifier}_${sinkConfig.name}`;
 }

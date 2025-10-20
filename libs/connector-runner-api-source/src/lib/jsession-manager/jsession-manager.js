@@ -30,9 +30,9 @@ __export(jsession_manager_exports, {
   JsessionManager: () => JsessionManager
 });
 module.exports = __toCommonJS(jsession_manager_exports);
+var import_logger = require("@transai/logger");
 var import_axios = __toESM(require("axios"));
 var import_qs = __toESM(require("qs"));
-var import_logger = require("@transai/logger");
 class JsessionManager {
   constructor(authUrl, username, password) {
     this.authUrl = authUrl;
@@ -59,7 +59,7 @@ class JsessionManager {
       return this.#sessionCooky;
     }
     try {
-      this.#logger.debug(this.authUrl, this.username, this.password);
+      this.#logger.debug(this.authUrl, this.username);
       const response = await import_axios.default.post(
         this.authUrl,
         import_qs.default.stringify({

@@ -21,10 +21,10 @@ __export(connector_runner_sql_sink_exports, {
 });
 module.exports = __toCommonJS(connector_runner_sql_sink_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
+var import_logger = require("@transai/logger");
 var import_datasource = require("@xip-online-data/datasource");
 var import_handle_error = require("@xip-online-data/handle-error");
-var import_logger = require("@transai/logger");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 function trimTrailingSemicolon(input) {
   return input.endsWith(";") ? input.slice(0, -1) : input;
 }

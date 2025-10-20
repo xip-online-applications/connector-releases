@@ -15,19 +15,26 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var template_implementation_overrides_interface_exports = {};
-__export(template_implementation_overrides_interface_exports, {
-  TemplateImplementationOverridesSchema: () => TemplateImplementationOverridesSchema
+var connector_interface_exports = {};
+__export(connector_interface_exports, {
+  ConnectorSchema: () => ConnectorSchema
 });
-module.exports = __toCommonJS(template_implementation_overrides_interface_exports);
+module.exports = __toCommonJS(connector_interface_exports);
 var import_zod = require("zod");
-var import_index = require("./index");
-const TemplateImplementationOverridesSchema = import_zod.z.object({
-  datasets: import_index.DatasetsSchema.optional(),
-  semanticTriggers: import_index.SemanticTriggersSchema.optional(),
-  connectors: import_index.ConnectorsSchema.optional()
+var import_types = require("../../types");
+var import_workflow = require("../workflow");
+const ConnectorSchema = import_zod.z.object({
+  identifier: import_zod.z.string(),
+  connectorType: import_zod.z.nativeEnum(import_types.ConfiguredConnectorTypes),
+  name: import_zod.z.string(),
+  location: import_zod.z.string(),
+  config: import_zod.z.record(import_zod.z.any()),
+  enabled: import_zod.z.boolean(),
+  actions: import_zod.z.array(import_workflow.ActionSchema).optional(),
+  createdAt: import_zod.z.date().optional(),
+  updatedAt: import_zod.z.date().optional()
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  TemplateImplementationOverridesSchema
+  ConnectorSchema
 });
