@@ -57,6 +57,11 @@ class OpcuaClient {
       } else {
         this.#clientSession = await this.#client.createSession();
       }
+      const namespaceArray = await this.#clientSession.readNamespaceArray();
+      this.#logger.info("Available namespaces:");
+      namespaceArray.forEach((ns, i) => {
+        this.#logger.info(`${i}: ${ns}`);
+      });
       this.#logger.info("Connected to OPC UA server.");
     } catch (error) {
       this.#logger.error("Connection error:", error);
