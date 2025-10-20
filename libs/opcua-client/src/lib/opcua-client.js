@@ -47,7 +47,16 @@ class OpcuaClient {
     try {
       this.#logger.info("Connecting to OPC UA server...");
       await this.#client.connect(this.#opcuaConfig.endpointUrl);
-      this.#clientSession = await this.#client.createSession();
+      if (this.#opcuaConfig.username && this.#opcuaConfig.password) {
+        const userIdentity = {
+          type: import_node_opcua.UserTokenType.UserName,
+          userName: this.#opcuaConfig.username,
+          password: this.#opcuaConfig.password
+        };
+        this.#clientSession = await this.#client.createSession(userIdentity);
+      } else {
+        this.#clientSession = await this.#client.createSession();
+      }
       this.#logger.info("Connected to OPC UA server.");
     } catch (error) {
       this.#logger.error("Connection error:", error);
