@@ -78,8 +78,19 @@ class OpcuaExtractorService {
       }
     }
     this.#logger.debug(`Starting OPCUA extractor for: ${this.#config.name}`);
-    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).pipe((0, import_rxjs.filter)(() => !this.#processing)).subscribe(async () => {
-      await this.extract();
+    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).pipe(
+      (0, import_rxjs.filter)(
+        () => !this.#processing && this.#config.query.startsWith("call")
+      )
+    ).subscribe(async () => {
+      await this.extractCalls();
+    });
+    this.#subscription = (0, import_rxjs.interval)(this.#config.interval * 1e3).pipe(
+      (0, import_rxjs.filter)(
+        () => !this.#processing && this.#config.query.startsWith("read")
+      )
+    ).subscribe(async () => {
+      await this.extractReads();
     });
   }
   stop() {
@@ -103,7 +114,7 @@ class OpcuaExtractorService {
       limit
     });
   }
-  async extract() {
+  async extractCalls() {
     if (this.#processing) {
       this.#logger.debug(
         "Upcua source service is already processing: ",
@@ -127,7 +138,36 @@ class OpcuaExtractorService {
           `Error while extracting data from opcUa source service ${error.message}`
         );
       });
-      await this.#opcUaResultHandler.handleResult(result, this.#config);
+      await this.#opcUaResultHandler.handleCallResult(result, this.#config);
+    } catch (error) {
+      this.#logger.error(JSON.stringify(error));
+    } finally {
+      this.#logger.debug(`Disconnecting from OPCUA for: ${this.#config.name}`);
+      await this.#opcUaClient.disconnect();
+      this.#processing = false;
+    }
+  }
+  async extractReads() {
+    if (this.#processing) {
+      this.#logger.debug(
+        "Upcua source service is already processing: ",
+        this.#config.name
+      );
+      return;
+    }
+    this.#processing = true;
+    await this.#opcUaClient.init();
+    try {
+      this.#logger.debug(`Building query for: ${this.#config.name}`);
+      this.#logger.debug(
+        `Executing query: ${this.#config.query}, for: ${this.#config.name}`
+      );
+      const result = await this.#opcUaClient.readFromDsl(this.#config.query).catch((error) => {
+        throw new Error(
+          `Error while extracting data from opcUa source service ${error.message}`
+        );
+      });
+      await this.#opcUaResultHandler.handleReadResult(result, this.#config);
     } catch (error) {
       this.#logger.error(JSON.stringify(error));
     } finally {

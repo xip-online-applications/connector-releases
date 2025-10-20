@@ -48,7 +48,7 @@ class OpcUaResultHandler {
   #handlebarsTemplate;
   #logger;
   #handlebarsInstance;
-  async handleResult(result, opcUaCallConfig) {
+  async handleCallResult(result, opcUaCallConfig) {
     this.#logger.debug(`Handling result for ${opcUaCallConfig.name}`);
     if (!result.outputArguments || result.outputArguments.length === 0) {
       return;
@@ -64,7 +64,7 @@ class OpcUaResultHandler {
       this.#logger.debug(`Compiling sub-query template ...`);
       const expression = (0, import_jsonata.default)(opcUaCallConfig.identifierSelector);
       this.#logger.debug(`Interating over results ...`);
-      const messages = [];
+      const messages2 = [];
       for (let idx = 0; idx < data.length; idx++) {
         const item = data[idx];
         this.#logger.debug({ item }, "Processing item");
@@ -85,7 +85,7 @@ class OpcUaResultHandler {
           this.#logger.debug(
             "No output arguments found for sub-query, sending original item"
           );
-          messages.push(item);
+          messages2.push(item);
           continue;
         }
         const jsonValue = result2.outputArguments[0]?.value;
@@ -93,16 +93,16 @@ class OpcUaResultHandler {
           const parsed = JSON.parse(jsonValue);
           const merged = Array.isArray(parsed) && parsed.length > 0 ? { ...item, ...parsed[0] } : { ...item, ...parsed ?? {} };
           this.#logger.debug({ merged }, "Data to send");
-          messages.push(merged);
+          messages2.push(merged);
         } catch (e) {
           this.#logger.warn(
             { err: e, jsonPreview: String(jsonValue).slice(0, 200) },
             "Invalid JSON in OPC UA response; returning original item"
           );
-          messages.push(item);
+          messages2.push(item);
         }
       }
-      await this.sendBatch(messages, opcUaCallConfig);
+      await this.sendBatch(messages2, opcUaCallConfig);
       return;
     }
     await this.sendBatch(data, opcUaCallConfig);
@@ -114,6 +114,13 @@ class OpcUaResultHandler {
     return this.#handlebarsTemplate({
       id
     });
+  }
+  async handleReadResult(result, opcUaCallConfig) {
+    this.#logger.debug(`Handling read result for ${opcUaCallConfig.name}`);
+    await this.sendBatch(
+      [{ [opcUaCallConfig.name]: result?.value?.value }],
+      opcUaCallConfig
+    );
   }
   async sendBatch(list, config) {
     this.#logger.debug(

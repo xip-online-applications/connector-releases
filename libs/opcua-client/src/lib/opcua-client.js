@@ -211,9 +211,8 @@ class OpcuaClient {
    * Parse DSL like:
    * call nsu=http://bystronic.com/ByVisionCutting/;s=History -> GetRunPartHistory("...", "...", 0, 100)
    */
-  parseDslWithNamespaceUri(dsl) {
+  parseCallDslWithNamespaceUri(dsl) {
     const callRegex = /^call\s+nsu=([^;]+);(s|i)=([^ ]+)\s*->\s*(s|i)=([^(\s]+)\((.*)\)$/;
-    const readRegex = /^read\s+nsu=([^;]+);(s|i)=([^ ]+)$/;
     const callMatch = dsl.match(callRegex);
     if (callMatch) {
       const [
@@ -236,6 +235,10 @@ class OpcuaClient {
         inputArguments: args
       };
     }
+    throw new Error("Invalid DSL format");
+  }
+  parseReadDslWithNamespaceUri(dsl) {
+    const readRegex = /^read\s+nsu=([^;]+);(s|i)=([^ ]+)$/;
     const readMatch = dsl.match(readRegex);
     if (readMatch) {
       const [, namespaceUri, nodeIdType, nodeIdValue] = readMatch;
@@ -308,7 +311,7 @@ class OpcuaClient {
     if (!this.#clientSession) {
       throw new Error("No active session. Please connect first.");
     }
-    const parsed = this.parseDslWithNamespaceUri(dsl);
+    const parsed = this.parseCallDslWithNamespaceUri(dsl);
     this.#logger.debug(parsed);
     const nsIndex = await this.resolveNamespaceIndex(parsed.namespaceUri);
     this.#logger.debug("Resolved namespace index:", nsIndex);
@@ -344,6 +347,18 @@ class OpcuaClient {
         }
       );
     });
+  }
+  async readFromDsl(dsl) {
+    if (!this.#clientSession) {
+      throw new Error("No active session. Please connect first.");
+    }
+    const parsed = this.parseReadDslWithNamespaceUri(dsl);
+    this.#logger.debug(parsed);
+    const nsIndex = await this.resolveNamespaceIndex(parsed.namespaceUri);
+    this.#logger.debug("Resolved namespace index:", nsIndex);
+    const nodeId = parsed.nodeId.replace("ns=0", `ns=${nsIndex}`);
+    this.#logger.debug("Resolved nodeId:", nodeId);
+    return this.#clientSession.read({ nodeId });
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
