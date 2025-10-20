@@ -115,12 +115,9 @@ class OpcUaResultHandler {
       id
     });
   }
-  async handleReadResult(result, opcUaCallConfig) {
+  async handleReadResult(results, opcUaCallConfig) {
     this.#logger.debug(`Handling read result for ${opcUaCallConfig.name}`);
-    await this.sendBatch(
-      [{ [opcUaCallConfig.name]: result?.value?.value }],
-      opcUaCallConfig
-    );
+    await this.sendBatch([results], opcUaCallConfig);
   }
   async sendBatch(list, config) {
     this.#logger.debug(

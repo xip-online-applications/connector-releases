@@ -238,18 +238,29 @@ class OpcuaClient {
     throw new Error("Invalid DSL format");
   }
   parseReadDslWithNamespaceUri(dsl) {
-    const readRegex = /^read\s+nsu=([^;]+);(s|i)=([^ ]+)$/;
-    const readMatch = dsl.match(readRegex);
-    if (readMatch) {
-      const [, namespaceUri, nodeIdType, nodeIdValue] = readMatch;
-      const nodeId = `ns=0;${nodeIdType}=${nodeIdValue}`;
-      return {
-        type: "read",
-        namespaceUri,
-        nodeId
-      };
+    const headRegex = /^read\s+nsu=([^;]+);((?:[si]=[^,\s]+)(?:,(?:[si]=[^,\s]+))*)$/;
+    const headMatch = dsl.match(headRegex);
+    if (!headMatch) {
+      throw new Error(
+        "Invalid DSL format. Expected: read nsu=<uri>;(s|i)=<id>(,(s|i)=<id>)* \u2014 no spaces allowed."
+      );
     }
-    throw new Error("Invalid DSL format");
+    const [, namespaceUri, nodesPart] = headMatch;
+    const nodeSpecs = nodesPart.split(",");
+    const nodes = nodeSpecs.map((spec) => {
+      const nodeRegex = /^(s|i)=([^,\s]+)$/;
+      const m = spec.match(nodeRegex);
+      if (!m) {
+        throw new Error(`Invalid node format: "${spec}"`);
+      }
+      const [, nodeIdType, nodeIdValue] = m;
+      return `ns=0;${nodeIdType}=${nodeIdValue}`;
+    });
+    return {
+      type: "read",
+      namespaceUri,
+      nodes
+    };
   }
   /**
    * Infer the correct OPC UA Variant from a literal string
@@ -356,9 +367,23 @@ class OpcuaClient {
     this.#logger.debug(parsed);
     const nsIndex = await this.resolveNamespaceIndex(parsed.namespaceUri);
     this.#logger.debug("Resolved namespace index:", nsIndex);
-    const nodeId = parsed.nodeId.replace("ns=0", `ns=${nsIndex}`);
-    this.#logger.debug("Resolved nodeId:", nodeId);
-    return this.#clientSession.read({ nodeId });
+    const nodes = parsed.nodes.map((nodeId) => {
+      return nodeId.replace("ns=0", `ns=${nsIndex}`);
+    });
+    const values = await this.#clientSession.read(
+      nodes.map((nodeId) => ({
+        nodeId
+      }))
+    );
+    const nodeKeys = nodes.map((nodeId) => {
+      const match = nodeId.match(/(?:s|i)=([^ ]+)/);
+      return match ? match[1] : nodeId;
+    });
+    const results = [];
+    for (let i = 0; i < nodeKeys.length; i += 1) {
+      results.push({ [nodeKeys[i]]: values[i].value?.value ?? null });
+    }
+    return results;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
