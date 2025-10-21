@@ -367,23 +367,21 @@ class OpcuaClient {
     this.#logger.debug(parsed);
     const nsIndex = await this.resolveNamespaceIndex(parsed.namespaceUri);
     this.#logger.debug("Resolved namespace index:", nsIndex);
-    const nodes = parsed.nodes.map((nodeId) => {
-      return nodeId.replace("ns=0", `ns=${nsIndex}`);
-    });
+    const nodes = parsed.nodes.map(
+      (nodeId) => nodeId.replace("ns=0", `ns=${nsIndex}`)
+    );
     const values = await this.#clientSession.read(
-      nodes.map((nodeId) => ({
-        nodeId
-      }))
+      nodes.map((nodeId) => ({ nodeId }))
     );
     const nodeKeys = nodes.map((nodeId) => {
       const match = nodeId.match(/ns=\d+;(?:s|i)=([^,\s]+)/);
       return match ? match[1] : nodeId;
     });
-    const results = [];
-    for (let i = 0; i < nodeKeys.length; i += 1) {
-      results.push({ [nodeKeys[i]]: values[i].value?.value ?? null });
+    const result = {};
+    for (let i = 0; i < nodeKeys.length; i++) {
+      result[nodeKeys[i]] = values[i].value?.value ?? null;
     }
-    return results;
+    return result;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

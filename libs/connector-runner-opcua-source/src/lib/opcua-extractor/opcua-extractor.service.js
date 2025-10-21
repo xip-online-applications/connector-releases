@@ -162,12 +162,12 @@ class OpcuaExtractorService {
       this.#logger.debug(
         `Executing query: ${this.#config.query}, for: ${this.#config.name}`
       );
-      const results = await this.#opcUaClient.readFromDsl(this.#config.query).catch((error) => {
+      const result = await this.#opcUaClient.readFromDsl(this.#config.query).catch((error) => {
         throw new Error(
           `Error while extracting data from opcUa source service ${error.message}`
         );
       });
-      await this.#opcUaResultHandler.handleReadResult(results, this.#config);
+      await this.#opcUaResultHandler.handleReadResult(result, this.#config);
     } catch (error) {
       this.#logger.error(JSON.stringify(error));
     } finally {
