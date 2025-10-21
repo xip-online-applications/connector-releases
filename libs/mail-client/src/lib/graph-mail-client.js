@@ -403,11 +403,14 @@ class GraphMailClient {
       const folderId = await this.getFolderId(mailbox);
       const fromEpoch = Math.max(0, (lastSeenTimestamp || 0) - OVERLAP_MS);
       const graphMsgs = await this.listMessages(folderId, fromEpoch, limit);
+      this.#logger.debug(`Fetched ${graphMsgs.length} messages from Graph`);
       const seenIds = /* @__PURE__ */ new Set();
       for (const gm of graphMsgs) {
         const receivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : gm.sentDateTime ? new Date(gm.sentDateTime).getTime() : 0;
-        if (!isAfterCursor(receivedMs, gm.id, lastSeenTimestamp || 0, lastSeenId))
+        if (!isAfterCursor(receivedMs, gm.id, lastSeenTimestamp || 0, lastSeenId)) {
+          this.#logger.debug(`Skipping message ${gm.id} before cursor`);
           continue;
+        }
         if (seenIds.has(gm.id))
           continue;
         seenIds.add(gm.id);
