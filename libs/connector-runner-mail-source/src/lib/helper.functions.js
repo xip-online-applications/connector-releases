@@ -22,8 +22,8 @@ __export(helper_functions_exports, {
   generateOffsetIdentifier: () => generateOffsetIdentifier
 });
 module.exports = __toCommonJS(helper_functions_exports);
-function generateCollectionName(connectorConfig, sourceConfig) {
-  return `${connectorConfig.datasourceIdentifier}_${sourceConfig.mailboxIdentifier}`;
+function generateCollectionName(connectorConfig) {
+  return `${connectorConfig.datasourceIdentifier}`;
 }
 function generateKafkaTopic(connectorConfig, sourceConfig) {
   return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}_${sourceConfig.mailboxIdentifier.replace("@", "_at_")}`;

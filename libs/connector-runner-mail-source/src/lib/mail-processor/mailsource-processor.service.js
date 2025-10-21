@@ -99,10 +99,10 @@ class MailsourceProcessorService {
         body: {
           ...parsedContent
         },
-        collection: (0, import_helper.generateCollectionName)(
-          this.#mailSourceConfig,
-          this.#mailboxConfig
-        )
+        metadata: {
+          mailboxIdentifier: this.#mailboxConfig.mailboxIdentifier
+        },
+        collection: (0, import_helper.generateCollectionName)(this.#mailSourceConfig)
       };
     };
     this.#mailSourceConfig = mailSourceConfig;
