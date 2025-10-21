@@ -403,7 +403,9 @@ class GraphMailClient {
       const folderId = await this.getFolderId(mailbox);
       const fromEpoch = Math.max(0, (lastSeenTimestamp || 0) - OVERLAP_MS);
       const graphMsgs = await this.listMessages(folderId, fromEpoch, limit);
-      this.#logger.debug(`Fetched ${graphMsgs.length} messages from Graph`);
+      this.#logger.debug(
+        `Fetched ${graphMsgs.length} messages from Graph for ${mailbox} and epoch ${fromEpoch}`
+      );
       const seenIds = /* @__PURE__ */ new Set();
       for (const gm of graphMsgs) {
         const receivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : gm.sentDateTime ? new Date(gm.sentDateTime).getTime() : 0;
