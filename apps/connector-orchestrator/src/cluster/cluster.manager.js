@@ -231,6 +231,8 @@ class ClusterManager {
     };
     this.#buildConnectorConfiguration = (connector, fullOrchestratorConfig, defaultTenantIdentifier) => {
       const tenantIdentifier = defaultTenantIdentifier ?? connector.tenantIdentifier;
+      const awsAccessKeyId = connector.config.kafka?.sasl?.accessKeyId ?? process.env["AWS_ACCESS_KEY_ID"] ?? fullOrchestratorConfig.config.awsAccessKeyId;
+      const awsSecretAccessKey = connector.config.kafka?.sasl?.secretAccessKey ?? process.env["AWS_SECRET_ACCESS_KEY"] ?? fullOrchestratorConfig.config.awsSecretAccessKey;
       return {
         ...connector,
         tenantIdentifier,
@@ -244,12 +246,14 @@ class ClusterManager {
             groupId: connector.config.kafka?.groupId ?? `${tenantIdentifier}-${connector.identifier}-group`,
             clientId: connector.config.kafka?.clientId ?? `${tenantIdentifier}-${connector.identifier}-client`,
             useConfluentLibrary: connector.config.kafka?.useConfluentLibrary ?? true,
-            sasl: {
-              region: connector.config.kafka?.sasl?.region ?? process.env["AWS_REGION"] ?? fullOrchestratorConfig.config.awsRegion ?? this.#DEFAULT_AWS_REGION,
-              accessKeyId: connector.config.kafka?.sasl?.accessKeyId ?? process.env["AWS_ACCESS_KEY_ID"] ?? fullOrchestratorConfig.config.awsAccessKeyId,
-              secretAccessKey: connector.config.kafka?.sasl?.secretAccessKey ?? process.env["AWS_SECRET_ACCESS_KEY"] ?? fullOrchestratorConfig.config.awsSecretAccessKey,
-              mechanism: "aws"
-            }
+            ...awsAccessKeyId && awsSecretAccessKey ? {
+              sasl: {
+                region: connector.config.kafka?.sasl?.region ?? process.env["AWS_REGION"] ?? fullOrchestratorConfig.config.awsRegion ?? this.#DEFAULT_AWS_REGION,
+                accessKeyId: awsAccessKeyId,
+                secretAccessKey: awsSecretAccessKey,
+                mechanism: "aws"
+              }
+            } : {}
           }
         }
       };

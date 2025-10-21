@@ -17,6 +17,7 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var type_enums_exports = {};
 __export(type_enums_exports, {
+  ConnectorOrigin: () => ConnectorOrigin,
   DatasetTypeEnum: () => DatasetTypeEnum,
   DimensionFormatsEnum: () => DimensionFormatsEnum,
   DimensionTypesEnum: () => DimensionTypesEnum,
@@ -126,8 +127,14 @@ var SemanticTriggerFilterOperatorsEnum = /* @__PURE__ */ ((SemanticTriggerFilter
   SemanticTriggerFilterOperatorsEnum2["afterOrOnDate"] = "afterOrOnDate";
   return SemanticTriggerFilterOperatorsEnum2;
 })(SemanticTriggerFilterOperatorsEnum || {});
+var ConnectorOrigin = /* @__PURE__ */ ((ConnectorOrigin2) => {
+  ConnectorOrigin2["from_template"] = "from_template";
+  ConnectorOrigin2["manual"] = "manual";
+  return ConnectorOrigin2;
+})(ConnectorOrigin || {});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ConnectorOrigin,
   DatasetTypeEnum,
   DimensionFormatsEnum,
   DimensionTypesEnum,

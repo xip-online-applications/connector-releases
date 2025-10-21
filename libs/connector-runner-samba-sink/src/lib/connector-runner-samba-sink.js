@@ -21,8 +21,8 @@ __export(connector_runner_samba_sink_exports, {
 });
 module.exports = __toCommonJS(connector_runner_samba_sink_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_logger = require("@transai/logger");
+var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_samba_file_writer = require("./samba-fire-writer/samba-file-writer.service");
 class ConnectorRunnerSambaSink extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs, injectedSambaInstance) {
