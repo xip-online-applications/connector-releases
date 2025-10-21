@@ -408,7 +408,9 @@ class GraphMailClient {
       for (const gm of graphMsgs) {
         const receivedMs = gm.receivedDateTime ? new Date(gm.receivedDateTime).getTime() : gm.sentDateTime ? new Date(gm.sentDateTime).getTime() : 0;
         if (!isAfterCursor(receivedMs, gm.id, lastSeenTimestamp || 0, lastSeenId)) {
-          this.#logger.debug(`Skipping message ${gm.id} before cursor`);
+          this.#logger.debug(
+            `Skipping message ${gm.id} before cursor with receivedMs: ${receivedMs}`
+          );
           continue;
         }
         if (seenIds.has(gm.id))

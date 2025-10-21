@@ -165,6 +165,7 @@ class MailsourceProcessorService {
     );
     const lastMessageId = lastOffset?.id || "";
     const lastMessageTimestamp = lastOffset?.timestamp || 0;
+    this.#logger.debug("Last message timestamp", lastMessageTimestamp);
     this.#logger.debug("Last message ID", lastMessageId);
     const messages = await this.#mailClient.readMail(
       config.mailbox,
