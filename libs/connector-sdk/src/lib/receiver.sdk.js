@@ -54,9 +54,11 @@ class ReceiverSDKService {
   #actionConfigs;
   registerCallback(callbackFunction, eventType, identifier) {
     this.#kafkaServiceInstance.setCallbackFunction(
-      (0, import_helper_functions.expirationValidatorInLine)(
-        this.#connectorConfig.action?.timeSensitive === true,
-        callbackFunction
+      this.#validateJobMessage(
+        (0, import_helper_functions.expirationValidatorInLine)(
+          this.#connectorConfig.action?.timeSensitive === true,
+          callbackFunction
+        )
       ),
       eventType,
       identifier
@@ -101,6 +103,14 @@ class ReceiverSDKService {
       return null;
     }
     return actions[0];
+  }
+  #validateJobMessage(callbackFunction) {
+    return async (message) => {
+      if (message.type !== "JOB") {
+        throw new Error("BAD REQUEST, INVALID MESSAGE TYPE");
+      }
+      return callbackFunction(message);
+    };
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

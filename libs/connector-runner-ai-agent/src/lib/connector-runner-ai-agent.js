@@ -20,13 +20,13 @@ __export(connector_runner_ai_agent_exports, {
   ConnectorRunnerAiAgent: () => ConnectorRunnerAiAgent
 });
 module.exports = __toCommonJS(connector_runner_ai_agent_exports);
-var import_output_parsers = require("@langchain/core/output_parsers");
 var import_prompts = require("@langchain/core/prompts");
 var import_runnables = require("@langchain/core/runnables");
 var import_openai = require("@langchain/openai");
 var import_connector_runtime = require("@transai/connector-runtime");
 var import_logger = require("@transai/logger");
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
+var import_output_parsers = require("./output-parsers");
 class ConnectorRunnerAiAgent extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, connectorConfig, actionConfigs, injectedLangchainInstance) {
     super(connector, connectorConfig, actionConfigs);
@@ -77,7 +77,7 @@ ${userPrompt}`,
             );
             this.logger.debug(`Processed prompt: ${processedPrompt}`);
             const { outputParameters } = action;
-            const outputParser = this.generateOutputParser(outputParameters);
+            const outputParser = (0, import_output_parsers.generateOutputParser)(outputParameters);
             const processedInstructions = this.escapeFormatInstructions(
               outputParser.getFormatInstructions()
             );
@@ -120,31 +120,6 @@ ${userPrompt}`,
       throw new Error("Langchain instance not initialized");
     }
     return this.langchainInstance;
-  }
-  // Dynamic output parser generation
-  generateOutputParser(outputParameters) {
-    if (!outputParameters || typeof outputParameters !== "object") {
-      class StrOutputParser extends import_output_parsers.BaseOutputParser {
-        constructor() {
-          super(...arguments);
-          this.lc_namespace = [
-            "langchain",
-            "output_parsers",
-            "str"
-          ];
-        }
-        parse(text, callbacks) {
-          return Promise.resolve(text);
-        }
-        getFormatInstructions(options) {
-          return "Return the output as a plain string.";
-        }
-      }
-      return new StrOutputParser();
-    }
-    return import_output_parsers.StructuredOutputParser.fromNamesAndDescriptions(
-      outputParameters
-    );
   }
   // Escape single curly braces in format instructions within markdown code blocks
   escapeFormatInstructions(instructions) {

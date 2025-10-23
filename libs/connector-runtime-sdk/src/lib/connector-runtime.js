@@ -34,13 +34,7 @@ var process = __toESM(require("node:process"));
 class ConnectorRuntimeSDK {
   constructor(connector, connectorSDK) {
     this.#IPC_CHANNEL = "connector-runtime";
-    this.init = () => {
-      const callback = this.callbackFunction;
-      if (callback !== void 0) {
-        this.connectorSDK.receiver.registerCallback(callback);
-      }
-      return Promise.resolve();
-    };
+    this.init = () => Promise.resolve();
     this.start = () => Promise.resolve();
     this.stop = () => Promise.resolve();
     this.#connectorSDK = connectorSDK;
@@ -83,8 +77,24 @@ class ConnectorRuntimeSDK {
   }
   #IPC_CHANNEL;
   #connectorSDK;
+  set callbackFunction(callback) {
+    this.connectorSDK.receiver.registerCallback(
+      this.#enrichWithActionConfig(callback)
+    );
+  }
   get connectorSDK() {
     return this.#connectorSDK;
+  }
+  #enrichWithActionConfig(callbackFunction) {
+    return async (message) => {
+      const action = this.#connectorSDK.receiver.getActionConfig(message);
+      if (!action) {
+        return this.#connectorSDK.receiver.responses.badRequest(
+          "Action not found"
+        )(message);
+      }
+      return callbackFunction(message, action);
+    };
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
