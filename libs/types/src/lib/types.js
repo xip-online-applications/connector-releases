@@ -43,10 +43,13 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["MQTT"] = "mqtt";
   ConfiguredConnectorTypes2["CUBE_QUERY_RUNNER"] = "cube-query-runner";
   ConfiguredConnectorTypes2["FACTORY_NEBULA_SOURCE"] = "factory-nebula-source";
+  ConfiguredConnectorTypes2["BYSTRONIC"] = "bystronic";
   ConfiguredConnectorTypes2["IMAP_SOURCE"] = "imap-source";
   ConfiguredConnectorTypes2["IMAP_SINK"] = "imap-sink";
   ConfiguredConnectorTypes2["OPCUA_SOURCE"] = "opcua-source";
   ConfiguredConnectorTypes2["OPCUA_SINK"] = "opcua-sink";
+  ConfiguredConnectorTypes2["AI_AGENT"] = "ai-agent";
+  ConfiguredConnectorTypes2["MICROSOFT_OFFICE365_EMAIL"] = "microsoft-office365-email";
   return ConfiguredConnectorTypes2;
 })(ConfiguredConnectorTypes || {});
 function isTopicRegex(obj) {

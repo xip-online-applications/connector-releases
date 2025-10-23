@@ -230,10 +230,7 @@ class ConnectorRuntime {
   }
   async start() {
     this.connectorConfig = await this.getConfig();
-    this.kafkaServiceInstance = this.connectorConfig.kafka.useConfluentLibrary ? new import_kafka_base_service.RdKafkaSourceService(
-      this.config,
-      (0, import_helper_functions.buildConnectorTopic)(this.connector)
-    ) : new import_kafka_base_service.KafkaSourceService(
+    this.kafkaServiceInstance = new import_kafka_base_service.RdKafkaSourceService(
       this.config,
       (0, import_helper_functions.buildConnectorTopic)(this.connector)
     );

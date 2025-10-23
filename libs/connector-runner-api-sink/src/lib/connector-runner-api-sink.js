@@ -21,9 +21,9 @@ __export(connector_runner_api_sink_exports, {
 });
 module.exports = __toCommonJS(connector_runner_api_sink_exports);
 var import_connector_runtime = require("@transai/connector-runtime");
+var import_logger = require("@transai/logger");
 var import_http_client = require("@xip-online-data/http-client");
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
-var import_logger = require("@transai/logger");
 class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
   constructor(connector, apiConfig, actionConfigs, injectedHttpClientInstance) {
     super(connector, apiConfig, actionConfigs);
@@ -63,6 +63,9 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
               );
               return callbackFunction(message);
             }
+            import_logger.Logger.getInstance().debug(
+              `Sending request to ${parsedUrl}: ${JSON.stringify(parsedBody)}`
+            );
             const result = await this.httpClient.post(parsedUrl, parsedBody);
             if (result.success) {
               return callbackFunction(message);
@@ -110,7 +113,7 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
   }
   get httpClient() {
     if (this.httpClientInstance === void 0) {
-      throw new Error("Samba client not initialized");
+      throw new Error("API client not initialized");
     }
     return this.httpClientInstance;
   }

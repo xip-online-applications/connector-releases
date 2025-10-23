@@ -20,6 +20,8 @@ __export(connector_manager_exports, {
   ConnectorManager: () => ConnectorManager
 });
 module.exports = __toCommonJS(connector_manager_exports);
+var import_connector_runtime_sdk = require("@transai/connector-runtime-sdk");
+var import_connector_sdk = require("@transai/connector-sdk");
 var import_logger = require("@transai/logger");
 var import_connector_type = require("./connector-type");
 class ConnectorManager {
@@ -28,12 +30,13 @@ class ConnectorManager {
       this.#logger.info(
         `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} started`
       );
-      const connector = (0, import_connector_type.getConnectorType)(this.#connectorData);
+      const connector = (0, import_connector_type.getConnectorType)(this.#connectorData, this.#connectorSDK);
       this.#node.process.on("SIGINT", async () => {
         this.#logger.warn(
           `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGINT signal. Start graceful shutdown`
         );
         await connector.stop();
+        await this.#connectorSDK.stop();
         this.#logger.warn(
           `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGINT signal and finished graceful shutdown`
         );
@@ -44,6 +47,7 @@ class ConnectorManager {
           `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGTERM. Start graceful shutdown`
         );
         await connector.stop();
+        await this.#connectorSDK.stop();
         this.#logger.warn(
           `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGTERM and finished graceful shutdown`
         );
@@ -55,19 +59,28 @@ class ConnectorManager {
         );
         this.#logger.error(error);
         await connector.stop();
+        await this.#connectorSDK.stop();
         this.#logger.warn(
           `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received uncaughtException and finished graceful shutdown`
         );
         this.#node.process.exit(1);
       });
+      if (connector instanceof import_connector_runtime_sdk.ConnectorRuntimeSDK) {
+        await connector.init();
+      }
       await connector.start();
     };
     this.#node = node;
     this.#connectorData = connectorData;
     this.#logger = import_logger.Logger.getInstance();
+    this.#connectorSDK = new import_connector_sdk.TransAIConnectorSDK(
+      this.#connectorData,
+      this.#logger
+    );
   }
   #node;
   #connectorData;
+  #connectorSDK;
   #logger;
 }
 // Annotate the CommonJS export names for ESM import in node:

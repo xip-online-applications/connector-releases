@@ -43,7 +43,7 @@ var LogLevels = /* @__PURE__ */ ((LogLevels2) => {
 })(LogLevels || {});
 class Logger {
   #datadogTransport;
-  constructor(identifier, loglevel = "info" /* info */) {
+  constructor(identifier = "default", loglevel = "info" /* info */) {
     this.logger = winston.createLogger({
       level: loglevel,
       format: winston.format.combine(

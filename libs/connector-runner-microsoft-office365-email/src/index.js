@@ -12,16 +12,10 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var offset_store_exports = {};
-module.exports = __toCommonJS(offset_store_exports);
-__reExport(offset_store_exports, require("./persistent-offset-store.interface"), module.exports);
-__reExport(offset_store_exports, require("./cloud-offset-store.service"), module.exports);
-__reExport(offset_store_exports, require("./offset-store.service"), module.exports);
-__reExport(offset_store_exports, require("./types"), module.exports);
+var src_exports = {};
+module.exports = __toCommonJS(src_exports);
+__reExport(src_exports, require("./lib/connector-runner-microsoft-office365-email"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ...require("./persistent-offset-store.interface"),
-  ...require("./cloud-offset-store.service"),
-  ...require("./offset-store.service"),
-  ...require("./types")
+  ...require("./lib/connector-runner-microsoft-office365-email")
 });

@@ -1,0 +1,61 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var processing_sdk_exports = {};
+__export(processing_sdk_exports, {
+  ProcessingSDKService: () => ProcessingSDKService
+});
+module.exports = __toCommonJS(processing_sdk_exports);
+var import_rxjs = require("rxjs");
+class ProcessingSDKService {
+  #intervals = {};
+  async registerInterval(intervalSeconds, handler, options) {
+    const name = handler?.name ?? `interval-${Object.keys(this.#intervals).length + 1}`;
+    if (this.#intervals[name]) {
+      throw new Error(`Interval with name ${name} already exists`);
+    }
+    this.#intervals[name] = {
+      handler,
+      subscription: (0, import_rxjs.interval)(intervalSeconds * 1e3).subscribe(handler.onRun)
+    };
+    if (options?.immediate) {
+      await handler.onRun();
+    }
+    return name;
+  }
+  async stopInterval(name) {
+    const interval2 = this.#intervals[name];
+    if (!interval2) {
+      return;
+    }
+    interval2.subscription.unsubscribe();
+    if (interval2.handler.onStop !== void 0) {
+      await interval2.handler.onStop();
+    }
+    delete this.#intervals[name];
+  }
+  stopAll() {
+    const stopPromises = Object.keys(this.#intervals).map(
+      (name) => this.stopInterval(name)
+    );
+    return Promise.all(stopPromises);
+  }
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  ProcessingSDKService
+});

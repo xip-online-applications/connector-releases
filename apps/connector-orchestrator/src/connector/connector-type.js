@@ -20,23 +20,26 @@ __export(connector_type_exports, {
   getConnectorType: () => getConnectorType
 });
 module.exports = __toCommonJS(connector_type_exports);
-var import_types = require("@xip-online-data/types");
+var import_connector_runner_ai_agent = require("@transai/connector-runner-ai-agent");
 var import_connector_runner_api_sink = require("@transai/connector-runner-api-sink");
 var import_connector_runner_api_source = require("@transai/connector-runner-api-source");
+var import_connector_runner_bystronic = require("@transai/connector-runner-bystronic");
+var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
+var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
 var import_connector_runner_dummy_sink = require("@transai/connector-runner-dummy-sink");
 var import_connector_runner_dummy_source = require("@transai/connector-runner-dummy-source");
-var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
+var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
 var import_connector_runner_file_copy = require("@transai/connector-runner-file-copy");
 var import_connector_runner_file_sink = require("@transai/connector-runner-file-sink");
 var import_connector_runner_file_source = require("@transai/connector-runner-file-source");
+var import_connector_runner_microsoft_office365_email = require("@transai/connector-runner-microsoft-office365-email");
+var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_connector_runner_samba_sink = require("@transai/connector-runner-samba-sink");
 var import_connector_runner_samba_source = require("@transai/connector-runner-samba-source");
 var import_connector_runner_sql_sink = require("@transai/connector-runner-sql-sink");
 var import_connector_runner_sql_source = require("@transai/connector-runner-sql-source");
-var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
-var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
-var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
-const getConnectorType = (connectorConfig) => {
+var import_types = require("@xip-online-data/types");
+const getConnectorType = (connectorConfig, connectorSDK) => {
   switch (connectorConfig.connectorType) {
     case import_types.ConfiguredConnectorTypes.API_SINK:
       return new import_connector_runner_api_sink.ConnectorRunnerApiSink(
@@ -127,6 +130,19 @@ const getConnectorType = (connectorConfig) => {
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.AI_AGENT:
+      return new import_connector_runner_ai_agent.ConnectorRunnerAiAgent(
+        connectorConfig,
+        connectorConfig.config,
+        connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.BYSTRONIC:
+      return new import_connector_runner_bystronic.ConnectorRunnerBystronic(connectorConfig, connectorSDK);
+    case import_types.ConfiguredConnectorTypes.MICROSOFT_OFFICE365_EMAIL:
+      return new import_connector_runner_microsoft_office365_email.ConnectorRunnerMicrosoftOffice365Email(
+        connectorConfig,
+        connectorSDK
       );
     default:
       throw new Error(
