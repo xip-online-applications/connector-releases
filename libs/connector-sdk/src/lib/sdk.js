@@ -54,7 +54,7 @@ class TransAIConnectorSDK {
       this.#kafkaServiceInstance
     );
     this.#templating = new import_templating.TemplatingSDKService();
-    this.#processing = new import_processing.ProcessingSDKService();
+    this.#processing = new import_processing.ProcessingSDKService(this.logger);
     this.#receiver = new import_receiver.ReceiverSDKService(
       this.#apiConfig,
       this.#kafkaServiceInstance,

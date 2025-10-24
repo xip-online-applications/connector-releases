@@ -22,7 +22,11 @@ __export(processing_sdk_exports, {
 module.exports = __toCommonJS(processing_sdk_exports);
 var import_rxjs = require("rxjs");
 class ProcessingSDKService {
+  #logger;
   #intervals = {};
+  constructor(logger) {
+    this.#logger = logger;
+  }
   async registerInterval(intervalSeconds, handler, options) {
     const name = handler?.name ?? `interval-${Object.keys(this.#intervals).length + 1}`;
     if (this.#intervals[name]) {
@@ -30,12 +34,23 @@ class ProcessingSDKService {
     }
     this.#intervals[name] = {
       handler,
-      subscription: (0, import_rxjs.interval)(intervalSeconds * 1e3).subscribe(handler.onRun)
+      subscription: (0, import_rxjs.interval)(intervalSeconds * 1e3).subscribe(async () => {
+        await this.#runHandler(handler);
+      })
     };
     if (options?.immediate) {
-      await handler.onRun();
+      await this.#runHandler(handler);
     }
     return name;
+  }
+  async #runHandler(handler) {
+    try {
+      await handler.onRun();
+    } catch (error) {
+      this.#logger.error(
+        `Error running interval handler ${handler.name}: ${error.message}`
+      );
+    }
   }
   async stopInterval(name) {
     const interval2 = this.#intervals[name];

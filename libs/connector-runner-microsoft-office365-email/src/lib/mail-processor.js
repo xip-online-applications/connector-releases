@@ -64,10 +64,17 @@ class MailProcessor {
     this.#processing = true;
     try {
       await this.#processMailbox(this.#mailboxConfig);
-    } finally {
+    } catch (error) {
+      this.#logger.error(
+        `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`,
+        error
+      );
       this.#processing = false;
-      this.#processingTries = 0;
+      this.#processingTries += 1;
+      return;
     }
+    this.#processing = false;
+    this.#processingTries = 0;
   }
   async #processMailbox(config) {
     this.#logger.debug(
