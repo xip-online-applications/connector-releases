@@ -20,7 +20,6 @@ __export(connector_type_exports, {
   getConnectorType: () => getConnectorType
 });
 module.exports = __toCommonJS(connector_type_exports);
-var import_connector_runner_ai_agent = require("@transai/connector-runner-ai-agent");
 var import_connector_runner_api_sink = require("@transai/connector-runner-api-sink");
 var import_connector_runner_api_source = require("@transai/connector-runner-api-source");
 var import_connector_runner_bystronic = require("@transai/connector-runner-bystronic");
@@ -127,12 +126,6 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
       );
     case import_types.ConfiguredConnectorTypes.FACTORY_NEBULA_SOURCE:
       return new import_connector_runner_factorynebula_source.ConnectorRunnerFactorynebulaSource(
-        connectorConfig,
-        connectorConfig.config,
-        connectorConfig.actions
-      );
-    case import_types.ConfiguredConnectorTypes.AI_AGENT:
-      return new import_connector_runner_ai_agent.ConnectorRunnerAiAgent(
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
