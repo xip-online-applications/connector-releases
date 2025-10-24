@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/switch.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport { WhenItemsInterface, WhenItemsSchema } from './when-items.interface';\n\nexport const SwitchSchema = z.object({\n  when: WhenItemsSchema,\n  else: z.string().min(1).optional(),\n  segment: z.boolean().optional(),\n});\n\nexport interface SwitchInterface {\n  when: WhenItemsInterface;\n  else?: string;\n  segment?: boolean;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,wBAAoD;AAE7C,MAAM,eAAe,aAAE,OAAO;AAAA,EACnC,MAAM;AAAA,EACN,MAAM,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,EACjC,SAAS,aAAE,QAAQ,EAAE,SAAS;AAChC,CAAC;",
+  "names": []
+}

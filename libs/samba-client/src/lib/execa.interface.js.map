@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/samba-client/src/lib/execa.interface.ts"],
+  "sourcesContent": ["import { Options } from \"execa\";\n\nexport interface ExecaInterface {\n    execute(command: string, args: string | Array<string>, options: Options): Promise<any>;\n}"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

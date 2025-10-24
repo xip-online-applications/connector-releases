@@ -182,3 +182,4 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
 0 && (module.exports = {
   RdKafkaBaseService
 });
+//# sourceMappingURL=rdkafka-base.service.js.map

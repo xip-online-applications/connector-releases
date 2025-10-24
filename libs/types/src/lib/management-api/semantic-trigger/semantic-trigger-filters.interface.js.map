@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/semantic-trigger/semantic-trigger-filters.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport {\n  SemanticTriggerFilterInterface,\n  SemanticTriggerFilterSchema,\n} from './semantic-trigger-filter.interface';\n\nexport const SemanticTriggerFiltersSchema = z.record(\n  z.union([SemanticTriggerFilterSchema, z.literal(false)]),\n);\n\nexport interface SemanticTriggerFiltersInterface {\n  [key: string]: SemanticTriggerFilterInterface | false;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,qCAGO;AAEA,MAAM,+BAA+B,aAAE;AAAA,EAC5C,aAAE,MAAM,CAAC,4DAA6B,aAAE,QAAQ,KAAK,CAAC,CAAC;AACzD;",
+  "names": []
+}

@@ -133,3 +133,4 @@ class Office365MailParser {
 0 && (module.exports = {
   Office365MailParser
 });
+//# sourceMappingURL=office365-mail-parser.js.map

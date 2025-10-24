@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/sdk.interface.ts"],
+  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\n\nimport { LoggerSDKInterface } from './logger.sdk.interface';\nimport { OffsetStoreSDKInterface } from './offset-store.sdk.interface';\nimport { ProcessingSDKInterface } from './processing.sdk.interface';\nimport { ReceiverSDKInterface } from './receiver.sdk.interface';\nimport { SenderSDKInterface } from './sender.sdk.interface';\nimport { TemplatingSDKInterface } from './templating.sdk.interface';\n\nexport interface ConnectorSDKInterface<T = BaseConnectorConfig> {\n  get config(): T;\n\n  get logger(): LoggerSDKInterface;\n\n  get sender(): SenderSDKInterface;\n\n  get receiver(): ReceiverSDKInterface;\n\n  get templating(): TemplatingSDKInterface;\n\n  get processing(): ProcessingSDKInterface;\n\n  get offsetStore(): OffsetStoreSDKInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

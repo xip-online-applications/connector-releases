@@ -117,7 +117,8 @@ class Logger {
       path: `/api/v2/logs?${searchParams.toString()}`,
       ssl: true,
       batch: true,
-      format: winston.format.json()
+      format: winston.format.json(),
+      level: "info" /* info */
     };
     if (this.#datadogTransport) {
       this.logger.remove(this.#datadogTransport);
@@ -174,3 +175,4 @@ class Logger {
   LogLevels,
   Logger
 });
+//# sourceMappingURL=logger.js.map

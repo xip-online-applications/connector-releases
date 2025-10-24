@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/QueryRunnerProviderAlreadyReleasedError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to use query runner from query runner provider after it was released.\n */\nexport class QueryRunnerProviderAlreadyReleasedError extends TypeORMError {\n  constructor() {\n    super(\n      `Database connection provided by a query runner was already ` +\n        `released, cannot continue to use its querying methods anymore.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gDAAgD,iCAAa;AAAA,EACxE,cAAc;AACZ;AAAA,MACE;AAAA,IAEF;AAAA,EACF;AACF;",
+  "names": []
+}

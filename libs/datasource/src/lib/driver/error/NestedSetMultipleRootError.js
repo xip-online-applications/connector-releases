@@ -30,3 +30,4 @@ class NestedSetMultipleRootError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   NestedSetMultipleRootError
 });
+//# sourceMappingURL=NestedSetMultipleRootError.js.map

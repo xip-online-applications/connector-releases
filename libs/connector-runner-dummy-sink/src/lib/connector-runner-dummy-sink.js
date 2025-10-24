@@ -85,3 +85,4 @@ class ConnectorRunnerDummySink extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerDummySink
 });
+//# sourceMappingURL=connector-runner-dummy-sink.js.map

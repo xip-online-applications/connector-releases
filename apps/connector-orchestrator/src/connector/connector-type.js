@@ -147,3 +147,4 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
 0 && (module.exports = {
   getConnectorType
 });
+//# sourceMappingURL=connector-type.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/connector-runtime-sdk/src/index.ts"],
+  "sourcesContent": ["export * from './lib/connector-runtime';\nexport * from './lib/connector-runtime.interface';\nexport * from './lib/sdk';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,oCAAd;AACA,wBAAc,8CADd;AAEA,wBAAc,sBAFd;",
+  "names": []
+}

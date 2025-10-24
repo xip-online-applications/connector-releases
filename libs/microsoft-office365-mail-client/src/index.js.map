@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/microsoft-office365-mail-client/src/index.ts"],
+  "sourcesContent": ["export * from './lib/mail-client.interface';\nexport * from './lib/mail-client';\nexport * from './lib/types';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,wCAAd;AACA,wBAAc,8BADd;AAEA,wBAAc,wBAFd;",
+  "names": []
+}

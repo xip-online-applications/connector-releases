@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var paginated_response_interface_exports = {};
 module.exports = __toCommonJS(paginated_response_interface_exports);
+//# sourceMappingURL=paginated-response.interface.js.map

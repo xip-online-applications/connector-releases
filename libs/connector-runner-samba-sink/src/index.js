@@ -19,3 +19,4 @@ __reExport(src_exports, require("./lib/connector-runner-samba-sink"), module.exp
 0 && (module.exports = {
   ...require("./lib/connector-runner-samba-sink")
 });
+//# sourceMappingURL=index.js.map

@@ -65,9 +65,9 @@ class MailProcessor {
     try {
       await this.#processMailbox(this.#mailboxConfig);
     } catch (error) {
-      this.#logger.error(
+      this.#logger.warn(
         `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`,
-        error
+        JSON.stringify(error)
       );
       this.#processing = false;
       this.#processingTries += 1;
@@ -100,6 +100,9 @@ class MailProcessor {
     }
     const messagesAsPayload = messages.map(
       (message) => this.#buildPayload(message)
+    );
+    this.#logger.info(
+      `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}:${this.#mailboxConfig.mailbox}, sending as ${this.#mailboxConfig.type}`
     );
     if (this.#mailboxConfig.type === "metric") {
       await this.#sdk.sender.metricsLegacy(
@@ -134,3 +137,4 @@ class MailProcessor {
 0 && (module.exports = {
   MailProcessor
 });
+//# sourceMappingURL=mail-processor.js.map

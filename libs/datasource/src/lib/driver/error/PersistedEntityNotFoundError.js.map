@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/PersistedEntityNotFoundError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown . Theoretically can't be thrown.\n */\nexport class PersistedEntityNotFoundError extends TypeORMError {\n  constructor() {\n    super(\n      `Internal error. Persisted entity was not found in the list of prepared operated entities.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,qCAAqC,iCAAa;AAAA,EAC7D,cAAc;AACZ;AAAA,MACE;AAAA,IACF;AAAA,EACF;AACF;",
+  "names": []
+}

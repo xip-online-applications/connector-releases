@@ -27,3 +27,4 @@ const ActionsSchema = import_zod.z.record(import_action.ActionSchema.or(import_z
 0 && (module.exports = {
   ActionsSchema
 });
+//# sourceMappingURL=actions.interface.js.map

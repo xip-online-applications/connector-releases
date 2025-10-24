@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/kafka-base-service/src/lib/message-monitor.interface.ts"],
+  "sourcesContent": ["import {\n  KafkaCallbackResponse,\n  XodActionType,\n  XodBaseMessageType,\n} from '@xip-online-data/types';\n\nexport interface MessageMonitorInterface {\n  processMessage(\n    callbackFunction: (\n      message: XodBaseMessageType,\n    ) => Promise<KafkaCallbackResponse>,\n  ): (message: XodBaseMessageType) => Promise<KafkaCallbackResponse>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

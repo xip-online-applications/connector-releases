@@ -341,3 +341,4 @@ class OpcuaClient {
 0 && (module.exports = {
   OpcuaClient
 });
+//# sourceMappingURL=opcua-client.js.map

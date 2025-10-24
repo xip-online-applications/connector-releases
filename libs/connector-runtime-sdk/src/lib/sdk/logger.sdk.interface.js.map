@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/logger.sdk.interface.ts"],
+  "sourcesContent": ["export interface LoggerSDKInterface {\n  info(...args: Array<unknown>): void;\n\n  debug(...args: Array<unknown>): void;\n\n  error(...args: Array<unknown>): void;\n\n  warn(...args: Array<unknown>): void;\n\n  verbose(...args: Array<unknown>): void;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

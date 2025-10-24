@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/datasets.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport { DatasetInterface, DatasetSchema } from './dataset.interface';\n\nexport const DatasetsSchema = z.record(DatasetSchema.or(z.boolean()));\n\nexport interface DatasetsInterface {\n  [key: string]: DatasetInterface | boolean;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,qBAAgD;AAEzC,MAAM,iBAAiB,aAAE,OAAO,6BAAc,GAAG,aAAE,QAAQ,CAAC,CAAC;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-dummy-source/src/lib/types.ts"],
+  "sourcesContent": ["import {BaseConnectorConfig, isBaseConnectorConfigType} from \"@xip-online-data/types\";\n\nexport interface YamlConfig extends BaseConnectorConfig {\n  interval?: number;\n}\n\nexport function isYamlConfigType(obj: YamlConfig): obj is YamlConfig {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    isBaseConnectorConfigType(obj)\n  );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAA6D;AAMtD,SAAS,iBAAiB,KAAoC;AACnE,SACE,QAAQ,UACR,QAAQ,YACR,wCAA0B,GAAG;AAEjC;",
+  "names": []
+}

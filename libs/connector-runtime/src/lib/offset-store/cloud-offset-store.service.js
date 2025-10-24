@@ -30,10 +30,10 @@ __export(cloud_offset_store_service_exports, {
   CloudOffsetStoreService: () => CloudOffsetStoreService
 });
 module.exports = __toCommonJS(cloud_offset_store_service_exports);
-var import_management_api_client = require("@transai/management-api-client");
-var import_rxjs = require("rxjs");
 var process = __toESM(require("node:process"));
 var import_logger = require("@transai/logger");
+var import_management_api_client = require("@transai/management-api-client");
+var import_rxjs = require("rxjs");
 var import_offset_store = require("./offset-store.service");
 class CloudOffsetStoreService {
   #managementApiClient = new import_management_api_client.ConnectorApiClient();
@@ -56,7 +56,7 @@ class CloudOffsetStoreService {
   async deInit() {
     await this.#offsetStore.deInit();
     this.#syncOffsets().then(() => {
-      this.#log.info("Successfully synced offsets.");
+      this.#log.debug("Successfully synced offsets.");
     }).catch((error) => {
       this.#log.error("Error syncing offsets.", error);
     });
@@ -71,7 +71,7 @@ class CloudOffsetStoreService {
     this.#offsetStore.setOffset(offset, identifier);
   }
   async #initializeOffsets() {
-    this.#log.info(`Initializing offset for ${this.#connectorIdentifier}`);
+    this.#log.verbose(`Initializing offset for ${this.#connectorIdentifier}`);
     await this.#initOffsetsFromCloud();
     if (!this.#initialized) {
       await new Promise((resolve) => {
@@ -79,7 +79,7 @@ class CloudOffsetStoreService {
       });
       return this.#initializeOffsets();
     }
-    this.#log.info(
+    this.#log.debug(
       `Initializing offset successfully for ${this.#connectorIdentifier}`
     );
     return Promise.resolve();
@@ -95,7 +95,7 @@ class CloudOffsetStoreService {
       })
     ).subscribe((v) => {
       if (v !== null)
-        this.#log.info("Offsets sync completed.");
+        this.#log.verbose("Offsets sync completed.");
     });
   }
   async #syncAllOffsets() {
@@ -139,7 +139,7 @@ class CloudOffsetStoreService {
         this.#log.debug("No user overriding offsets to sync.");
         return;
       }
-      this.#log.info(
+      this.#log.debug(
         `Successfully synced ${userOverridesOffsets.length} user overriding offsets.`
       );
       this.#log.debug(
@@ -158,7 +158,7 @@ class CloudOffsetStoreService {
         this.#log.error(`Error loading offsets: ${JSON.stringify(error)}`);
         return [];
       });
-      this.#log.info(`Successfully synced ${offsets.length} offsets.`);
+      this.#log.debug(`Successfully synced ${offsets.length} offsets.`);
       this.#log.debug(
         `Set Cloud offsets: ${offsets.map((o) => o.identifier).join(", ")}`
       );
@@ -173,3 +173,4 @@ class CloudOffsetStoreService {
 0 && (module.exports = {
   CloudOffsetStoreService
 });
+//# sourceMappingURL=cloud-offset-store.service.js.map

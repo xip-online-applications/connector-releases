@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-sql-sink/src/lib/types.ts"],
+  "sourcesContent": ["import { DatasourceOptions, isDatasourceOptions } from '@xip-online-data/datasource';\nimport {\n  ActionConfig,\n  BaseConnectorConfig,\n  isActionConfigType,\n  isBaseConnectorConfigType,\n} from '@xip-online-data/types';\n\nexport interface SqlSinkConfig {\n  action: ActionConfig;\n  database: DatasourceOptions;\n}\n\nexport function isYamlConfigType(obj: SqlSinkConfig): obj is SqlSinkConfig {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    isActionConfigType(obj.action) &&\n    isDatasourceOptions(obj.database)\n  );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,wBAAuD;AACvD,mBAKO;AAOA,SAAS,iBAAiB,KAA0C;AACzE,SACE,QAAQ,UACR,QAAQ,YACR,iCAAmB,IAAI,MAAM,SAC7B,uCAAoB,IAAI,QAAQ;AAEpC;",
+  "names": []
+}

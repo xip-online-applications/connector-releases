@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/kafka-base-service/src/lib/kafkajs-logger.ts"],
+  "sourcesContent": ["import { logLevel } from 'kafkajs';\nimport { Logger } from '@transai/logger';\n\nexport const TransAILogCreator = () => {\n  return ({ level, log }: { level: logLevel; log: { message: string } }) => {\n    const logger = Logger.getInstance();\n    const { message, error } = log as { message: string; error?: string };\n    const parsedMessage = error ? `${message} - ${error}` : message;\n    switch (level) {\n      case logLevel.ERROR:\n      case logLevel.NOTHING:\n        logger.error(parsedMessage);\n        break;\n      case logLevel.WARN:\n        logger.warn(parsedMessage);\n        break;\n      case logLevel.INFO:\n        logger.info(parsedMessage);\n        break;\n      case logLevel.DEBUG:\n        logger.debug(parsedMessage);\n        break;\n      default:\n        logger.info(parsedMessage);\n        break;\n    }\n  };\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAyB;AACzB,oBAAuB;AAEhB,MAAM,oBAAoB,MAAM;AACrC,SAAO,CAAC,EAAE,OAAO,IAAI,MAAqD;AACxE,UAAM,SAAS,qBAAO,YAAY;AAClC,UAAM,EAAE,SAAS,MAAM,IAAI;AAC3B,UAAM,gBAAgB,QAAQ,GAAG,OAAO,MAAM,KAAK,KAAK;AACxD,YAAQ,OAAO;AAAA,MACb,KAAK,wBAAS;AAAA,MACd,KAAK,wBAAS;AACZ,eAAO,MAAM,aAAa;AAC1B;AAAA,MACF,KAAK,wBAAS;AACZ,eAAO,KAAK,aAAa;AACzB;AAAA,MACF,KAAK,wBAAS;AACZ,eAAO,KAAK,aAAa;AACzB;AAAA,MACF,KAAK,wBAAS;AACZ,eAAO,MAAM,aAAa;AAC1B;AAAA,MACF;AACE,eAAO,KAAK,aAAa;AACzB;AAAA,IACJ;AAAA,EACF;AACF;",
+  "names": []
+}

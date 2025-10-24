@@ -27,3 +27,4 @@ function isDatasourceOptions(obj) {
 0 && (module.exports = {
   isDatasourceOptions
 });
+//# sourceMappingURL=datasource.options.js.map

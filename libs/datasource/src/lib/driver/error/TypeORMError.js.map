@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/TypeORMError.ts"],
+  "sourcesContent": ["export class TypeORMError extends Error {\n  override get name() {\n    return this.constructor.name;\n  }\n\n  constructor(message?: string) {\n    super(message);\n\n    // restore prototype chain because the base `Error` type\n    // will break the prototype chain a little\n    if (Object.setPrototypeOf) {\n      Object.setPrototypeOf(this, new.target.prototype);\n    } else {\n      (this as any).__proto__ = new.target.prototype;\n    }\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,qBAAqB,MAAM;AAAA,EACtC,IAAa,OAAO;AAClB,WAAO,KAAK,YAAY;AAAA,EAC1B;AAAA,EAEA,YAAY,SAAkB;AAC5B,UAAM,OAAO;AAIb,QAAI,OAAO,gBAAgB;AACzB,aAAO,eAAe,MAAM,WAAW,SAAS;AAAA,IAClD,OAAO;AACL,MAAC,KAAa,YAAY,WAAW;AAAA,IACvC;AAAA,EACF;AACF;",
+  "names": []
+}

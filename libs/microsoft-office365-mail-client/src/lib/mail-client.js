@@ -62,7 +62,7 @@ class MailClient {
       );
       const seenIds = /* @__PURE__ */ new Set();
       const messages = await Promise.all(
-        mails.filter((office365Mail) => !seenIds.has(office365Mail.id)).map(
+        mails.filter((office365Mail) => !!office365Mail).filter((office365Mail) => !seenIds.has(office365Mail.id)).map(
           async (office365Mail) => this.#parseEmail(
             office365Mail,
             folder,
@@ -72,13 +72,12 @@ class MailClient {
           )
         )
       );
-      messages.filter((gm) => !!gm).sort((a, b) => {
+      return messages.filter((gm) => !!gm).sort((a, b) => {
         if (a.deltaTimestamp !== b.deltaTimestamp) {
           return a.deltaTimestamp - b.deltaTimestamp;
         }
         return a.deltaId.localeCompare(b.deltaId);
       });
-      return messages;
     } catch (err) {
       const message = `Failed to read email from mailbox ${mailbox}`;
       this.#logger.warn(message, err);
@@ -178,3 +177,4 @@ class MailClient {
 0 && (module.exports = {
   MailClient
 });
+//# sourceMappingURL=mail-client.js.map

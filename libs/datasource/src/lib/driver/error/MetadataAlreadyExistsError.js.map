@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/MetadataAlreadyExistsError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\nexport class MetadataAlreadyExistsError extends TypeORMError {\n  constructor(\n    metadataType: string,\n    constructor: Function,\n    propertyName?: string,\n  ) {\n    super(\n      `${\n        metadataType\n      } metadata already exists for the class constructor ${JSON.stringify(\n        constructor,\n      )}${\n        propertyName\n          ? ` on property ${propertyName}`\n          : '. If you previously renamed or moved entity class, make sure' +\n            \" that compiled version of old entity class source wasn't left in the compiler output directory.\"\n      }`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAEtB,MAAM,mCAAmC,iCAAa;AAAA,EAC3D,YACE,cACA,aACA,cACA;AACA;AAAA,MACE,GACE,YACF,sDAAsD,KAAK;AAAA,QACzD;AAAA,MACF,CAAC,GACC,eACI,gBAAgB,YAAY,KAC5B,6JAEN;AAAA,IACF;AAAA,EACF;AACF;",
+  "names": []
+}

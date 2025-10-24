@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/filters.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport {\n  FilterGroupInterface,\n  FilterGroupSchema,\n} from './filter-group.interface';\nimport { FilterInterface, FilterSchema } from './filter.interface';\n\nexport const FiltersSchema = <z.ZodType<FiltersInterface>>(\n  z.record(\n    z.union([z.lazy(() => FilterGroupSchema), FilterSchema, z.literal(false)]),\n  )\n);\n\nexport interface FiltersInterface {\n  [key: string]: FilterGroupInterface | FilterInterface | false;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,0BAGO;AACP,oBAA8C;AAEvC,MAAM,gBACX,aAAE;AAAA,EACA,aAAE,MAAM,CAAC,aAAE,KAAK,MAAM,qCAAiB,GAAG,4BAAc,aAAE,QAAQ,KAAK,CAAC,CAAC;AAC3E;",
+  "names": []
+}
