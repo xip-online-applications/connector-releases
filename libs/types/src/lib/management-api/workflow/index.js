@@ -29,4 +29,3 @@ __reExport(workflow_exports, require("./trigger-types.interface"), module.export
   ...require("./workflow.drawing"),
   ...require("./trigger-types.interface")
 });
-//# sourceMappingURL=index.js.map

@@ -139,4 +139,3 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerCubeQuery
 });
-//# sourceMappingURL=connector-runner-cube-query.js.map

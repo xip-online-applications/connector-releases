@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/handle-error/src/lib/wait-till-restart.ts"],
-  "sourcesContent": ["function sleep(ms: number): Promise<void> {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n\nexport async function waitTillRestart(message: string, error: any = undefined): Promise<void> {\n  console.log('Wait till restart;', message);\n  if (error) {\n    console.error(error);\n  }\n  // eslint-disable-next-line no-constant-condition\n  while (true) {\n    await sleep(5 * 60 * 1000); // Sleep for 5 minutes\n    console.log('Wait till restart;', message);\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,SAAS,MAAM,IAA2B;AACxC,SAAO,IAAI,QAAQ,aAAW,WAAW,SAAS,EAAE,CAAC;AACvD;AAEA,eAAsB,gBAAgB,SAAiB,QAAa,QAA0B;AAC5F,UAAQ,IAAI,sBAAsB,OAAO;AACzC,MAAI,OAAO;AACT,YAAQ,MAAM,KAAK;AAAA,EACrB;AAEA,SAAO,MAAM;AACX,UAAM,MAAM,IAAI,KAAK,GAAI;AACzB,YAAQ,IAAI,sBAAsB,OAAO;AAAA,EAC3C;AACF;",
-  "names": []
-}

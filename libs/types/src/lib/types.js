@@ -30,8 +30,6 @@ module.exports = __toCommonJS(types_exports);
 var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["API_SINK"] = "api-sink";
   ConfiguredConnectorTypes2["API_SOURCE"] = "api-source";
-  ConfiguredConnectorTypes2["DUMMY_SINK"] = "dummy-sink";
-  ConfiguredConnectorTypes2["DUMMY_SOURCE"] = "dummy-source";
   ConfiguredConnectorTypes2["DUMMY_NODE"] = "dummy-node";
   ConfiguredConnectorTypes2["FILE_COPY"] = "file-copy";
   ConfiguredConnectorTypes2["FILE_SINK"] = "file-sink";
@@ -87,4 +85,3 @@ function isBaseConnectorConfigType(obj) {
   isKafkaBrokerConfigType,
   isTopicRegex
 });
-//# sourceMappingURL=types.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/semantic-trigger/semantic-trigger-filter.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport {\n  FilterValueType,\n  SemanticTriggerFilterOperatorsEnum,\n} from '../type-enums';\n\nexport const SemanticTriggerFilterSchema = z.object({\n  dimension: z.string().min(1),\n  operator: z.nativeEnum(SemanticTriggerFilterOperatorsEnum),\n  values: FilterValueType,\n});\n\nexport interface SemanticTriggerFilterInterface {\n  dimension: string;\n  operator: SemanticTriggerFilterOperatorsEnum;\n  values: FilterValueType;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,wBAGO;AAEA,MAAM,8BAA8B,aAAE,OAAO;AAAA,EAClD,WAAW,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EAC3B,UAAU,aAAE,WAAW,oDAAkC;AAAA,EACzD,QAAQ;AACV,CAAC;",
-  "names": []
-}

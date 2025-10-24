@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/logger/src/index.ts"],
-  "sourcesContent": ["export * from './lib/logger';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,yBAAd;",
-  "names": []
-}

@@ -30,4 +30,3 @@ const CollectionSchema = import_zod.z.object({
 0 && (module.exports = {
   CollectionSchema
 });
-//# sourceMappingURL=collection.interface.js.map

@@ -157,4 +157,3 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
 0 && (module.exports = {
   ConnectorRunnerSqlSink
 });
-//# sourceMappingURL=connector-runner-sql-sink.js.map

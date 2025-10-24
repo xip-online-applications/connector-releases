@@ -20,37 +20,38 @@ __export(connector_runner_dummy_node_exports, {
   ConnectorRunnerDummyNode: () => ConnectorRunnerDummyNode
 });
 module.exports = __toCommonJS(connector_runner_dummy_node_exports);
-var import_connector_runtime = require("@transai/connector-runtime");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
-var import_logger = require("@transai/logger");
-class ConnectorRunnerDummyNode extends import_connector_runtime.ConnectorRuntime {
+var import_connector_runtime_sdk = require("@transai/connector-runtime-sdk");
+class ConnectorRunnerDummyNode extends import_connector_runtime_sdk.ConnectorRuntimeSDK {
   constructor() {
     super(...arguments);
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_DUMMY_NODE_CONFIG";
     this.init = async () => {
-      const failProbability = this.config.failProbability || 0;
+      const { config } = this.connectorSDK;
+      const failProbability = config.failProbability || 0;
       if (failProbability > 0) {
-        import_logger.Logger.getInstance().debug("Fail probability set to", failProbability);
+        this.connectorSDK.logger.debug(
+          "Fail probability set to",
+          failProbability
+        );
       }
       const dummyProcessFailed = () => {
         return Math.random() < failProbability;
       };
-      const mainCallbackFunction = (callbackFunction) => {
-        return async (message) => {
-          import_logger.Logger.getInstance().info(
-            "Received message: ",
-            message.testRun ? "(test run)" : "",
-            message.eventId,
-            message.payload
-          );
-          if (dummyProcessFailed()) {
-            import_logger.Logger.getInstance().error("Dummy process failed");
-            return (0, import_kafka_base_service.InternalServerError)("Dummy process failed")(message);
-          }
-          return callbackFunction(message);
-        };
+      this.callbackFunction = async (message, action) => {
+        this.connectorSDK.logger.info(
+          "Received message: ",
+          message.testRun ? "(test run)" : "",
+          message.eventId,
+          message.payload
+        );
+        if (dummyProcessFailed()) {
+          this.connectorSDK.logger.error("Dummy process failed");
+          return this.connectorSDK.receiver.responses.internalServerError(
+            "Dummy process failed"
+          )(message);
+        }
+        return this.connectorSDK.receiver.responses.ok()(message);
       };
-      this.callbackFunction = mainCallbackFunction(this.emitEventType((0, import_kafka_base_service.Ok)()));
     };
   }
 }
@@ -58,4 +59,3 @@ class ConnectorRunnerDummyNode extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerDummyNode
 });
-//# sourceMappingURL=connector-runner-dummy-node.js.map

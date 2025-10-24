@@ -32,4 +32,3 @@ class QueryResult {
 0 && (module.exports = {
   QueryResult
 });
-//# sourceMappingURL=query-result.js.map

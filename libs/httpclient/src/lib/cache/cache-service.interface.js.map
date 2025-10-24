@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/cache/cache-service.interface.ts"],
-  "sourcesContent": ["export interface CacheServiceInterface {\n  get<T>(key: string): Promise<T | undefined>;\n\n  set<T>(key: string, value: T): Promise<void>;\n\n  clear(): Promise<void>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

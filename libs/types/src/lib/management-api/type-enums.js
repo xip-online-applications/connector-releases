@@ -147,4 +147,3 @@ var ConnectorOrigin = /* @__PURE__ */ ((ConnectorOrigin2) => {
   RelationTypesEnum,
   SemanticTriggerFilterOperatorsEnum
 });
-//# sourceMappingURL=type-enums.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/AlreadyHasActiveConnectionError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to recreate connection with the same name, but previous connection was not closed yet.\n */\nexport class AlreadyHasActiveConnectionError extends TypeORMError {\n  constructor(connectionName: string) {\n    super(\n      `Cannot create a new connection named \"${connectionName}\", because connection with such name ` +\n        `already exist and it now has an active connection session.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,wCAAwC,iCAAa;AAAA,EAChE,YAAY,gBAAwB;AAClC;AAAA,MACE,yCAAyC,cAAc;AAAA,IAEzD;AAAA,EACF;AACF;",
-  "names": []
-}

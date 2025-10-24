@@ -34,4 +34,3 @@ const SegmentSchema = import_zod.z.intersection(
 0 && (module.exports = {
   SegmentSchema
 });
-//# sourceMappingURL=segment.interface.js.map

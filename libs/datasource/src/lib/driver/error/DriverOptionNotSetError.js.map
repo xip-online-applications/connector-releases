@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/DriverOptionNotSetError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown if some required driver's option is not set.\n */\nexport class DriverOptionNotSetError extends TypeORMError {\n  constructor(optionName: string) {\n    super(\n      `Driver option (${optionName}) is not set. ` +\n        `Please set it to perform connection to the database.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gCAAgC,iCAAa;AAAA,EACxD,YAAY,YAAoB;AAC9B;AAAA,MACE,kBAAkB,UAAU;AAAA,IAE9B;AAAA,EACF;AACF;",
-  "names": []
-}

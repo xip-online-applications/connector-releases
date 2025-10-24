@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/http-client/src/index.ts"],
-  "sourcesContent": ["export * from './lib/http-client';\nexport * from './lib/types';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,8BAAd;AACA,wBAAc,wBADd;",
-  "names": []
-}

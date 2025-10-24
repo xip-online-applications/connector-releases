@@ -92,4 +92,3 @@ class KafkaSourceService extends import_kafka_base.KafkaBaseService {
 0 && (module.exports = {
   KafkaSourceService
 });
-//# sourceMappingURL=kafka-source.service.js.map

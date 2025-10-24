@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/TreeRepositoryNotSupportedError.ts"],
-  "sourcesContent": ["import { Driver } from '../driver';\nimport { TypeORMError } from './TypeORMError';\n\nexport class TreeRepositoryNotSupportedError extends TypeORMError {\n  constructor(driver: Driver) {\n    super(\n      `Tree repositories are not supported in ${driver.options.type} driver.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,0BAA6B;AAEtB,MAAM,wCAAwC,iCAAa;AAAA,EAChE,YAAY,QAAgB;AAC1B;AAAA,MACE,0CAA0C,OAAO,QAAQ,IAAI;AAAA,IAC/D;AAAA,EACF;AACF;",
-  "names": []
-}

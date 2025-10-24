@@ -32,4 +32,3 @@ function handleError(errorMessage, error = void 0) {
 0 && (module.exports = {
   handleError
 });
-//# sourceMappingURL=handle-error.js.map

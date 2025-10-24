@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CannotAttachTreeChildrenEntityError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user saves tree children entity but its parent is not saved yet.\n */\nexport class CannotAttachTreeChildrenEntityError extends TypeORMError {\n  constructor(entityName: string) {\n    super(\n      `Cannot attach entity \"${entityName}\" to its parent. Please make sure parent ` +\n        `is saved in the database before saving children nodes.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,4CAA4C,iCAAa;AAAA,EACpE,YAAY,YAAoB;AAC9B;AAAA,MACE,yBAAyB,UAAU;AAAA,IAErC;AAAA,EACF;AACF;",
-  "names": []
-}

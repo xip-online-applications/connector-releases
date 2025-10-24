@@ -34,13 +34,9 @@ class ProcessingSDKService {
     }
     this.#intervals[name] = {
       handler,
-      subscription: (0, import_rxjs.interval)(intervalSeconds * 1e3).subscribe(async () => {
-        await this.#runHandler(handler);
-      })
+      options,
+      interval: intervalSeconds
     };
-    if (options?.immediate) {
-      await this.#runHandler(handler);
-    }
     return name;
   }
   async #runHandler(handler) {
@@ -57,11 +53,30 @@ class ProcessingSDKService {
     if (!interval2) {
       return;
     }
-    interval2.subscription.unsubscribe();
-    if (interval2.handler.onStop !== void 0) {
-      await interval2.handler.onStop();
-    }
+    interval2.subscription?.unsubscribe();
     delete this.#intervals[name];
+  }
+  async start() {
+    await Promise.all(
+      Object.values(this.#intervals).map(async (intervalData) => {
+        if (intervalData.subscription) {
+          return;
+        }
+        intervalData.subscription = (0, import_rxjs.interval)(
+          intervalData.interval * 1e3
+        ).subscribe(async () => {
+          await this.#runHandler(intervalData.handler);
+        });
+        if (intervalData.handler.onStop) {
+          intervalData.subscription.add(async () => {
+            await intervalData.handler.onStop();
+          });
+        }
+        if (intervalData.options?.immediate) {
+          await this.#runHandler(intervalData.handler);
+        }
+      })
+    );
   }
   stopAll() {
     const stopPromises = Object.keys(this.#intervals).map(
@@ -74,4 +89,3 @@ class ProcessingSDKService {
 0 && (module.exports = {
   ProcessingSDKService
 });
-//# sourceMappingURL=processing.sdk.js.map

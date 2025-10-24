@@ -99,4 +99,3 @@ class SenderSDKService {
 0 && (module.exports = {
   SenderSDKService
 });
-//# sourceMappingURL=sender.sdk.js.map

@@ -122,4 +122,3 @@ class QueryResultHandler {
 0 && (module.exports = {
   QueryResultHandler
 });
-//# sourceMappingURL=query-result.handler.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/file-system-connector/src/lib/types.ts"],
-  "sourcesContent": ["\nexport type FileInfoType = \"d\" | \"-\" | \"l\";\n\nexport enum FileInfoEnum {\n  DIRECTORY = 'DIRECTORY',\n  FILE = 'FILE',\n}\n\nexport interface FileInfo {\n  type: FileInfoEnum;\n  name: string;\n  size: number;\n  modifyTime: Date;\n}\n\nexport interface ListMetaData {\n  name: string;\n  type: 'D' | 'A';\n  size: number;\n  modifyTime: Date;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGO,IAAK,eAAL,kBAAKA,kBAAL;AACL,EAAAA,cAAA,eAAY;AACZ,EAAAA,cAAA,UAAO;AAFG,SAAAA;AAAA,GAAA;",
-  "names": ["FileInfoEnum"]
-}

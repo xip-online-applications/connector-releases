@@ -19,4 +19,3 @@ __reExport(event_server_exports, require("./create-event.interface"), module.exp
 0 && (module.exports = {
   ...require("./create-event.interface")
 });
-//# sourceMappingURL=index.js.map

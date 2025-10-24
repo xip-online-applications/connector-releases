@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/offset.interface.ts"],
-  "sourcesContent": ["export interface OffsetStore {\n  timestamp: number;\n  id: number | string;\n  date?: string;\n  rawTimestamp: number | string;\n}\n\nexport interface ExtendedOffsetStore extends OffsetStore {\n  [key: string]: string | number | undefined;\n}\n\nexport interface OffsetInterface {\n  identifier: string;\n  tenantIdentifier: string;\n  offset: ExtendedOffsetStore;\n  connectorIdentifier: string;\n  userOverwrite: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

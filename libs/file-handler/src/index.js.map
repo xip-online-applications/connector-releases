@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/file-handler/src/index.ts"],
-  "sourcesContent": ["export * from './lib/file-handler';\nexport * from './lib/types';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,+BAAd;AACA,wBAAc,wBADd;",
-  "names": []
-}

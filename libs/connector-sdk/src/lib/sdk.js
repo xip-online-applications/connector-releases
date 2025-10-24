@@ -81,6 +81,12 @@ class TransAIConnectorSDK {
       throw err;
     });
   }
+  async start() {
+    await Promise.all([
+      this.#processing.start(),
+      this.#kafkaServiceInstance.init()
+    ]);
+  }
   async stop() {
     await Promise.all([
       this.#processing.stopAll(),
@@ -114,4 +120,3 @@ class TransAIConnectorSDK {
 0 && (module.exports = {
   TransAIConnectorSDK
 });
-//# sourceMappingURL=sdk.js.map

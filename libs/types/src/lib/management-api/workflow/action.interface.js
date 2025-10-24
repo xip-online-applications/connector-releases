@@ -45,4 +45,3 @@ const ActionSchema = import_zod.z.object({
 0 && (module.exports = {
   ActionSchema
 });
-//# sourceMappingURL=action.interface.js.map

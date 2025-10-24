@@ -21,4 +21,3 @@ __reExport(src_exports, require("./lib/management-api-client"), module.exports);
   ...require("./lib/connector-api-client"),
   ...require("./lib/management-api-client")
 });
-//# sourceMappingURL=index.js.map

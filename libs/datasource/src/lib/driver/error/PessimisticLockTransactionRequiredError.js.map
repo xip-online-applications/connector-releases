@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/PessimisticLockTransactionRequiredError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when a transaction is required for the current operation, but there is none open.\n */\nexport class PessimisticLockTransactionRequiredError extends TypeORMError {\n  constructor() {\n    super(`An open transaction is required for pessimistic lock.`);\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gDAAgD,iCAAa;AAAA,EACxE,cAAc;AACZ,UAAM,uDAAuD;AAAA,EAC/D;AACF;",
-  "names": []
-}

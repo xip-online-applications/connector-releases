@@ -65,10 +65,13 @@ class ReceiverSDKService {
     );
   }
   getActionConfig(message) {
-    if (!message.actionVersion || message.actionVersion === "latest") {
-      return this.#getLatestActionConfig(message);
+    const actions = this.#actionConfigs.filter((action) => {
+      return action.identifier === message.actionIdentifier && action.version === message.actionVersion;
+    });
+    if (actions.length !== 1) {
+      return null;
     }
-    return this.#getSpecificActionConfig(message);
+    return actions[0];
   }
   emitEventType(callbackFunction) {
     return (message) => {
@@ -84,30 +87,10 @@ class ReceiverSDKService {
       });
     }
   }
-  #getLatestActionConfig(message) {
-    const actions = this.#actionConfigs.filter(
-      (action) => action.identifier === message.actionIdentifier
-    );
-    if (actions.length === 0) {
-      return null;
-    }
-    return actions.sort((a, b) => {
-      return a.createdAt > b.createdAt ? -1 : 1;
-    })[0];
-  }
-  #getSpecificActionConfig(message) {
-    const actions = this.#actionConfigs.filter((action) => {
-      return action.identifier === message.actionIdentifier && action.version === message.actionVersion;
-    });
-    if (actions.length !== 1) {
-      return null;
-    }
-    return actions[0];
-  }
   #validateJobMessage(callbackFunction) {
     return async (message) => {
       if (message.type !== "JOB") {
-        throw new Error("BAD REQUEST, INVALID MESSAGE TYPE");
+        return this.responses.badRequest("Only Accept JOB types")(message);
       }
       return callbackFunction(message);
     };
@@ -117,4 +100,3 @@ class ReceiverSDKService {
 0 && (module.exports = {
   ReceiverSDKService
 });
-//# sourceMappingURL=receiver.sdk.js.map

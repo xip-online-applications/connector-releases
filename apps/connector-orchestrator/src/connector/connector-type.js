@@ -20,13 +20,12 @@ __export(connector_type_exports, {
   getConnectorType: () => getConnectorType
 });
 module.exports = __toCommonJS(connector_type_exports);
+var import_connector_runner_ai_agent = require("@transai/connector-runner-ai-agent");
 var import_connector_runner_api_sink = require("@transai/connector-runner-api-sink");
 var import_connector_runner_api_source = require("@transai/connector-runner-api-source");
 var import_connector_runner_bystronic = require("@transai/connector-runner-bystronic");
 var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
-var import_connector_runner_dummy_sink = require("@transai/connector-runner-dummy-sink");
-var import_connector_runner_dummy_source = require("@transai/connector-runner-dummy-source");
 var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
 var import_connector_runner_file_copy = require("@transai/connector-runner-file-copy");
 var import_connector_runner_file_sink = require("@transai/connector-runner-file-sink");
@@ -48,24 +47,6 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
       );
     case import_types.ConfiguredConnectorTypes.API_SOURCE:
       return new import_connector_runner_api_source.ConnectorRunnerApiSource(
-        connectorConfig,
-        connectorConfig.config,
-        connectorConfig.actions
-      );
-    case import_types.ConfiguredConnectorTypes.DUMMY_SINK:
-      return new import_connector_runner_dummy_sink.ConnectorRunnerDummySink(
-        connectorConfig,
-        connectorConfig.config,
-        connectorConfig.actions
-      );
-    case import_types.ConfiguredConnectorTypes.DUMMY_SOURCE:
-      return new import_connector_runner_dummy_source.ConnectorRunnerDummySource(
-        connectorConfig,
-        connectorConfig.config,
-        connectorConfig.actions
-      );
-    case import_types.ConfiguredConnectorTypes.DUMMY_NODE:
-      return new import_connector_runner_dummy_node.ConnectorRunnerDummyNode(
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
@@ -130,6 +111,13 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig.config,
         connectorConfig.actions
       );
+    case import_types.ConfiguredConnectorTypes.DUMMY_NODE:
+      return new import_connector_runner_dummy_node.ConnectorRunnerDummyNode(
+        connectorConfig,
+        connectorSDK
+      );
+    case import_types.ConfiguredConnectorTypes.AI_AGENT:
+      return new import_connector_runner_ai_agent.ConnectorRunnerAiAgent(connectorConfig, connectorSDK);
     case import_types.ConfiguredConnectorTypes.BYSTRONIC:
       return new import_connector_runner_bystronic.ConnectorRunnerBystronic(connectorConfig, connectorSDK);
     case import_types.ConfiguredConnectorTypes.MICROSOFT_OFFICE365_EMAIL:
@@ -147,4 +135,3 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
 0 && (module.exports = {
   getConnectorType
 });
-//# sourceMappingURL=connector-type.js.map

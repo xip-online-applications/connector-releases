@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/opcua-client/src/lib/opcua-client.interface.ts"],
-  "sourcesContent": ["import { VariantLike } from 'node-opcua';\n\nexport interface OpcuaInterface {\n  init(): Promise<void>;\n\n  disconnect(): Promise<void>;\n\n  readValue<T>(nodeId: string): Promise<T | undefined>;\n\n  callMethod<T>(\n    nodeId: string,\n    methodName: string,\n    args?: Array<VariantLike>,\n  ): Promise<Array<T>>;\n\n  callFromDsl<T>(dsl: string): Promise<Array<T>>;\n\n  subscribeToNode<T>(\n    nodeId: string,\n    callback: (nodeId: string, value: T) => void,\n  ): Promise<void>;\n\n  unsubscribeFromNode(nodeId: string): Promise<void>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

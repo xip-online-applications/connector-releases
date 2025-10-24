@@ -68,7 +68,7 @@ class ConnectorManager {
       if (connector instanceof import_connector_runtime_sdk.ConnectorRuntimeSDK) {
         await connector.init();
       }
-      await connector.start();
+      await Promise.all([this.#connectorSDK.start(), connector.start()]);
     };
     this.#node = node;
     this.#connectorData = connectorData;
@@ -87,4 +87,3 @@ class ConnectorManager {
 0 && (module.exports = {
   ConnectorManager
 });
-//# sourceMappingURL=connector.manager.js.map

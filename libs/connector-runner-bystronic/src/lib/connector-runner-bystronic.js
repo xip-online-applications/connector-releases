@@ -57,4 +57,3 @@ class ConnectorRunnerBystronic extends import_connector_runtime_sdk.ConnectorRun
 0 && (module.exports = {
   ConnectorRunnerBystronic
 });
-//# sourceMappingURL=connector-runner-bystronic.js.map
