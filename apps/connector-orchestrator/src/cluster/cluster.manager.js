@@ -276,4 +276,3 @@ class ClusterManager {
 0 && (module.exports = {
   ClusterManager
 });
-//# sourceMappingURL=cluster.manager.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-file-source/src/lib/helper.functions.ts"],
-  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\nimport { FileSourceConfig } from './types';\n\nexport function generateCollectionName(\n  connectorConfig: BaseConnectorConfig,\n  sourceConfig: FileSourceConfig,\n): string {\n  return `${connectorConfig.datasourceIdentifier}_${sourceConfig.ftpIdentifier}`;\n}\n\nexport function generateKafkaTopic(\n  connectorConfig: BaseConnectorConfig,\n  sourceConfig: FileSourceConfig,\n): string {\n  return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}_${sourceConfig.ftpIdentifier}`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGO,SAAS,uBACd,iBACA,cACQ;AACR,SAAO,GAAG,gBAAgB,oBAAoB,IAAI,aAAa,aAAa;AAC9E;AAEO,SAAS,mBACd,iBACA,cACQ;AACR,SAAO,GAAG,gBAAgB,gBAAgB,WAAW,gBAAgB,oBAAoB,IAAI,aAAa,aAAa;AACzH;",
-  "names": []
-}

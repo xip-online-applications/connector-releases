@@ -50,4 +50,3 @@ async function parseMessageToInput(message, mapper) {
 0 && (module.exports = {
   parseMessageToInput
 });
-//# sourceMappingURL=workflow-parameter-parser.js.map

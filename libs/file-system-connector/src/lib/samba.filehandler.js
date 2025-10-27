@@ -142,4 +142,3 @@ class SambaFilehandler {
   SambaFile,
   SambaFilehandler
 });
-//# sourceMappingURL=samba.filehandler.js.map

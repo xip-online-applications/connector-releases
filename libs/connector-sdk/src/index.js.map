@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-sdk/src/index.ts"],
-  "sourcesContent": ["export * from './lib/sdk';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,sBAAd;",
-  "names": []
-}

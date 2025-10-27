@@ -29,4 +29,3 @@ const DimensionsSchema = import_zod.z.record(
 0 && (module.exports = {
   DimensionsSchema
 });
-//# sourceMappingURL=dimensions.interface.js.map

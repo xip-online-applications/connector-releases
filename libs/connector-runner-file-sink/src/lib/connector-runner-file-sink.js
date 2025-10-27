@@ -115,4 +115,3 @@ class ConnectorRunnerFileSink extends import_connector_runtime.ConnectorRuntime 
 0 && (module.exports = {
   ConnectorRunnerFileSink
 });
-//# sourceMappingURL=connector-runner-file-sink.js.map

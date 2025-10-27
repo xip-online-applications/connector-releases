@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/management-api/chart.interface.ts"],
-  "sourcesContent": ["export interface ChartInterface {\n  dashboards: Array<number>;\n  owners: Array<number>;\n  params: string;\n  slice_name: string;\n  viz_type: string;\n  id: string;\n  supersetId: number;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

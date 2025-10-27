@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/dimensions.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { DimensionInterface, DimensionSchema } from './dimension.interface';\n\nexport const DimensionsSchema = z.record(\n  z.union([DimensionSchema, z.literal(false)]),\n);\n\nexport interface DimensionsInterface {\n  [key: string]: DimensionInterface | false;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,uBAAoD;AAE7C,MAAM,mBAAmB,aAAE;AAAA,EAChC,aAAE,MAAM,CAAC,kCAAiB,aAAE,QAAQ,KAAK,CAAC,CAAC;AAC7C;",
-  "names": []
-}

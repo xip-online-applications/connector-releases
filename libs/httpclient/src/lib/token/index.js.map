@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/token/index.ts"],
-  "sourcesContent": ["export * from './jwt-token.service';\nexport * from './request-options.interface';\nexport * from './token.interface';\nexport * from './jwt-token-options.interface';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,0BAAc,gCAAd;AACA,0BAAc,wCADd;AAEA,0BAAc,8BAFd;AAGA,0BAAc,0CAHd;",
-  "names": []
-}

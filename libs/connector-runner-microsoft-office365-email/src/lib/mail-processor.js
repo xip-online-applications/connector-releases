@@ -100,7 +100,7 @@ class MailProcessor {
         messages,
         {
           keyField: "messageId",
-          collection: `${this.#sdk.config.datasourceIdentifier}_${this.#mailboxConfig.mailboxIdentifier}`
+          collection: this.#sdk.config.datasourceIdentifier
         },
         {
           ttl: this.DEFAULT_EVENT_TTL
@@ -111,7 +111,7 @@ class MailProcessor {
         messages,
         {
           keyField: "messageId",
-          collection: `${this.#sdk.config.datasourceIdentifier}_${this.#mailboxConfig.mailboxIdentifier}`
+          collection: this.#sdk.config.datasourceIdentifier
         },
         {
           ttl: this.DEFAULT_EVENT_TTL
@@ -136,4 +136,3 @@ class MailProcessor {
 0 && (module.exports = {
   MailProcessor
 });
-//# sourceMappingURL=mail-processor.js.map

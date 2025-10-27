@@ -25,4 +25,3 @@ const SemanticTriggerIdentifier = (trigger) => `${trigger.tenantId}_${trigger.ev
 0 && (module.exports = {
   SemanticTriggerIdentifier
 });
-//# sourceMappingURL=semantic-trigger-record.interface.js.map

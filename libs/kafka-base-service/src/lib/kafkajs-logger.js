@@ -51,4 +51,3 @@ const TransAILogCreator = () => {
 0 && (module.exports = {
   TransAILogCreator
 });
-//# sourceMappingURL=kafkajs-logger.js.map

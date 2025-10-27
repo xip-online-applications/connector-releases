@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/ColumnTypeUndefinedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when ORM cannot get column's type automatically.\n * Basically, when reflect-metadata is not available or tsconfig is not properly setup.\n */\nexport class ColumnTypeUndefinedError extends TypeORMError {\n  constructor(object: Object, propertyName: string) {\n    super(\n      `Column type for ${object.constructor.name}#${propertyName} is not defined and cannot be guessed. ` +\n        `Make sure you have turned on an \"emitDecoratorMetadata\": true option in tsconfig.json. ` +\n        `Also make sure you have imported \"reflect-metadata\" on top of the main entry file in your application (before any entity imported).` +\n        `If you are using JavaScript instead of TypeScript you must explicitly provide a column type.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAMtB,MAAM,iCAAiC,iCAAa;AAAA,EACzD,YAAY,QAAgB,cAAsB;AAChD;AAAA,MACE,mBAAmB,OAAO,YAAY,IAAI,IAAI,YAAY;AAAA,IAI5D;AAAA,EACF;AACF;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/interface/http-service-options.interface.ts"],
-  "sourcesContent": ["export interface HttpOptions {\n  baseUrl: string;\n  tenantIdentifier?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

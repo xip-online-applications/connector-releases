@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/relation.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { RelationTypesEnum } from '../type-enums';\n\nexport const RelationSchema = z\n  .object({\n    type: z.nativeEnum(RelationTypesEnum),\n    dimension: z.string().min(1).optional(),\n    targetDataset: z.string().min(1),\n    targetDimension: z.string().min(1).optional(),\n    sql: z.string().min(1).optional(),\n  })\n  .superRefine((val, ctx) => {\n    if (\n      val.sql !== undefined &&\n      (val.dimension !== undefined || val.targetDimension !== undefined)\n    ) {\n      ctx.addIssue({\n        code: z.ZodIssueCode.custom,\n        message: 'Use sql field or dimension/targetDimension.',\n      });\n    }\n  });\n\nexport interface RelationInterface {\n  type: RelationTypesEnum;\n  dimension?: string;\n  targetDataset?: string;\n  targetDimension?: string;\n  sql?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,wBAAkC;AAE3B,MAAM,iBAAiB,aAC3B,OAAO;AAAA,EACN,MAAM,aAAE,WAAW,mCAAiB;AAAA,EACpC,WAAW,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,EACtC,eAAe,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EAC/B,iBAAiB,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,EAC5C,KAAK,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAClC,CAAC,EACA,YAAY,CAAC,KAAK,QAAQ;AACzB,MACE,IAAI,QAAQ,WACX,IAAI,cAAc,UAAa,IAAI,oBAAoB,SACxD;AACA,QAAI,SAAS;AAAA,MACX,MAAM,aAAE,aAAa;AAAA,MACrB,SAAS;AAAA,IACX,CAAC;AAAA,EACH;AACF,CAAC;",
-  "names": []
-}

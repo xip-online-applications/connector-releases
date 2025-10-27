@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/kafka-base-service/src/lib/kafka-source.interface.ts"],
-  "sourcesContent": ["import {\n  KafkaCallbackResponse,\n  XodBaseMessageType,\n  XodSourceMessageType,\n} from '@xip-online-data/types';\n\nexport interface KafkaSourceInterface {\n  setCallbackFunction(\n    callbackFunction: (\n      message: XodBaseMessageType,\n    ) => Promise<KafkaCallbackResponse>,\n    eventType?: string,\n    identifier?: string,\n  ): void;\n  init(): Promise<void>;\n  send(\n    messages: Array<XodSourceMessageType>,\n    topic: string,\n    additionalMetaData?: Partial<XodBaseMessageType>,\n  ): Promise<boolean>;\n  sendIndividual(\n    messages: Array<XodSourceMessageType>,\n    topic: string,\n  ): Promise<boolean>;\n  exitProcess(message: string): Promise<void>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

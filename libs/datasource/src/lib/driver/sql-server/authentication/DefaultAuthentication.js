@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var DefaultAuthentication_exports = {};
 module.exports = __toCommonJS(DefaultAuthentication_exports);
-//# sourceMappingURL=DefaultAuthentication.js.map

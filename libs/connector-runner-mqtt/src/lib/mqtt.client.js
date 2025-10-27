@@ -102,4 +102,3 @@ class MqttClient {
   MqttClient,
   generateKafkaTopic
 });
-//# sourceMappingURL=mqtt.client.js.map

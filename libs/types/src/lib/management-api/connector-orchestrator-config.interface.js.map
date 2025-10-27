@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/management-api/connector-orchestrator-config.interface.ts"],
-  "sourcesContent": ["import { ConnectorInterface } from './connector/connector.interface';\n\nexport interface ConnectorOrchestratorConfigInterface {\n  awsAccessKeyId?: string;\n  awsSecretAccessKey?: string;\n  awsRegion?: string;\n  datadogApiKey?: string;\n}\n\nexport interface ConnectorOrchestratorConfigWithKafkaInterface\n  extends ConnectorOrchestratorConfigInterface {\n  kafkaBrokers?: Array<string>;\n}\n\nexport interface ConnectorOrchestratorFullConfigurationInterface {\n  config: ConnectorOrchestratorConfigWithKafkaInterface;\n\n  connectors: Array<ConnectorInterface>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

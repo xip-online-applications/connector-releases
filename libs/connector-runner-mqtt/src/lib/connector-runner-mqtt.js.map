@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-mqtt/src/lib/connector-runner-mqtt.ts"],
-  "sourcesContent": ["import { ConnectorRuntime } from '@transai/connector-runtime';\nimport { MqttConfig } from './types';\nimport { MqttClient } from './mqtt.client';\n\nexport class ConnectorRunnerMqtt extends ConnectorRuntime<MqttConfig> {\n  readonly CONNECTOR_INSTANCE: string = 'XOD_CONNECTOR_MQTT_SOURCE_CONFIG';\n\n  #mqttClient: MqttClient | undefined;\n\n  override init = async (): Promise<void> => {\n    const config = await this.getConfig();\n    this.#mqttClient = new MqttClient(config, config, this.kafkaService);\n  };\n\n  override exit = async () => {\n    this.#mqttClient?.stop();\n  };\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,+BAAiC;AAEjC,kBAA2B;AAEpB,MAAM,4BAA4B,0CAA6B;AAAA,EAA/D;AAAA;AACL,SAAS,qBAA6B;AAItC,SAAS,OAAO,YAA2B;AACzC,YAAM,SAAS,MAAM,KAAK,UAAU;AACpC,WAAK,cAAc,IAAI,uBAAW,QAAQ,QAAQ,KAAK,YAAY;AAAA,IACrE;AAEA,SAAS,OAAO,YAAY;AAC1B,WAAK,aAAa,KAAK;AAAA,IACzB;AAAA;AAAA,EATA;AAUF;",
-  "names": []
-}

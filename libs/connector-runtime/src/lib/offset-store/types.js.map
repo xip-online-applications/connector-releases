@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime/src/lib/offset-store/types.ts"],
-  "sourcesContent": ["import { StoredOffset } from '@transai/connector-runtime-sdk';\n\nexport interface OffsetStore extends StoredOffset {\n  timestamp: number;\n  id: number | string;\n  isoDate?: string;\n  date?: string;\n  rawTimestamp?: number | string;\n}\n\nexport interface ExtendedOffsetStore extends OffsetStore {\n  [key: string]: string | number | undefined;\n}\n\nexport function isOffsetStoreType(obj: OffsetStore): obj is OffsetStore {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    obj.timestamp !== undefined &&\n    typeof obj.timestamp === 'number' &&\n    !Number.isNaN(obj.timestamp)\n  );\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAcO,SAAS,kBAAkB,KAAsC;AACtE,SACE,QAAQ,UACR,QAAQ,QACR,IAAI,cAAc,UAClB,OAAO,IAAI,cAAc,YACzB,CAAC,OAAO,MAAM,IAAI,SAAS;AAE/B;",
-  "names": []
-}

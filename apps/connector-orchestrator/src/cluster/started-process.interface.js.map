@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../apps/connector-orchestrator/src/cluster/started-process.interface.ts"],
-  "sourcesContent": ["import { Worker } from 'cluster';\n\nimport { ConfiguredConnectorTypes } from '@xip-online-data/types';\n\nexport interface StartedConnectorProcess {\n  connectorType: ConfiguredConnectorTypes;\n  identifier: string;\n  pid: number;\n  worker: Worker;\n  startedOn: Date;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

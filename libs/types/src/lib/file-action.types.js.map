@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/types/src/lib/file-action.types.ts"],
-  "sourcesContent": ["export enum FileActionType {\n  ACTION_MOVE = 'move',\n  ACTION_DELETE = 'delete',\n  ACTION_NOTHING = 'nothing',\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,iBAAL,kBAAKA,oBAAL;AACL,EAAAA,gBAAA,iBAAc;AACd,EAAAA,gBAAA,mBAAgB;AAChB,EAAAA,gBAAA,oBAAiB;AAHP,SAAAA;AAAA,GAAA;",
-  "names": ["FileActionType"]
-}

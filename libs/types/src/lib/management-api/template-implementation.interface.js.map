@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/management-api/template-implementation.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { TemplateInterface } from './template.interface';\nimport {\n  TemplateImplementationOverridesInterface,\n  TemplateImplementationOverridesSchema,\n} from './template-implementation-overrides.interface';\n\nexport const TemplateImplementationSchema = z.object({\n  templateVersion: z.literal('latest').or(z.string().min(1)),\n  name: z.string().min(1),\n  description: z.string().min(1),\n  overrides: TemplateImplementationOverridesSchema,\n});\n\nexport const TemplateImplementationCreateSchema =\n  TemplateImplementationSchema.extend({\n    templateId: z.string().min(1),\n    tenantId: z.string().min(1),\n  });\n\nexport interface TemplateImplementationInterface {\n  id: string;\n  templateId: string;\n  template: TemplateInterface;\n  templateVersion: string | 'latest';\n  tenantId: string;\n  name: string;\n  description: string;\n  overrides: TemplateImplementationOverridesInterface;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAElB,+CAGO;AAEA,MAAM,+BAA+B,aAAE,OAAO;AAAA,EACnD,iBAAiB,aAAE,QAAQ,QAAQ,EAAE,GAAG,aAAE,OAAO,EAAE,IAAI,CAAC,CAAC;AAAA,EACzD,MAAM,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EACtB,aAAa,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EAC7B,WAAW;AACb,CAAC;AAEM,MAAM,qCACX,6BAA6B,OAAO;AAAA,EAClC,YAAY,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EAC5B,UAAU,aAAE,OAAO,EAAE,IAAI,CAAC;AAC5B,CAAC;",
-  "names": []
-}

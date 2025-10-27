@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/templating.sdk.interface.ts"],
-  "sourcesContent": ["export type RuntimeOptions = {\n  partial?: boolean;\n};\n\nexport type CompileDelegate<T = unknown> = {\n  (context: T, options?: RuntimeOptions): string;\n};\n\nexport type CompileOptions = { strict?: boolean };\n\nexport interface TemplatingSDKInterface {\n  compile<T = unknown>(\n    input: string,\n    options?: CompileOptions,\n  ): CompileDelegate<T>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

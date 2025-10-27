@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/connector/connectors.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\n\nimport { ConnectorInterface, ConnectorSchema } from '../index';\n\nexport const ConnectorsSchema = z.record(ConnectorSchema.or(z.boolean()));\n\nexport interface ConnectorsInterface {\n  [key: string]: ConnectorInterface | boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAElB,eAAoD;AAE7C,MAAM,mBAAmB,aAAE,OAAO,yBAAgB,GAAG,aAAE,QAAQ,CAAC,CAAC;",
-  "names": []
-}

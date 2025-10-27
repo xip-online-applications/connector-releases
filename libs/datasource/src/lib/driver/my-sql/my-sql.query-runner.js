@@ -75,4 +75,3 @@ class MySqlQueryRunner {
 0 && (module.exports = {
   MySqlQueryRunner
 });
-//# sourceMappingURL=my-sql.query-runner.js.map

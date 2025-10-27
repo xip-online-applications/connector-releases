@@ -85,4 +85,3 @@ class TokenManager {
 0 && (module.exports = {
   TokenManager
 });
-//# sourceMappingURL=token-manager.js.map

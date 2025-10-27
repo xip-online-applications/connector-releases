@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-file-copy/src/lib/file-handler.factory.ts"],
-  "sourcesContent": ["import {\n  DummyConfig,\n  DummyFilehandler,\n  FileHandlerInterface,\n  SambaConfig,\n  SambaFilehandler,\n  SftpConnectConfig,\n  SftpFilehandler,\n  SftpReconnectFilehandler,\n  SftpRegularConfig,\n} from '@xip-online-data/file-system-connector';\n\nexport const fileHandlerFactory = (\n  config: SftpRegularConfig | SftpConnectConfig | SambaConfig | DummyConfig,\n): FileHandlerInterface => {\n  switch (config.type) {\n    case 'samba':\n      return new SambaFilehandler(config);\n    case 'sftp':\n      return new SftpFilehandler(config);\n    case 'sftp-reconnect':\n      return new SftpReconnectFilehandler(config);\n    case 'dummy':\n      return new DummyFilehandler(config);\n    default:\n      throw new Error('Invalid file handler type');\n  }\n};\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mCAUO;AAEA,MAAM,qBAAqB,CAChC,WACyB;AACzB,UAAQ,OAAO,MAAM;AAAA,IACnB,KAAK;AACH,aAAO,IAAI,8CAAiB,MAAM;AAAA,IACpC,KAAK;AACH,aAAO,IAAI,6CAAgB,MAAM;AAAA,IACnC,KAAK;AACH,aAAO,IAAI,sDAAyB,MAAM;AAAA,IAC5C,KAAK;AACH,aAAO,IAAI,8CAAiB,MAAM;AAAA,IACpC;AACE,YAAM,IAAI,MAAM,2BAA2B;AAAA,EAC/C;AACF;",
-  "names": []
-}

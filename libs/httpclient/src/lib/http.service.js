@@ -83,4 +83,3 @@ class HttpService {
 0 && (module.exports = {
   HttpService
 });
-//# sourceMappingURL=http.service.js.map

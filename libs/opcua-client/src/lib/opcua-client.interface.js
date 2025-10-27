@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var opcua_client_interface_exports = {};
 module.exports = __toCommonJS(opcua_client_interface_exports);
-//# sourceMappingURL=opcua-client.interface.js.map

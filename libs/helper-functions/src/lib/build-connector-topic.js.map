@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/helper-functions/src/lib/build-connector-topic.ts"],
-  "sourcesContent": ["export function buildConnectorTopic(connectorConfig: {\n  tenantIdentifier: string;\n  identifier: string;\n  location: string;\n}): string {\n  return `${connectorConfig.tenantIdentifier}_CONNECTOR_${connectorConfig.identifier}_${connectorConfig.location}`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,oBAAoB,iBAIzB;AACT,SAAO,GAAG,gBAAgB,gBAAgB,cAAc,gBAAgB,UAAU,IAAI,gBAAgB,QAAQ;AAChH;",
-  "names": []
-}

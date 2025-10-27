@@ -27,4 +27,3 @@ __reExport(src_exports, require("./lib/interface"), module.exports);
   ...require("./lib/token"),
   ...require("./lib/interface")
 });
-//# sourceMappingURL=index.js.map

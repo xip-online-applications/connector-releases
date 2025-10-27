@@ -32,4 +32,3 @@ function generateKafkaTopic(connectorConfig, sinkConfig) {
   generateCollectionName,
   generateKafkaTopic
 });
-//# sourceMappingURL=helper.functions.js.map

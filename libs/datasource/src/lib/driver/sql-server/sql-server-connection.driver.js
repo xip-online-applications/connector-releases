@@ -115,4 +115,3 @@ class SqlServerConnectionDriver {
 0 && (module.exports = {
   SqlServerConnectionDriver
 });
-//# sourceMappingURL=sql-server-connection.driver.js.map

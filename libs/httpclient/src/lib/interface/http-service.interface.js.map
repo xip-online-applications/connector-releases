@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/httpclient/src/lib/interface/http-service.interface.ts"],
-  "sourcesContent": ["import { RequestOptions } from './request-options.interface';\n\nexport interface HttpServiceInterface {\n  get<T>(\n    url: string,\n    options?: RequestOptions,\n    queryParams?: Record<string, string | number | boolean>,\n  ): Promise<T>;\n\n  post<T>(\n    url: string,\n    body: string | object,\n    options?: RequestOptions,\n  ): Promise<T>;\n\n  put<T>(\n    url: string,\n    body: string | object,\n    options?: RequestOptions,\n  ): Promise<T>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

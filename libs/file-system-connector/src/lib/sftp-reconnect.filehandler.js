@@ -115,4 +115,3 @@ class SftpReconnectFilehandler extends import_sftp.SftpFilehandler {
 0 && (module.exports = {
   SftpReconnectFilehandler
 });
-//# sourceMappingURL=sftp-reconnect.filehandler.js.map

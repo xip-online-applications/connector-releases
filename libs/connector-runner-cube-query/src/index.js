@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/connector-runner-cube-query"), module.exp
 0 && (module.exports = {
   ...require("./lib/connector-runner-cube-query")
 });
-//# sourceMappingURL=index.js.map

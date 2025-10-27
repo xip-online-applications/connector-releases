@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/management-api/dashboard.interface.ts"],
-  "sourcesContent": ["// Generic dashboard position value that can be any valid JSON value\nexport type DashboardPositionValue =\n  | string\n  | number\n  | boolean\n  | null\n  | Record<string, unknown>\n  | Array<unknown>;\n\n// Dashboard position JSON is completely flexible - any key can have any valid JSON value\nexport interface DashboardPositionJson {\n  [key: string]: DashboardPositionValue;\n}\n\nexport interface CreateDashboardInterface {\n  id: number;\n  title: string | null;\n  slug: string | null;\n  description: string | null;\n  positionJson: DashboardPositionJson | null;\n  isPublished: boolean;\n  tenantIdentifier: string;\n  charts: Array<number>;\n  roles: Array<string>;\n  supersetId: number | null;\n}\n\nexport interface UpdateDashboardInterface {\n  title: string | null;\n  slug: string | null;\n  description: string | null;\n  positionJson: DashboardPositionJson | null;\n  isPublished: boolean;\n  roles: Array<string>;\n  charts: Array<number>;\n  supersetId: number | null;\n}\n\nexport interface DashboardInterface extends CreateDashboardInterface {\n  createdAt: Date;\n  updatedAt: Date;\n}\n\nexport interface DashboardExportInterface {\n  exportData: DashboardInterface;\n  exportType: string;\n  exportedAt: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

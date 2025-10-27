@@ -39,4 +39,3 @@ const SemanticTriggerSchema = import_zod.z.object({
 0 && (module.exports = {
   SemanticTriggerSchema
 });
-//# sourceMappingURL=semantic-trigger.interface.js.map

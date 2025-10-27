@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/receiver.sdk.interface.ts"],
-  "sourcesContent": ["import {\n  ActionInterface,\n  KafkaCallbackResponse,\n  KafkaCallbackResponseType,\n  XodJobType,\n} from '@xip-online-data/types';\n\nexport interface ReceiverSDKInterface {\n  readonly responses: {\n    readonly ok: KafkaCallbackResponseType;\n    readonly created: KafkaCallbackResponseType;\n    readonly badRequest: KafkaCallbackResponseType;\n    readonly unprocessableEntity: KafkaCallbackResponseType;\n    readonly notFound: KafkaCallbackResponseType;\n    readonly internalServerError: KafkaCallbackResponseType;\n  };\n\n  registerCallback<T extends XodJobType = XodJobType>(\n    callbackFunction: (message: T) => Promise<KafkaCallbackResponse>,\n    eventType?: string,\n    identifier?: string,\n  ): void;\n\n  getActionConfig(message: XodJobType): ActionInterface | null;\n\n  emitEventType<T extends XodJobType = XodJobType>(\n    callbackFunction: (message: T) => Promise<KafkaCallbackResponse>,\n  ): (message: T) => Promise<KafkaCallbackResponse>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}
