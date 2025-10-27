@@ -33,15 +33,19 @@ module.exports = __toCommonJS(result_handler_exports);
 var import_jsonata = __toESM(require("jsonata"));
 var import_node_opcua = require("node-opcua");
 class ResultHandler {
-  #OPCUA_ID_JSONATA_EXPRESSION = "JobGuid";
-  #INCREMENTAL_FIELD_JSONATA_EXPRESSION = "TimeStamp";
-  #sdk;
-  #opcuaClient;
-  #idExpression = (0, import_jsonata.default)(this.#OPCUA_ID_JSONATA_EXPRESSION);
   constructor(sdk, opcuaClient) {
+    this.DEFAULT_DATASOURCE_IDENTIFIER = "bystronic";
+    this.#OPCUA_ID_JSONATA_EXPRESSION = "JobGuid";
+    this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION = "TimeStamp";
+    this.#idExpression = (0, import_jsonata.default)(this.#OPCUA_ID_JSONATA_EXPRESSION);
     this.#sdk = sdk;
     this.#opcuaClient = opcuaClient;
   }
+  #OPCUA_ID_JSONATA_EXPRESSION;
+  #INCREMENTAL_FIELD_JSONATA_EXPRESSION;
+  #sdk;
+  #opcuaClient;
+  #idExpression;
   async handleResult(result, opcUaCallConfig) {
     this.#sdk.logger.debug(`Handling result for ${opcUaCallConfig.name}`);
     const data = JSON.parse(
@@ -109,18 +113,16 @@ class ResultHandler {
     if (!incrementalField || incrementalField.length === 0) {
       incrementalField = this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION;
     }
+    const metadata = {
+      ...config.metadata ? config.metadata : {},
+      ...config.keyField ? { keyField: config.keyField } : {},
+      collection: this.#sdk.config.datasourceIdentifier ?? this.DEFAULT_DATASOURCE_IDENTIFIER,
+      incrementalField
+    };
     if (config.type === "metric") {
-      await this.#sdk.sender.metricsLegacy(
-        list,
-        config.metadata ?? {}
-      );
+      await this.#sdk.sender.metricsLegacy(list, metadata);
     } else {
-      await this.#sdk.sender.documents(list, config.metadata, {
-        extraPayload: {
-          keyField: config.keyField ?? "",
-          incrementalField
-        }
-      });
+      await this.#sdk.sender.documents(list, metadata);
     }
     const item = list[list.length - 1];
     const expression = (0, import_jsonata.default)(incrementalField);

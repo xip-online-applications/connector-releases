@@ -22,6 +22,7 @@ __export(mail_processor_exports, {
 module.exports = __toCommonJS(mail_processor_exports);
 class MailProcessor {
   constructor(sdk, config, mailClient) {
+    this.DEFAULT_DATASOURCE_IDENTIFIER = "microsoft-office365-email";
     this.DEFAULT_EVENT_TTL = 36e5;
     this.DEFAULT_INTERVAL_SECONDS = 60;
     this.MAX_PROCESSING_TRIES = 10;
@@ -100,7 +101,7 @@ class MailProcessor {
         messages,
         {
           keyField: "messageId",
-          collection: this.#sdk.config.datasourceIdentifier
+          collection: this.#sdk.config.datasourceIdentifier ?? this.DEFAULT_DATASOURCE_IDENTIFIER
         },
         {
           ttl: this.DEFAULT_EVENT_TTL
@@ -111,7 +112,7 @@ class MailProcessor {
         messages,
         {
           keyField: "messageId",
-          collection: this.#sdk.config.datasourceIdentifier
+          collection: this.#sdk.config.datasourceIdentifier ?? this.DEFAULT_DATASOURCE_IDENTIFIER
         },
         {
           ttl: this.DEFAULT_EVENT_TTL
