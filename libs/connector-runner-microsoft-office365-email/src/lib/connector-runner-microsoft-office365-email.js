@@ -27,7 +27,7 @@ var import_mail_processor = require("./mail-processor");
 class ConnectorRunnerMicrosoftOffice365Email extends import_connector_runtime_sdk.ConnectorRuntimeSDK {
   constructor(connector, connectorSDK) {
     super(connector, connectorSDK);
-    this.start = async () => {
+    this.init = async () => {
       const { config } = this.connectorSDK;
       await Promise.all(
         config.mailboxes.map(async (mailSourceConfig) => {
@@ -59,3 +59,4 @@ class ConnectorRunnerMicrosoftOffice365Email extends import_connector_runtime_sd
 0 && (module.exports = {
   ConnectorRunnerMicrosoftOffice365Email
 });
+//# sourceMappingURL=connector-runner-microsoft-office365-email.js.map

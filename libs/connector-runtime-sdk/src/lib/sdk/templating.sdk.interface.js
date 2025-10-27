@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var templating_sdk_interface_exports = {};
 module.exports = __toCommonJS(templating_sdk_interface_exports);
+//# sourceMappingURL=templating.sdk.interface.js.map

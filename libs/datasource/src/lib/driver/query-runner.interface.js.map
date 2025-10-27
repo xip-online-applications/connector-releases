@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/datasource/src/lib/driver/query-runner.interface.ts"],
+  "sourcesContent": ["import { DatasourceService } from '../datasource.service';\nimport { QueryResult } from './query-result';\n\nexport interface QueryRunnerInterface {\n  readonly connection: DatasourceService;\n  readonly isReleased: boolean;\n  readonly isTransactionActive: boolean;\n\n  connect(): Promise<any>;\n  release(): Promise<void>;\n  query(query: string, parameters?: Array<any>): Promise<QueryResult>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

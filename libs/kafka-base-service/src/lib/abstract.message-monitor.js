@@ -53,3 +53,4 @@ class AbstractMessageMonitor {
 0 && (module.exports = {
   AbstractMessageMonitor
 });
+//# sourceMappingURL=abstract.message-monitor.js.map

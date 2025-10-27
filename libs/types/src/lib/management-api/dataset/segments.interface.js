@@ -29,3 +29,4 @@ const SegmentsSchema = import_zod.z.record(
 0 && (module.exports = {
   SegmentsSchema
 });
+//# sourceMappingURL=segments.interface.js.map

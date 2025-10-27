@@ -30,3 +30,4 @@ class OptimisticLockCanNotBeUsedError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   OptimisticLockCanNotBeUsedError
 });
+//# sourceMappingURL=OptimisticLockCanNotBeUsedError.js.map

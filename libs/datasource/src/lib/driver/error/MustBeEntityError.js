@@ -32,3 +32,4 @@ class MustBeEntityError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   MustBeEntityError
 });
+//# sourceMappingURL=MustBeEntityError.js.map

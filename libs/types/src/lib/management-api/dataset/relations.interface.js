@@ -29,3 +29,4 @@ const RelationsSchema = import_zod.z.record(
 0 && (module.exports = {
   RelationsSchema
 });
+//# sourceMappingURL=relations.interface.js.map

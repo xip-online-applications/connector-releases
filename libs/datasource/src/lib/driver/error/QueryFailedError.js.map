@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/QueryFailedError.ts"],
+  "sourcesContent": ["import { ObjectUtils } from '../../util/object-utils';\nimport { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when query execution has failed.\n */\nexport class QueryFailedError<T extends Error = Error> extends TypeORMError {\n  constructor(\n    readonly query: string,\n    readonly parameters: Array<any> | undefined,\n    readonly driverError: T,\n  ) {\n    super(\n      driverError\n        .toString()\n        .replace(/^error: /, '')\n        .replace(/^Error: /, '')\n        .replace(/^Request/, ''),\n    );\n\n    if (driverError) {\n      const {\n                name: _, // eslint-disable-line\n        ...otherProperties\n      } = driverError;\n\n      ObjectUtils.assign(this, {\n        ...otherProperties,\n      });\n    }\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA4B;AAC5B,0BAA6B;AAKtB,MAAM,yBAAkD,iCAAa;AAAA,EAC1E,YACW,OACA,YACA,aACT;AACA;AAAA,MACE,YACG,SAAS,EACT,QAAQ,YAAY,EAAE,EACtB,QAAQ,YAAY,EAAE,EACtB,QAAQ,YAAY,EAAE;AAAA,IAC3B;AAVS;AACA;AACA;AAUT,QAAI,aAAa;AACf,YAAM;AAAA,QACI,MAAM;AAAA;AAAA,QACd,GAAG;AAAA,MACL,IAAI;AAEJ,sCAAY,OAAO,MAAM;AAAA,QACvB,GAAG;AAAA,MACL,CAAC;AAAA,IACH;AAAA,EACF;AACF;",
+  "names": []
+}

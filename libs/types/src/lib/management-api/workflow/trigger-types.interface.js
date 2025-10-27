@@ -30,3 +30,4 @@ var TriggerType = /* @__PURE__ */ ((TriggerType2) => {
 0 && (module.exports = {
   TriggerType
 });
+//# sourceMappingURL=trigger-types.interface.js.map

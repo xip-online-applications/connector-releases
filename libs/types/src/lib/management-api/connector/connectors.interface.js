@@ -27,3 +27,4 @@ const ConnectorsSchema = import_zod.z.record(import__.ConnectorSchema.or(import_
 0 && (module.exports = {
   ConnectorsSchema
 });
+//# sourceMappingURL=connectors.interface.js.map

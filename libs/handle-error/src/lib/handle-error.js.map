@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/handle-error/src/lib/handle-error.ts"],
+  "sourcesContent": ["import { Logger } from '@transai/logger';\n\nexport function handleError(\n  errorMessage: string,\n  error: unknown = undefined,\n): void {\n  Logger.getInstance().error(errorMessage);\n  if (error instanceof Error) {\n    Logger.getInstance().error(error);\n  }\n  process.exit(1);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,oBAAuB;AAEhB,SAAS,YACd,cACA,QAAiB,QACX;AACN,uBAAO,YAAY,EAAE,MAAM,YAAY;AACvC,MAAI,iBAAiB,OAAO;AAC1B,yBAAO,YAAY,EAAE,MAAM,KAAK;AAAA,EAClC;AACA,UAAQ,KAAK,CAAC;AAChB;",
+  "names": []
+}

@@ -30,3 +30,4 @@ class LimitOnUpdateNotSupportedError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   LimitOnUpdateNotSupportedError
 });
+//# sourceMappingURL=LimitOnUpdateNotSupportedError.js.map

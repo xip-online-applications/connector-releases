@@ -32,3 +32,4 @@ class ColumnTypeUndefinedError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   ColumnTypeUndefinedError
 });
+//# sourceMappingURL=ColumnTypeUndefinedError.js.map

@@ -20,8 +20,8 @@ __export(rdkafka_logs_service_exports, {
   RdKafkaLogsService: () => RdKafkaLogsService
 });
 module.exports = __toCommonJS(rdkafka_logs_service_exports);
-var import_types = require("@xip-online-data/types");
 var import_logger = require("@transai/logger");
+var import_types = require("@xip-online-data/types");
 var import_abstract_rdkafka_service = require("./abstract-rdkafka-service");
 class RdKafkaLogsService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
   constructor() {
@@ -156,3 +156,4 @@ class RdKafkaLogsService extends import_abstract_rdkafka_service.AbstractRdKafka
 0 && (module.exports = {
   RdKafkaLogsService
 });
+//# sourceMappingURL=rdkafka-logs.service.js.map

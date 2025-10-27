@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/datasource/src/lib/driver/driver.ts"],
+  "sourcesContent": ["import { DatasourceOptions } from '../datasource.options';\nimport { QueryRunnerInterface } from './query-runner.interface';\n\n/**\n * Driver organizes TypeORM communication with specific database management system.\n */\nexport interface Driver {\n  /**\n   * Connection options.\n   */\n  options: DatasourceOptions;\n\n  /**\n   * Database version/release. Often requires a SQL query to the DB, so it is not always set\n   */\n  version?: string;\n\n  /**\n   * Database name used to perform all write queries.\n   *\n   * todo: probably move into query runner.\n   */\n  database?: string;\n\n  /**\n   * Performs connection to the database.\n   * Depend on driver type it may create a connection pool.\n   */\n  connect(): Promise<void>;\n\n  /**\n   * Makes any action after connection (e.g. create extensions in Postgres driver).\n   */\n  afterConnect(): Promise<void>;\n\n  /**\n   * Closes connection with database and releases all resources.\n   */\n  disconnect(): Promise<void>;\n\n  /**\n   * Creates a query runner used for common queries.\n   */\n  createQueryRunner(): QueryRunnerInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

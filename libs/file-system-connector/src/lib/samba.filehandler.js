@@ -31,10 +31,10 @@ __export(samba_filehandler_exports, {
   SambaFilehandler: () => SambaFilehandler
 });
 module.exports = __toCommonJS(samba_filehandler_exports);
-var import_samba_client = require("@xip-online-data/samba-client");
-var import_types = require("./types");
-var import_uuid = require("uuid");
 var fs = __toESM(require("node:fs"));
+var import_samba_client = require("@xip-online-data/samba-client");
+var import_uuid = require("uuid");
+var import_types = require("./types");
 const mapFileInfo = (fileInfo) => {
   return {
     name: fileInfo.name,
@@ -44,16 +44,18 @@ const mapFileInfo = (fileInfo) => {
   };
 };
 class SambaFile {
+  #file;
+  #tempFile;
   constructor(file, tempFile) {
-    this.file = file;
-    this.tempFile = tempFile;
+    this.#file = file;
+    this.#tempFile = tempFile;
   }
   get() {
-    return this.file;
+    return this.#file;
   }
   close() {
     let success = false;
-    fs.unlink(this.tempFile, (err) => {
+    fs.unlink(this.#tempFile, (err) => {
       success = err === null;
     });
     return success;
@@ -70,7 +72,9 @@ class SambaFilehandler {
   }
   async list(dir) {
     const list = await this.sambaClient.list(dir);
-    const directories = list.filter((r) => !(r.type === "D" && (r.name === "." || r.name === "..")));
+    const directories = list.filter(
+      (r) => !(r.type === "D" && (r.name === "." || r.name === ".."))
+    );
     return directories.map(mapFileInfo);
   }
   async readFile(remoteFile) {
@@ -81,7 +85,9 @@ class SambaFilehandler {
     return new SambaFile(buffer, localFile);
   }
   async writeFile(data, remotePath, filename) {
-    console.log(`Writing file ${filename} to ${remotePath}, checking if directory exists`);
+    console.log(
+      `Writing file ${filename} to ${remotePath}, checking if directory exists`
+    );
     let directoryExists = false;
     try {
       console.log(`Checking if ${remotePath} exists`);
@@ -99,17 +105,17 @@ class SambaFilehandler {
     const tempFilename = `${(0, import_uuid.v4)()}.tmp`;
     const localFile = `${this.sambaConfig.tmpDirectory}/${tempFilename}`;
     console.log(`Writing file to ${localFile}`);
-    fs.writeFileSync(
-      localFile,
-      buffer
-    );
+    fs.writeFileSync(localFile, new Uint8Array(buffer));
     let success = false;
     try {
       const path = remotePath === "" ? filename : `${remotePath}/${filename}`;
       console.log(`Sending local file ${localFile} to ${path}`);
       const feedback = await this.sambaClient.sendFile(localFile, path);
       console.log("feedback", feedback);
-      console.log("feedback includes NT_STATUS_OK", feedback.includes("NT_STATUS_OK"));
+      console.log(
+        "feedback includes NT_STATUS_OK",
+        feedback.includes("NT_STATUS_OK")
+      );
       success = true;
     } catch (e) {
       console.log(e);
@@ -136,3 +142,4 @@ class SambaFilehandler {
   SambaFile,
   SambaFilehandler
 });
+//# sourceMappingURL=samba.filehandler.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/helper-functions/src/lib/cube-query-helper.ts"],
+  "sourcesContent": ["export function parseCubeResultToObjects(data: {\n  [key: string]: any;\n}): object {\n  const keys = Object.keys(data);\n  const cubes = keys.map(k => k.split('.')[0]);\n  const uniqueCubes = Array.from(new Set<string>(cubes));\n  const objects: { [key: string]: { [key: string]: any } } = {};\n\n  uniqueCubes.forEach(cube => {\n    const applicableKeys = keys\n      .filter(k => k.split('.').length > 1)\n      .filter(k => k.split('.')[0] === cube);\n\n    if (applicableKeys.length === 0) {\n      return;\n    }\n\n    objects[cube] = {};\n    applicableKeys.forEach(k => {\n      const keys = k.split('.');\n\n      if (keys.length === 1) {\n        return;\n      }\n\n      objects[cube][keys[1]] = data[k];\n    });\n  });\n\n  return objects;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,yBAAyB,MAE9B;AACT,QAAM,OAAO,OAAO,KAAK,IAAI;AAC7B,QAAM,QAAQ,KAAK,IAAI,OAAK,EAAE,MAAM,GAAG,EAAE,CAAC,CAAC;AAC3C,QAAM,cAAc,MAAM,KAAK,IAAI,IAAY,KAAK,CAAC;AACrD,QAAM,UAAqD,CAAC;AAE5D,cAAY,QAAQ,UAAQ;AAC1B,UAAM,iBAAiB,KACpB,OAAO,OAAK,EAAE,MAAM,GAAG,EAAE,SAAS,CAAC,EACnC,OAAO,OAAK,EAAE,MAAM,GAAG,EAAE,CAAC,MAAM,IAAI;AAEvC,QAAI,eAAe,WAAW,GAAG;AAC/B;AAAA,IACF;AAEA,YAAQ,IAAI,IAAI,CAAC;AACjB,mBAAe,QAAQ,OAAK;AAC1B,YAAMA,QAAO,EAAE,MAAM,GAAG;AAExB,UAAIA,MAAK,WAAW,GAAG;AACrB;AAAA,MACF;AAEA,cAAQ,IAAI,EAAEA,MAAK,CAAC,CAAC,IAAI,KAAK,CAAC;AAAA,IACjC,CAAC;AAAA,EACH,CAAC;AAED,SAAO;AACT;",
+  "names": ["keys"]
+}

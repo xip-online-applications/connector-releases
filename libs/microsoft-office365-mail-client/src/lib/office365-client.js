@@ -227,7 +227,9 @@ class Office365Client {
         res.on("data", (d) => chunks.push(Buffer.from(d)));
         res.on("end", () => {
           const status = res.statusCode || 0;
-          const raw = Buffer.concat(chunks).toString("utf-8");
+          const raw = Buffer.concat(
+            chunks
+          ).toString("utf-8");
           if (status >= 200 && status < 300) {
             if (!raw)
               return resolve(void 0);
@@ -323,7 +325,10 @@ class Office365Client {
     return new Promise((resolve, reject) => {
       const chunks = [];
       stream.on("data", (c) => chunks.push(c));
-      stream.once("end", () => resolve(Buffer.concat(chunks)));
+      stream.once(
+        "end",
+        () => resolve(Buffer.concat(chunks))
+      );
       stream.once("error", reject);
     });
   }
@@ -332,3 +337,4 @@ class Office365Client {
 0 && (module.exports = {
   Office365Client
 });
+//# sourceMappingURL=office365-client.js.map

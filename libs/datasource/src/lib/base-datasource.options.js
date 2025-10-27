@@ -13,3 +13,4 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var base_datasource_options_exports = {};
 module.exports = __toCommonJS(base_datasource_options_exports);
+//# sourceMappingURL=base-datasource.options.js.map

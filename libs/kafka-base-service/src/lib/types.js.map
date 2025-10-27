@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/kafka-base-service/src/lib/types.ts"],
+  "sourcesContent": ["import {\n  KafkaCallbackResponse,\n  XodBaseMessageType,\n} from '@xip-online-data/types';\n\nexport interface KafkaCallbackWrapper {\n  callback: (message: XodBaseMessageType) => Promise<KafkaCallbackResponse>;\n  identifier: string;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

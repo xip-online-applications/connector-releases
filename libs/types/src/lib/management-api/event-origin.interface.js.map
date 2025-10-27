@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/types/src/lib/management-api/event-origin.interface.ts"],
+  "sourcesContent": ["import { TriggerType } from './workflow';\n\nexport interface EventOriginInterface {\n  type: TriggerType;\n  id: string;\n}\n\nexport interface CreateEventInterface {\n  origin: EventOriginInterface;\n  payload: object;\n  testRun?: boolean;\n}\n\nexport interface XodTriggerPayloadType {\n  data?: Record<string, unknown> | Array<unknown>;\n  filter?: Record<string, unknown> | Array<unknown>;\n  global?: Record<string, unknown> | Array<unknown>;\n}\n\nexport interface EventInterface {\n  id: string;\n  origin: EventOriginInterface;\n  payload: XodTriggerPayloadType;\n  tenantIdentifier: string;\n  testRun?: boolean;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

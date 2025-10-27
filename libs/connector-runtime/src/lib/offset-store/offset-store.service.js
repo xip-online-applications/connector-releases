@@ -176,13 +176,13 @@ class OffsetStoreService {
       })
     ).subscribe((v) => {
       if (v !== null) {
-        this.#log.debug("Offsets stored on disk completed.");
+        this.#log.verbose("Offsets stored on disk completed.");
       }
     });
   }
   #storeOffsetFileSystem() {
     const keys = Array.from(this.#offsetCache.keys());
-    this.#log.debug(
+    this.#log.verbose(
       `storing offset for ${keys.length} in filesystem, ${keys.join(", ")}`
     );
     return Promise.all(
@@ -206,3 +206,4 @@ class OffsetStoreService {
 0 && (module.exports = {
   OffsetStoreService
 });
+//# sourceMappingURL=offset-store.service.js.map

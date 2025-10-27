@@ -93,12 +93,6 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig.config,
         connectorConfig.actions
       );
-    case import_types.ConfiguredConnectorTypes.CUBE_QUERY_RUNNER:
-      return new import_connector_runner_cube_query.ConnectorRunnerCubeQuery(
-        connectorConfig,
-        connectorConfig.config,
-        connectorConfig.actions
-      );
     case import_types.ConfiguredConnectorTypes.MQTT:
       return new import_connector_runner_mqtt.ConnectorRunnerMqtt(
         connectorConfig,
@@ -110,6 +104,11 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig,
         connectorConfig.config,
         connectorConfig.actions
+      );
+    case import_types.ConfiguredConnectorTypes.CUBE_QUERY_RUNNER:
+      return new import_connector_runner_cube_query.ConnectorRunnerCubeQuery(
+        connectorConfig,
+        connectorSDK
       );
     case import_types.ConfiguredConnectorTypes.DUMMY_NODE:
       return new import_connector_runner_dummy_node.ConnectorRunnerDummyNode(
@@ -135,3 +134,4 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
 0 && (module.exports = {
   getConnectorType
 });
+//# sourceMappingURL=connector-type.js.map

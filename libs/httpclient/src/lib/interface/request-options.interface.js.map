@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/httpclient/src/lib/interface/request-options.interface.ts"],
+  "sourcesContent": ["export interface RequestOptions {\n  baseUrl?: string;\n  tenantIdentifier?: string;\n  audience?: string;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/sftp-client/src/index.ts"],
+  "sourcesContent": ["export * from './lib/sftp-client';\nexport * from './lib/sftp-interface';\nexport * from './lib/connect-sftp-client';\nexport * from './lib/types';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,8BAAd;AACA,wBAAc,iCADd;AAEA,wBAAc,sCAFd;AAGA,wBAAc,wBAHd;",
+  "names": []
+}

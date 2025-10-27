@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/meta.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\n\nexport const LocaleSchema = z.record(\n  z.string().regex(/^[a-z]{2}$/), // Ensures valid locale codes (e.g., en, nl, de)\n  z.record(z.string(), z.string()), // Ensures all fields inside each locale are strings\n);\n\nexport const MetaSchema = z.record(\n  z.union([LocaleSchema, z.string().min(1), z.number(), z.boolean()]),\n);\n\nexport interface LocaleInterface {\n  [key: string]: Record<string, string>;\n}\n\nexport interface MetaInterface {\n  [key: string]: string | LocaleInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAEX,MAAM,eAAe,aAAE;AAAA,EAC5B,aAAE,OAAO,EAAE,MAAM,YAAY;AAAA;AAAA,EAC7B,aAAE,OAAO,aAAE,OAAO,GAAG,aAAE,OAAO,CAAC;AAAA;AACjC;AAEO,MAAM,aAAa,aAAE;AAAA,EAC1B,aAAE,MAAM,CAAC,cAAc,aAAE,OAAO,EAAE,IAAI,CAAC,GAAG,aAAE,OAAO,GAAG,aAAE,QAAQ,CAAC,CAAC;AACpE;",
+  "names": []
+}

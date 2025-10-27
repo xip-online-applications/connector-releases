@@ -175,3 +175,4 @@ class Logger {
   LogLevels,
   Logger
 });
+//# sourceMappingURL=logger.js.map

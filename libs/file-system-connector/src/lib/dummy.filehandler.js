@@ -59,3 +59,4 @@ class DummyFilehandler {
 0 && (module.exports = {
   DummyFilehandler
 });
+//# sourceMappingURL=dummy.filehandler.js.map

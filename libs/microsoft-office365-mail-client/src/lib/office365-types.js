@@ -49,3 +49,4 @@ const EMAIL_SELECTABLE_FIELD = [
   EMAIL_SELECTABLE_FIELD,
   WELL_KNOWN_EMAIL_BOXES
 });
+//# sourceMappingURL=office365-types.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/InsertValuesMissingError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user tries to insert using QueryBuilder but do not specify what to insert.\n */\nexport class InsertValuesMissingError extends TypeORMError {\n  constructor() {\n    super(\n      `Cannot perform insert query because values are not defined. ` +\n        `Call \"qb.values(...)\" method to specify inserted values.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,iCAAiC,iCAAa;AAAA,EACzD,cAAc;AACZ;AAAA,MACE;AAAA,IAEF;AAAA,EACF;AACF;",
+  "names": []
+}

@@ -29,3 +29,4 @@ const MeasuresSchema = import_zod.z.record(
 0 && (module.exports = {
   MeasuresSchema
 });
+//# sourceMappingURL=measures.interface.js.map

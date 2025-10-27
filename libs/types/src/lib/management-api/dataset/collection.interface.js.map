@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/collection.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport { FiltersInterface, FiltersSchema } from './filters.interface';\n\nexport const CollectionSchema = z.object({\n  collection: z.string().min(1),\n  filters: FiltersSchema.optional(),\n});\n\nexport interface CollectionInterface {\n  collection: string;\n  filters?: FiltersInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,qBAAgD;AAEzC,MAAM,mBAAmB,aAAE,OAAO;AAAA,EACvC,YAAY,aAAE,OAAO,EAAE,IAAI,CAAC;AAAA,EAC5B,SAAS,6BAAc,SAAS;AAClC,CAAC;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/connector-runner-sql-sink/src/index.ts"],
+  "sourcesContent": ["export * from './lib/connector-runner-sql-sink';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,4CAAd;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/datasource/src/index.ts"],
+  "sourcesContent": ["export * from './lib/datasource.service';\nexport * from './lib/datasource.options';\nexport * from './lib/driver/query-result';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,qCAAd;AACA,wBAAc,qCADd;AAEA,wBAAc,sCAFd;",
+  "names": []
+}

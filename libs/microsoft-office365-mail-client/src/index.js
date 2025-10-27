@@ -23,3 +23,4 @@ __reExport(src_exports, require("./lib/types"), module.exports);
   ...require("./lib/mail-client"),
   ...require("./lib/types")
 });
+//# sourceMappingURL=index.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../libs/connector-runner-file-sink/src/index.ts"],
+  "sourcesContent": ["export * from './lib/connector-runner-file-sink';\nexport * from './lib/types';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,6CAAd;AACA,wBAAc,wBADd;",
+  "names": []
+}

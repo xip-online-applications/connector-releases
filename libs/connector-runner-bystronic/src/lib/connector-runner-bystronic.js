@@ -28,7 +28,7 @@ class ConnectorRunnerBystronic extends import_connector_runtime_sdk.ConnectorRun
   constructor() {
     super(...arguments);
     this.#OPCUA_NAMESPACE = "http://bystronic.com/ByVisionCutting/";
-    this.start = async () => {
+    this.init = async () => {
       const { config } = this.connectorSDK;
       const opcUaClient = new import_opcua_client.OpcuaClient({
         namespace: this.#OPCUA_NAMESPACE,
@@ -57,3 +57,4 @@ class ConnectorRunnerBystronic extends import_connector_runtime_sdk.ConnectorRun
 0 && (module.exports = {
   ConnectorRunnerBystronic
 });
+//# sourceMappingURL=connector-runner-bystronic.js.map

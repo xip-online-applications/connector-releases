@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-file-copy/src/lib/types.ts"],
+  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\nimport {\n  DummyConfig,\n  SambaConfig,\n  SftpConnectConfig,\n  SftpRegularConfig,\n} from '@xip-online-data/file-system-connector';\n\nexport interface FileCopyConfig extends BaseConnectorConfig {\n  source: SftpRegularConfig | SftpConnectConfig | SambaConfig | DummyConfig;\n  destination:\n    | SftpRegularConfig\n    | SftpConnectConfig\n    | SambaConfig\n    | DummyConfig;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

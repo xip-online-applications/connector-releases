@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/microsoft-office365-mail-client/src/lib/types.ts"],
+  "sourcesContent": ["export interface MailConfig {\n  username: string;\n  tenantId?: string;\n  clientId?: string;\n  clientSecret?: string;\n  emlTestMode?: boolean;\n}\n\nexport interface MailAttachment {\n  content?: string;\n  text?: string;\n  contentType: string;\n  filename?: string;\n  path?: string;\n}\n\nexport interface MailMessage {\n  /**\n   * Surrogate, monotonic per sync: Graph lastModifiedDateTime as epoch ms.\n   * This advances on moves/edits so backfills (e.g. moving old mail to Inbox)\n   * are detected on the next run.\n   */\n  deltaTimestamp: number;\n  deltaId: string;\n  attachments?: Array<MailAttachment>;\n  headers?: Array<{ key: string; header: string }>;\n  headerLines?: Array<{ key: string; line: string }>;\n  subject?: string;\n  references?: string | Array<string>;\n  date?: Date; // display date (uses received/sent), not the sync cursor\n  to?: Array<string>;\n  from?: Array<string>;\n  cc?: Array<string>;\n  bcc?: Array<string>;\n  messageId?: string; // RFC822 Message-ID (internetMessageId)\n  inReplyTo?: string;\n  replyTo?: Array<string>;\n  text?: string;\n  html?: string;\n  textAsHtml?: string;\n  originalMessageId?: string;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

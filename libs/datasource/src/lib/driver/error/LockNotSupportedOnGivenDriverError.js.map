@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/LockNotSupportedOnGivenDriverError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when selected sql driver does not supports locking.\n */\nexport class LockNotSupportedOnGivenDriverError extends TypeORMError {\n  constructor() {\n    super(`Locking not supported on given driver.`);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,2CAA2C,iCAAa;AAAA,EACnE,cAAc;AACZ,UAAM,wCAAwC;AAAA,EAChD;AACF;",
+  "names": []
+}

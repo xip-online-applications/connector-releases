@@ -112,11 +112,15 @@ class Office365MailParser {
           const chunks = [];
           att.content?.on?.(
             "data",
-            (c) => chunks.push(Buffer.from(c))
+            (c) => chunks.push(c)
           );
           att.content?.once?.(
             "end",
-            () => resolve(Buffer.concat(chunks))
+            () => resolve(
+              Buffer.concat(
+                chunks
+              )
+            )
           );
           att.content?.once?.("error", reject);
         });
@@ -133,3 +137,4 @@ class Office365MailParser {
 0 && (module.exports = {
   Office365MailParser
 });
+//# sourceMappingURL=office365-mail-parser.js.map
