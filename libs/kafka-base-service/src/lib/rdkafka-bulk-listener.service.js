@@ -20,7 +20,6 @@ __export(rdkafka_bulk_listener_service_exports, {
   RdKafkaBulkListenerService: () => RdKafkaBulkListenerService
 });
 module.exports = __toCommonJS(rdkafka_bulk_listener_service_exports);
-var import_logger = require("@transai/logger");
 var import_abstract_rdkafka_service = require("./abstract-rdkafka-service");
 class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.AbstractRdKafkaService {
   constructor(baseYamlConfig, callbackFunction, bulkApplicable = () => true) {
@@ -29,9 +28,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
     this.bulkApplicable = bulkApplicable;
     this.init = async () => {
       await this.consumer.connect().catch((e) => {
-        import_logger.Logger.getInstance().error(
-          `Failed to connect to Kafka consumer: ${e.message}`
-        );
+        this.logger.error(`Failed to connect to Kafka consumer: ${e.message}`);
         throw new Error(`Failed to connect to Kafka consumer: ${e.message}`);
       });
       const topics = [
@@ -44,7 +41,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
         })
       ]);
       if (this.baseYamlConfig.kafka.autoCommitThreshold) {
-        import_logger.Logger.getInstance().error(
+        this.logger.error(
           "autoCommitThreshold is not supported in bulk listener. Please use autoCommitInterval instead"
         );
       }
@@ -61,7 +58,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
       const messages = batch.messages.map(
         (message) => JSON.parse(message.value?.toString() ?? "")
       );
-      import_logger.Logger.getInstance().debug(
+      this.logger.debug(
         "Received batch of messages",
         messages.length,
         batch.topic
@@ -69,7 +66,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
       if (this.bulkApplicable(messages)) {
         try {
           await this.callbackFunction(messages).catch((error) => {
-            import_logger.Logger.getInstance().error(
+            this.logger.error(
               `Error in callback function for bulk processing, ${JSON.stringify(error)}`
             );
             throw error;
@@ -77,16 +74,16 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
           const { offset } = batch.messages[batch.messages.length - 1];
           resolveOffset(offset);
         } catch (error) {
-          import_logger.Logger.getInstance().error(
+          this.logger.error(
             `Error in callback function. Continue as single batch ${JSON.stringify(error)}`
           );
-          import_logger.Logger.getInstance().error(
+          this.logger.error(
             `${messages.map((m) => m.value?.toString()).join(",\n")}`
           );
           await this.#consumeBatchAsSingle(batch.messages, resolveOffset);
         }
       } else {
-        import_logger.Logger.getInstance().debug(
+        this.logger.debug(
           "Batch processing not applicable. Continue as single batch"
         );
         await this.#consumeBatchAsSingle(batch.messages, resolveOffset);
@@ -97,7 +94,7 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
         try {
           const parsedMessage = JSON.parse(message.value?.toString() ?? "{}");
           await this.callbackFunction([parsedMessage]).catch((error) => {
-            import_logger.Logger.getInstance().error(
+            this.logger.error(
               `Error in callback function for single message processing, ${JSON.stringify(
                 error
               )}`
@@ -106,8 +103,8 @@ class RdKafkaBulkListenerService extends import_abstract_rdkafka_service.Abstrac
           });
           resolveOffset(message.offset);
         } catch (error) {
-          import_logger.Logger.getInstance().error("Error in callback function", error);
-          import_logger.Logger.getInstance().error(`${message.value?.toString()}`);
+          this.logger.error("Error in callback function", error);
+          this.logger.error(`${message.value?.toString()}`);
           resolveOffset(message.offset);
         }
       }

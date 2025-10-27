@@ -27,15 +27,6 @@ class MailProcessor {
     this.MAX_PROCESSING_TRIES = 10;
     this.#processing = false;
     this.#processingTries = 0;
-    this.#buildPayload = (parsedContent) => {
-      return {
-        keyField: "messageId",
-        body: {
-          ...parsedContent
-        },
-        collection: `${this.#sdk.config.datasourceIdentifier}_${this.#mailboxConfig.mailboxIdentifier}`
-      };
-    };
     this.#sdk = sdk;
     this.#mailClient = mailClient;
     this.#mailboxConfig = config;
@@ -51,12 +42,12 @@ class MailProcessor {
     if (this.#processing) {
       if (this.#processingTries > this.MAX_PROCESSING_TRIES) {
         this.#logger.error(
-          `Exceeded processingTries for mailbox processor: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
+          `Exceeded processingTries for mailbox processor: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
         );
         process.exit(1);
       }
       this.#logger.debug(
-        `Mailsource processor service is already processing: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
+        `Mailsource processor service is already processing: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
       );
       this.#processingTries += 1;
       return;
@@ -66,7 +57,7 @@ class MailProcessor {
       await this.#processMailbox(this.#mailboxConfig);
     } catch (error) {
       this.#logger.warn(
-        `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`,
+        `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`,
         JSON.stringify(error)
       );
       this.#processing = false;
@@ -78,14 +69,17 @@ class MailProcessor {
   }
   async #processMailbox(config) {
     this.#logger.debug(
-      `Processing mailbox: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
+      `Processing mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
     );
     const lastOffset = await this.#sdk.offsetStore.getOffset(
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );
     const lastMessageId = lastOffset?.id || "";
     const lastMessageTimestamp = lastOffset?.timestamp || 0;
-    this.#logger.debug("Last message ID", lastMessageId);
+    this.#logger.verbose(
+      `Last message ID of mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}:`,
+      lastMessageId
+    );
     const messages = await this.#mailClient.readMailbox(
       config.mailbox,
       lastMessageTimestamp,
@@ -94,33 +88,39 @@ class MailProcessor {
     );
     if (messages.length === 0) {
       this.#logger.debug(
-        `No new messages found for mailbox: ${this.#mailboxConfig.mailboxIdentifier} ${this.#mailboxConfig.mailbox}`
+        `No new messages found for mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
       );
       return;
     }
-    const messagesAsPayload = messages.map(
-      (message) => this.#buildPayload(message)
-    );
-    this.#logger.info(
-      `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}:${this.#mailboxConfig.mailbox}, sending as ${this.#mailboxConfig.type}`
+    this.#logger.debug(
+      `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sending as ${this.#mailboxConfig.type}`
     );
     if (this.#mailboxConfig.type === "metric") {
       await this.#sdk.sender.metricsLegacy(
-        messagesAsPayload,
-        {},
+        messages,
+        {
+          keyField: "messageId",
+          collection: `${this.#sdk.config.datasourceIdentifier}_${this.#mailboxConfig.mailboxIdentifier}`
+        },
         {
           ttl: this.DEFAULT_EVENT_TTL
         }
       );
     } else {
       await this.#sdk.sender.documents(
-        messagesAsPayload,
-        {},
+        messages,
+        {
+          keyField: "messageId",
+          collection: `${this.#sdk.config.datasourceIdentifier}_${this.#mailboxConfig.mailboxIdentifier}`
+        },
         {
           ttl: this.DEFAULT_EVENT_TTL
         }
       );
     }
+    this.#logger.info(
+      `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sent as ${this.#mailboxConfig.type}`
+    );
     const lastMessage = messages[messages.length - 1];
     this.#sdk.offsetStore.setOffset(
       {
@@ -131,7 +131,6 @@ class MailProcessor {
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );
   }
-  #buildPayload;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
