@@ -56,7 +56,7 @@ class MailClient {
         throw new Error(`Mailbox folder not found: ${mailbox}`);
       }
       const mails = await this.#office365Client.getMails(
-        folder.id,
+        folder,
         limit,
         fromEpoch
       );
@@ -87,36 +87,44 @@ class MailClient {
   async reply(messageId, from, body, concept = true) {
     await this.#init();
     const originalMail = await this.#office365Client.getMail(messageId);
+    if (!originalMail) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
     const draftMail = await this.#office365Client.createReply(
-      originalMail.id,
+      originalMail,
       this.#office365Parser.formatMailReplyBody(originalMail, body),
       from
     );
     if (!concept) {
-      return this.#office365Client.sendMail(draftMail.id);
+      return this.#office365Client.sendMail(draftMail);
     }
     const draftsFolder = await this.#office365Client.getFolder("Drafts");
     if (!draftsFolder) {
       throw new Error("Folder not found: Drafts");
     }
-    return this.#office365Client.moveMailToFolder(
-      draftMail.id,
-      draftsFolder.id
-    );
+    return this.#office365Client.moveMailToFolder(draftMail, draftsFolder);
   }
   async addCategory(messageId, ...category) {
     await this.#init();
-    const categories = await this.#office365Client.getMailCategories(messageId);
+    const originalMail = await this.#office365Client.getMail(messageId);
+    if (!originalMail) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
+    const categories = await this.#office365Client.getMailCategories(originalMail);
     const current = categories?.categories || [];
-    await this.#office365Client.updateMailCategories(messageId, {
+    await this.#office365Client.updateMailCategories(originalMail, {
       categories: Array.from((/* @__PURE__ */ new Set([...current, ...category])).values())
     });
   }
   async removeCategory(messageId, ...category) {
     await this.#init();
-    const categories = await this.#office365Client.getMailCategories(messageId);
+    const originalMail = await this.#office365Client.getMail(messageId);
+    if (!originalMail) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
+    const categories = await this.#office365Client.getMailCategories(originalMail);
     const current = categories?.categories || [];
-    await this.#office365Client.updateMailCategories(messageId, {
+    await this.#office365Client.updateMailCategories(originalMail, {
       categories: current.filter((c) => !category.includes(c))
     });
   }
@@ -154,8 +162,8 @@ class MailClient {
     }
     try {
       const fullMail = await this.#office365Client.getFullMail(
-        office365Folder.id,
-        office365Mail.id
+        office365Folder,
+        office365Mail
       );
       seenIds.add(office365Mail.id);
       return this.#office365Parser.parsedToMailMessage(

@@ -78,7 +78,7 @@ class Office365Client {
     );
     return searchResult.value?.[0] ?? null;
   }
-  async getMails(folderId, limit = 100, fromEpochMs = 0) {
+  async getMails(folder, limit = 100, fromEpochMs = 0) {
     const iso = new Date(fromEpochMs).toISOString();
     const params = new URLSearchParams();
     params.set("$select", import_office365_types.EMAIL_SELECTABLE_FIELD.join(","));
@@ -86,7 +86,7 @@ class Office365Client {
     params.set("$filter", `lastModifiedDateTime ge ${iso}`);
     params.set("$top", limit.toString());
     const out = [];
-    let url = `${this.#base}/mailFolders/${folderId}/messages?${params.toString()}`;
+    let url = `${this.#base}/mailFolders/${folder.id}/messages?${params.toString()}`;
     while (url && url !== "") {
       const page = await this.#graphRequest(url);
       if (page?.value?.length) {
@@ -96,22 +96,22 @@ class Office365Client {
     }
     return out;
   }
-  async getFullMail(folderId, mailId) {
+  async getFullMail(folder, mail) {
     let mimeBuf = null;
     if (this.#emlTestMode !== false) {
-      mimeBuf = await this.#tryGetEmlBuffer(folderId, mailId);
+      mimeBuf = await this.#tryGetEmlBuffer(folder.id, mail.id);
     }
     if (!mimeBuf) {
-      mimeBuf = await this.#downloadMessageMime(folderId, mailId);
+      mimeBuf = await this.#downloadMessageMime(folder.id, mail.id);
     }
     const parsed = await (0, import_mailparser.simpleParser)(mimeBuf);
     parsed.attachments = await this.#addPdfJsonAttachments(parsed);
     return parsed;
   }
-  getMailCategories(messageId) {
+  async getMailCategories(mail) {
     return this.#graphRequest(
       `${this.#base}/messages/${encodeURIComponent(
-        messageId
+        mail.id
       )}?$select=categories`,
       "GET",
       void 0,
@@ -120,23 +120,23 @@ class Office365Client {
       }
     );
   }
-  async updateMailCategories(messageId, categories) {
+  async updateMailCategories(mail, categories) {
     await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}`,
+      `${this.#base}/messages/${encodeURIComponent(mail.id)}`,
       "PATCH",
       categories
     );
   }
-  async createReply(messageId, body, from) {
+  async createReply(mail, body, from) {
     const draft = await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}/createReply`,
+      `${this.#base}/messages/${encodeURIComponent(mail.id)}/createReply`,
       "POST"
     );
     if (!body && !from) {
       return draft;
     }
     await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}`,
+      `${this.#base}/messages/${encodeURIComponent(draft.id)}`,
       "PATCH",
       {
         body: body ? {
@@ -148,18 +148,18 @@ class Office365Client {
     );
     return draft;
   }
-  sendMail(messageId) {
+  sendMail(mail) {
     return this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}/send`,
+      `${this.#base}/messages/${encodeURIComponent(mail.id)}/send`,
       "POST"
     );
   }
-  moveMailToFolder(messageId, folderId) {
+  moveMailToFolder(mail, folder) {
     return this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}/move`,
+      `${this.#base}/messages/${encodeURIComponent(mail.id)}/move`,
       "POST",
       {
-        destinationId: folderId
+        destinationId: folder.id
       }
     );
   }
