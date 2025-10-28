@@ -108,10 +108,14 @@ class Office365Client {
     parsed.attachments = await this.#addPdfJsonAttachments(parsed);
     return parsed;
   }
-  getMailCategories(messageId) {
+  async getMailCategories(messageId) {
+    const orig = await this.getMail(messageId);
+    if (!orig) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
     return this.#graphRequest(
       `${this.#base}/messages/${encodeURIComponent(
-        messageId
+        orig.id
       )}?$select=categories`,
       "GET",
       void 0,
@@ -121,8 +125,12 @@ class Office365Client {
     );
   }
   async updateMailCategories(messageId, categories) {
+    const orig = await this.getMail(messageId);
+    if (!orig) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
     await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(messageId)}`,
+      `${this.#base}/messages/${encodeURIComponent(orig.id)}`,
       "PATCH",
       categories
     );
