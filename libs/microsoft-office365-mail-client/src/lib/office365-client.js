@@ -136,18 +136,8 @@ class Office365Client {
     );
   }
   async createReply(messageId, body, from) {
-    const orig = await this.getMail(messageId);
-    if (!orig) {
-      throw new Error(`Message with ID ${messageId} not found`);
-    }
-    const origFrom = orig.from?.emailAddress?.address || "";
-    const origTo = orig.toRecipients?.map((r) => r.emailAddress?.address).filter(Boolean).join("; ") || "";
-    const origSubject = orig.subject || "";
-    const origDate = orig.sentDateTime ? new Date(orig.sentDateTime).toLocaleString() : "";
-    const separator = `<br><hr style="border:none;border-top:solid #b1b1b1 1px;height:1px;margin:16px 0 8px 0;" /><br>From: ${origFrom}<br>Sent: ${origDate}<br>To: ${origTo}<br>Subject: ${origSubject}<br><br>`;
-    const origBody = orig.body?.content || "";
     const draft = await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(orig.id)}/createReply`,
+      `${this.#base}/messages/${encodeURIComponent(messageId)}/createReply`,
       "POST"
     );
     if (!body && !from) {
@@ -159,7 +149,7 @@ class Office365Client {
       {
         body: body ? {
           contentType: "html",
-          content: `${body}${separator}${origBody}`
+          content: body
         } : void 0,
         from: from ? { emailAddress: { address: from } } : void 0
       }
