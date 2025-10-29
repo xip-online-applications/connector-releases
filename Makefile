@@ -1,6 +1,7 @@
 install:
+	git reset --hard
 	git fetch && git pull
-	npm ci
+	npm ci --legacy-peer-deps
 	$(MAKE) start
 
 start:
