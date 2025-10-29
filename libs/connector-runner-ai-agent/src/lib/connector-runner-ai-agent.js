@@ -20,10 +20,9 @@ __export(connector_runner_ai_agent_exports, {
   ConnectorRunnerAiAgent: () => ConnectorRunnerAiAgent
 });
 module.exports = __toCommonJS(connector_runner_ai_agent_exports);
-var import_prompts = require("@langchain/core/prompts");
-var import_runnables = require("@langchain/core/runnables");
 var import_openai = require("@langchain/openai");
 var import_connector_runtime_sdk = require("@transai/connector-runtime-sdk");
+var import_langchain = require("langchain");
 var import_output_parsers = require("./output-parsers");
 class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRuntimeSDK {
   constructor(connector, connectorSDK, injectedLangchainInstance) {
@@ -44,74 +43,67 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
             "Prompt not found"
           )(message);
         }
-        const processedPrompt = this.processPromptTemplate(
-          `${systemPrompt}
-
-${userPrompt}`,
+        const processedSystemPrompt = this.processPromptTemplate(
+          systemPrompt,
           action.inputParameters,
           message.payload
         );
-        this.#logger.debug(`Processed prompt: ${processedPrompt}`);
-        const { outputParameters } = action;
-        const outputParser = (0, import_output_parsers.generateOutputParser)(outputParameters);
-        const processedInstructions = this.escapeFormatInstructions(
-          outputParser.getFormatInstructions()
+        const processedUserPrompt = this.processPromptTemplate(
+          userPrompt,
+          action.inputParameters,
+          message.payload
         );
-        this.#logger.debug(
-          `Processed format instructions: ${processedInstructions}`
+        const outputSchema = (0, import_output_parsers.parseParametersToZod)(
+          action.outputParameters
         );
-        const chain = import_runnables.RunnableSequence.from([
-          import_prompts.ChatPromptTemplate.fromTemplate(
-            `<system>${processedPrompt}</system>
-            <format>${processedInstructions}</format>
-            <user>{{question}}</user>`
-          ),
-          this.langchain,
-          outputParser
-        ]);
-        this.#logger.info("Invoking AI agent...");
-        const response = await chain.invoke({
-          question: action.config["question"] || ""
+        const llm = (0, import_langchain.createAgent)({
+          model: this.langchain,
+          responseFormat: (0, import_langchain.toolStrategy)(outputSchema),
+          systemPrompt: processedSystemPrompt,
+          tools: []
         });
-        this.#logger.info(`AI response: ${JSON.stringify(response, null, 2)}`);
-        const returnPayload = {
-          ...message,
-          payload: response
-        };
-        return this.connectorSDK.receiver.responses.ok()(returnPayload);
+        try {
+          this.#logger.info("Invoking AI agent...");
+          const response = await llm.invoke({
+            messages: [new import_langchain.HumanMessage(processedUserPrompt)]
+          });
+          this.#logger.info("AI agent invoked successfully.");
+          const returnPayload = {
+            ...message,
+            payload: {
+              openAiMessages: response.messages,
+              ...response.structuredResponse
+            }
+          };
+          return this.connectorSDK.receiver.responses.ok()(returnPayload);
+        } catch (error) {
+          this.#logger.error(`Error processing AI agent request: ${error}`);
+          return this.connectorSDK.receiver.responses.internalServerError(
+            `Error processing AI agent request: ${error}`
+          )(message);
+        }
       };
     };
-    const { openai } = this.connectorSDK.config;
+    this.#openAISettings = this.connectorSDK.config.openai;
     this.#logger = this.connectorSDK.logger;
     this.#logger.debug(
-      `Initializing AI Agent Connector Runner with model: ${openai.model}`
+      `Initializing AI Agent Connector Runner with model: ${this.#openAISettings.model}`
     );
     this.#langchainInstance = injectedLangchainInstance ?? new import_openai.ChatOpenAI({
-      apiKey: openai.apiKey,
-      model: openai.model || "gpt-3.5-turbo",
-      temperature: openai.temperature || 0,
-      timeout: openai.timeout || 6e4
+      apiKey: this.#openAISettings.apiKey,
+      model: this.#openAISettings.model || "gpt-3.5-turbo",
+      temperature: this.#openAISettings.temperature || 0,
+      timeout: this.#openAISettings.timeout || 6e4
     });
   }
   #logger;
+  #openAISettings;
   #langchainInstance;
   get langchain() {
     if (this.#langchainInstance === void 0) {
       throw new Error("Langchain instance not initialized");
     }
     return this.#langchainInstance;
-  }
-  // Escape single curly braces in format instructions within markdown code blocks
-  escapeFormatInstructions(instructions) {
-    return instructions.replace(
-      /```json\n([\s\S]*?)\n```/g,
-      (match, jsonContent) => {
-        const escapedJson = jsonContent.replace(/{/g, "{{").replace(/}/g, "}}");
-        return `\`\`\`json
-${escapedJson}
-\`\`\``;
-      }
-    );
   }
   // Template processing with inputParameters
   processPromptTemplate(template, inputParams, payload) {

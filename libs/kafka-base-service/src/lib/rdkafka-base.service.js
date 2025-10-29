@@ -118,7 +118,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
             await this.reportResult(message, result, callback.identifier);
           }
         } catch (error) {
-          import_logger.Logger.getInstance().debug(
+          import_logger.Logger.getInstance().error(
             `Error processing message: ${error.message}`
           );
         } finally {
