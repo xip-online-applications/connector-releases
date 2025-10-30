@@ -44,6 +44,10 @@ class Office365Client {
   #base;
   #emlTestMode = false;
   #token;
+  #folderCache = {};
+  #mailCache = {};
+  #fullMailCache = {};
+  #attachmentsCache = {};
   constructor(userPrincipalName, emlTestMode = false) {
     this.#base = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
       userPrincipalName
@@ -51,32 +55,46 @@ class Office365Client {
     this.#emlTestMode = emlTestMode;
   }
   async init(tenantId, clientId, clientSecret) {
+    this.#folderCache = {};
+    this.#mailCache = {};
+    this.#attachmentsCache = {};
     this.#token = await this.#getAccessToken(tenantId, clientId, clientSecret);
   }
   async getFolder(displayName, topMailboxes = 100) {
     const loweredDisplayName = displayName.toLowerCase();
+    if (this.#folderCache[loweredDisplayName]) {
+      return this.#folderCache[loweredDisplayName];
+    }
     if (import_office365_types.WELL_KNOWN_EMAIL_BOXES.includes(loweredDisplayName)) {
       const data2 = await this.#graphRequest(
         `${this.#base}/mailFolders/${encodeURIComponent(displayName)}`
       );
       if (data2?.id) {
+        this.#folderCache[loweredDisplayName] = data2;
         return data2;
       }
     }
     const data = await this.#graphRequest(
       `${this.#base}/mailFolders?$top=${topMailboxes}`
     );
-    return data?.value?.find(
-      (folder) => folder.displayName?.toLowerCase() === loweredDisplayName
+    const folder = data?.value?.find(
+      (folder2) => folder2.displayName?.toLowerCase() === loweredDisplayName
     ) ?? null;
+    this.#folderCache[loweredDisplayName] = folder;
+    return folder;
   }
   async getMail(messageId) {
+    if (this.#mailCache[messageId]) {
+      return this.#mailCache[messageId];
+    }
     const params = new URLSearchParams();
     params.set("$filter", `internetMessageId eq '${messageId}'`);
     const searchResult = await this.#graphRequest(
       `${this.#base}/messages?${params.toString()}`
     );
-    return searchResult.value?.[0] ?? null;
+    const mail = searchResult.value?.[0] ?? null;
+    this.#mailCache[messageId] = mail;
+    return mail;
   }
   async getMails(folder, limit = 100, fromEpochMs = 0) {
     const iso = new Date(fromEpochMs).toISOString();
@@ -162,6 +180,13 @@ class Office365Client {
         destinationId: folder.id
       }
     );
+  }
+  async listAttachments(folderId, messageId, limit = 50) {
+    const data = await this.#graphRequest(
+      `${this.#base}/mailFolders/${folderId}/messages/${messageId}/attachments?$expand=microsoft.graph.itemAttachment/item&$top=${limit}`,
+      "GET"
+    );
+    return data?.value || [];
   }
   #getAccessToken(tenantId, clientId, clientSecret) {
     return new Promise((resolve, reject) => {
@@ -266,7 +291,7 @@ class Office365Client {
     );
   }
   async #tryGetEmlBuffer(folderId, messageId) {
-    const attachments = await this.#listAttachments(folderId, messageId);
+    const attachments = await this.listAttachments(folderId, messageId);
     const fileEml = attachments.find(
       (attachment) => attachment["@odata.type"] === "#microsoft.graph.fileAttachment" && ((attachment.contentType || "").toLowerCase() === "message/rfc822" || String(attachment.name || attachment.fileName || "").toLowerCase().endsWith(".eml"))
     );
@@ -287,13 +312,6 @@ class Office365Client {
       );
     }
     return null;
-  }
-  async #listAttachments(folderId, messageId, limit = 50) {
-    const data = await this.#graphRequest(
-      `${this.#base}/mailFolders/${folderId}/messages/${messageId}/attachments?$expand=microsoft.graph.itemAttachment/item&$top=${limit}`,
-      "GET"
-    );
-    return data?.value || [];
   }
   async #addPdfJsonAttachments(parsed) {
     if (!Array.isArray(parsed.attachments) || parsed.attachments.length === 0) {

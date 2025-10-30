@@ -14,18 +14,22 @@ var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "defau
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var src_exports = {};
 module.exports = __toCommonJS(src_exports);
+__reExport(src_exports, require("./lib/file-system-connector"), module.exports);
 __reExport(src_exports, require("./lib/file-handler.interface"), module.exports);
+__reExport(src_exports, require("./lib/generic-active-file.active-file-handler"), module.exports);
 __reExport(src_exports, require("./lib/types"), module.exports);
-__reExport(src_exports, require("./lib/dummy.filehandler"), module.exports);
-__reExport(src_exports, require("./lib/samba.filehandler"), module.exports);
-__reExport(src_exports, require("./lib/sftp.filehandler"), module.exports);
-__reExport(src_exports, require("./lib/sftp-reconnect.filehandler"), module.exports);
+__reExport(src_exports, require("./lib/handler/dummy.filehandler"), module.exports);
+__reExport(src_exports, require("./lib/handler/samba.filehandler"), module.exports);
+__reExport(src_exports, require("./lib/handler/sftp.filehandler"), module.exports);
+__reExport(src_exports, require("./lib/handler/sftp-reconnect.filehandler"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ...require("./lib/file-system-connector"),
   ...require("./lib/file-handler.interface"),
+  ...require("./lib/generic-active-file.active-file-handler"),
   ...require("./lib/types"),
-  ...require("./lib/dummy.filehandler"),
-  ...require("./lib/samba.filehandler"),
-  ...require("./lib/sftp.filehandler"),
-  ...require("./lib/sftp-reconnect.filehandler")
+  ...require("./lib/handler/dummy.filehandler"),
+  ...require("./lib/handler/samba.filehandler"),
+  ...require("./lib/handler/sftp.filehandler"),
+  ...require("./lib/handler/sftp-reconnect.filehandler")
 });

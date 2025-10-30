@@ -20,15 +20,27 @@ __export(dummy_filehandler_exports, {
   DummyFilehandler: () => DummyFilehandler
 });
 module.exports = __toCommonJS(dummy_filehandler_exports);
-var import_types = require("./types");
-var import_generic_active_file = require("./generic-active-file.active-file-handler");
+var import_logger = require("@transai/logger");
+var import_generic_active_file = require("../generic-active-file.active-file-handler");
+var import_types = require("../types");
 class DummyFilehandler {
+  #dummyConfig;
   constructor(dummyConfig) {
-    this.dummyConfig = dummyConfig;
-    console.log("Dummy File handler setup!");
+    this.#dummyConfig = dummyConfig;
+  }
+  static fromDsn(dsn) {
+    if (!dsn.startsWith("dummy:")) {
+      return null;
+    }
+    const dummyFiles = dsn.substring(0, dsn.indexOf("dummy:"));
+    return new DummyFilehandler({
+      type: "dummy",
+      dummyFiles: dummyFiles.split(","),
+      processedAction: "move"
+    });
   }
   async list() {
-    return (this.dummyConfig.dummyFiles ?? []).map((file) => {
+    return (this.#dummyConfig.dummyFiles ?? []).map((file) => {
       return {
         name: file,
         size: 0,
@@ -42,17 +54,20 @@ class DummyFilehandler {
     const buffer = Buffer.from(randomData);
     return new import_generic_active_file.GenericActiveFileActiveFileHandler(buffer);
   }
-  async writeFile() {
+  async writeFile(data, remotePath, filename) {
+    import_logger.Logger.getInstance().debug(
+      `Dummy write file to ${remotePath} / ${filename}`
+    );
     return true;
   }
-  async deleteFile() {
+  async deleteFile(filepath) {
+    import_logger.Logger.getInstance().debug(`Dummy delete file from ${filepath}`);
     return true;
   }
   async fileExists() {
     return true;
   }
   async init() {
-    console.log("DummyFilehandler initialized");
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

@@ -20,6 +20,7 @@ __export(mail_processor_exports, {
   MailProcessor: () => MailProcessor
 });
 module.exports = __toCommonJS(mail_processor_exports);
+var import_file_system_connector = require("@xip-online-data/file-system-connector");
 class MailProcessor {
   constructor(sdk, config, mailClient) {
     this.DEFAULT_EVENT_TTL = 36e5;
@@ -31,11 +32,15 @@ class MailProcessor {
     this.#mailClient = mailClient;
     this.#mailboxConfig = config;
     this.#logger = this.#sdk.logger;
+    this.#fileHandler = new import_file_system_connector.FileSystemConnector().fromDsn(
+      this.#mailboxConfig.attachmentDestination ?? this.#sdk.config.attachmentDestination ?? "dummy:"
+    );
   }
   #sdk;
   #mailClient;
   #mailboxConfig;
   #logger;
+  #fileHandler;
   #processing;
   #processingTries;
   async onRun() {
@@ -92,6 +97,7 @@ class MailProcessor {
       );
       return;
     }
+    await this.#storeAttachments(config.mailbox, ...messages);
     this.#logger.debug(
       `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sending as ${this.#mailboxConfig.type}`
     );
@@ -129,6 +135,43 @@ class MailProcessor {
         rawTimestamp: (/* @__PURE__ */ new Date()).toISOString()
       },
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
+    );
+  }
+  async #storeAttachments(mailbox, ...messages) {
+    await Promise.all(
+      messages.filter((message) => (message.attachments ?? []).length !== 0).map(async (message) => {
+        const attachments = await this.#mailClient.getAttachments(
+          mailbox,
+          message.messageId
+        );
+        if (attachments.length === 0) {
+          return;
+        }
+        this.#logger.verbose(
+          `Found ${attachments.length} attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId}`
+        );
+        await Promise.all(
+          attachments.map(async (attachment) => {
+            if (!attachment.contentBytes) {
+              return;
+            }
+            const file = new import_file_system_connector.GenericActiveFileActiveFileHandler(
+              attachment.contentBytes
+            );
+            this.#logger.verbose(
+              `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId} attachment "${attachment.id}--${attachment.filename}" using ${typeof this.#fileHandler}...`
+            );
+            await this.#fileHandler.writeFile(
+              file,
+              `${mailbox}/${message.messageId}`,
+              `${attachment.id}--${attachment.filename}`
+            );
+            this.#logger.debug(
+              `Stored mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId} attachment "${attachment.id}--${attachment.filename}"`
+            );
+          })
+        );
+      })
     );
   }
 }

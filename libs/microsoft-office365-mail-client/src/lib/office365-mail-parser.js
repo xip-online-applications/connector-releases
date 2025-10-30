@@ -125,6 +125,7 @@ class Office365MailParser {
           att.content?.once?.("error", reject);
         });
         return {
+          id: att.cid,
           filename: att.filename || "attachment.json",
           contentType: "application/json",
           content: buf.toString("utf-8")

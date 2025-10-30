@@ -21,8 +21,8 @@ __export(sftp_filehandler_exports, {
 });
 module.exports = __toCommonJS(sftp_filehandler_exports);
 var import_logger = require("@transai/logger");
-var import_types = require("./types");
-var import_generic_active_file = require("./generic-active-file.active-file-handler");
+var import_generic_active_file = require("../generic-active-file.active-file-handler");
+var import_types = require("../types");
 const sftp = require("ssh2-sftp-client");
 const mapFileInfo = (fileInfo) => {
   return {
@@ -33,16 +33,40 @@ const mapFileInfo = (fileInfo) => {
   };
 };
 class SftpFilehandler {
+  static {
+    this.DEFAULT_PORT = 22;
+  }
+  #config;
   constructor(config) {
-    this.config = config;
-    import_logger.Logger.getInstance().info("SFTP File handler setup!");
-    config.privateKey = config.privateKey?.replace(/\\n/g, "\n");
-    this.sftpClient = new sftp(config.sftpIdentifier);
+    this.#config = config;
+    this.#config.privateKey = this.#config.privateKey?.replace(/\\n/g, "\n");
+    this.sftpClient = new sftp(this.#config.sftpIdentifier);
+  }
+  static fromDsn(dsn) {
+    if (!dsn.startsWith("sftp:")) {
+      return null;
+    }
+    const url = new URL(dsn);
+    const keepaliveInterval = url.searchParams.get("keepaliveInterval");
+    const config = {
+      type: "sftp",
+      processedAction: url.searchParams.get("processedAction") ?? "move",
+      sftpIdentifier: decodeURIComponent(url.hostname),
+      host: decodeURIComponent(url.hostname),
+      port: url.port ? Number.parseInt(url.port, 10) : SftpFilehandler.DEFAULT_PORT,
+      username: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      protocol: url.searchParams.get("protocol") ?? void 0,
+      privateKey: url.searchParams.get("privateKey") ?? void 0,
+      keepaliveInterval: keepaliveInterval ? Number.parseInt(keepaliveInterval, 10) : void 0
+    };
+    return new SftpFilehandler(config);
+  }
+  get config() {
+    return this.#config;
   }
   async init() {
-    import_logger.Logger.getInstance().info("Initializing sftp: ", this.config.host);
-    await this.sftpClient.connect(this.config);
-    import_logger.Logger.getInstance().info("SFTP client initialized");
+    await this.sftpClient.connect(this.#config);
   }
   async list(dir) {
     const listings = await this.sftpClient.list(dir);
@@ -85,7 +109,6 @@ class SftpFilehandler {
     }
   }
   async fileExists(filepath) {
-    import_logger.Logger.getInstance().info(`Checking if file exists: ${filepath}`);
     const file = await this.sftpClient.exists(filepath);
     return file !== false;
   }
