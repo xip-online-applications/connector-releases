@@ -149,10 +149,19 @@ class MailProcessor {
   async #storeAttachments(mailbox, ...messages) {
     await Promise.all(
       messages.filter((message) => message.attachmentsCount > 0).map(async (message) => {
-        const attachments = await this.#mailClient.getAttachments(
-          mailbox,
-          message.id
-        );
+        let attachments;
+        try {
+          attachments = await this.#mailClient.getAttachments(
+            mailbox,
+            message.id
+          );
+        } catch (error) {
+          this.#logger.error(
+            `Failed to fetch attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} due to: ${error.message}`,
+            error
+          );
+          return;
+        }
         if (attachments.length === 0) {
           this.#logger.info(
             `Somehow found ${attachments.length} of ${message.attachmentsCount} expected attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id}`
