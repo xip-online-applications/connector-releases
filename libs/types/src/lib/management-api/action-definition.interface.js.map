@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/types/src/lib/management-api/action-definition.interface.ts"],
+  "sourcesContent": ["import { TenantInterface } from './tenant.interface';\nimport { CubeQueryConfig } from '../cube-query-config.types';\n\nexport interface ActionDefinitionInterface {\n  tenant: TenantInterface;\n  eventType: string;\n  eventTopic: string;\n  destinationTopic: string;\n  actionIdentifier: string;\n\n  template: string;\n  fileNameTemplate: string | undefined;\n  queryConfig: CubeQueryConfig | undefined;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

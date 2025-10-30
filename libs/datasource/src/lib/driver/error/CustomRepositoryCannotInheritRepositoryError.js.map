@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CustomRepositoryCannotInheritRepositoryError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown if custom repository inherits Repository class however entity is not set in @EntityRepository decorator.\n */\nexport class CustomRepositoryCannotInheritRepositoryError extends TypeORMError {\n  constructor(repository: any) {\n    super(\n      `Custom entity repository ${\n        typeof repository === 'function'\n          ? repository.name\n          : repository.constructor.name\n      } ` +\n        ` cannot inherit Repository class without entity being set in the @EntityRepository decorator.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,qDAAqD,iCAAa;AAAA,EAC7E,YAAY,YAAiB;AAC3B;AAAA,MACE,4BACE,OAAO,eAAe,aAClB,WAAW,OACX,WAAW,YAAY,IAC7B;AAAA,IAEF;AAAA,EACF;AACF;",
+  "names": []
+}

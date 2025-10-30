@@ -61,3 +61,4 @@ class ConnectSftpClient extends import_sftp_client.SftpClient {
 0 && (module.exports = {
   ConnectSftpClient
 });
+//# sourceMappingURL=connect-sftp-client.js.map

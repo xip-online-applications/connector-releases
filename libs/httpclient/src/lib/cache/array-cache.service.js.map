@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/httpclient/src/lib/cache/array-cache.service.ts"],
+  "sourcesContent": ["import { CacheServiceInterface } from './cache-service.interface';\n\nexport class ArrayCacheService implements CacheServiceInterface {\n  #cache: { [key: string]: any } = {};\n\n  public get<T>(key: string): Promise<T | undefined> {\n    return Promise.resolve(this.#cache[key] ?? undefined);\n  }\n\n  public set<T>(key: string, value: T): Promise<void> {\n    this.#cache[key] = value;\n\n    return Promise.resolve();\n  }\n\n  public clear(): Promise<void> {\n    this.#cache = [];\n\n    return Promise.resolve();\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,MAAM,kBAAmD;AAAA,EAC9D,SAAiC,CAAC;AAAA,EAE3B,IAAO,KAAqC;AACjD,WAAO,QAAQ,QAAQ,KAAK,OAAO,GAAG,KAAK,MAAS;AAAA,EACtD;AAAA,EAEO,IAAO,KAAa,OAAyB;AAClD,SAAK,OAAO,GAAG,IAAI;AAEnB,WAAO,QAAQ,QAAQ;AAAA,EACzB;AAAA,EAEO,QAAuB;AAC5B,SAAK,SAAS,CAAC;AAEf,WAAO,QAAQ,QAAQ;AAAA,EACzB;AACF;",
+  "names": []
+}

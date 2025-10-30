@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/processing.sdk.interface.ts"],
+  "sourcesContent": ["export interface IntervalHandler {\n  name?: string;\n  onRun: () => Promise<void> | void;\n  onStop?: () => Promise<void> | void;\n}\n\nexport type RegisterIntervalOptions = {\n  immediate?: boolean;\n};\n\nexport interface ProcessingSDKInterface {\n  registerInterval(\n    intervalSeconds: number,\n    handler: IntervalHandler,\n    options?: RegisterIntervalOptions,\n  ): Promise<string>;\n\n  stopInterval(name: string): Promise<void>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

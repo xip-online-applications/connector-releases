@@ -118,6 +118,9 @@ class DiskFileHandler {
       });
     });
   }
+  pathAsDsn(filepath) {
+    return `file://${import_node_path.default.join(this.#config.path, filepath)}`;
+  }
   async init() {
   }
 }
@@ -125,3 +128,4 @@ class DiskFileHandler {
 0 && (module.exports = {
   DiskFileHandler
 });
+//# sourceMappingURL=disk.filehandler.js.map

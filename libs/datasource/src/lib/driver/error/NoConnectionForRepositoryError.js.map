@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/NoConnectionForRepositoryError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to access repository before connection is established.\n */\nexport class NoConnectionForRepositoryError extends TypeORMError {\n  constructor(connectionName: string) {\n    super(\n      `Cannot get a Repository for \"${connectionName} connection, because connection with the database ` +\n        `is not established yet. Call connection#connect method to establish connection.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,uCAAuC,iCAAa;AAAA,EAC/D,YAAY,gBAAwB;AAClC;AAAA,MACE,gCAAgC,cAAc;AAAA,IAEhD;AAAA,EACF;AACF;",
+  "names": []
+}

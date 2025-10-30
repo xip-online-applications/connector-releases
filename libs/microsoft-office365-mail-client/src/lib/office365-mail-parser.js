@@ -1,6 +1,8 @@
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -14,12 +16,21 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var office365_mail_parser_exports = {};
 __export(office365_mail_parser_exports, {
   Office365MailParser: () => Office365MailParser
 });
 module.exports = __toCommonJS(office365_mail_parser_exports);
+var import_pdf2md = __toESM(require("@opendocsg/pdf2md"));
 var import_html_to_text = require("html-to-text");
 class Office365MailParser {
   async parsedToMailMessage(mail, parsed, receivedFallback) {
@@ -45,7 +56,9 @@ class Office365MailParser {
     return {
       deltaTimestamp: receivedFallback.getTime(),
       deltaId: mail.id,
+      id: mail.id,
       originalMessageId: mail.internetMessageId,
+      attachmentsCount: (parsed.attachments ?? []).length,
       attachments: await this.#parseAttachments(parsed.attachments ?? []),
       headers,
       headerLines,
@@ -102,12 +115,12 @@ class Office365MailParser {
   async #parseAttachments(attachments) {
     return (await Promise.all(
       attachments.map(async (att) => {
-        const ct = (att.contentType || "").toLowerCase();
-        const fn = (att.filename || "attachment").toLowerCase();
-        const isJson = ct === "application/json" || fn.endsWith(".json");
-        if (!isJson) {
+        const isJson = att.contentType?.toLowerCase().includes("application/json") || att.filename?.toLowerCase().endsWith(".json");
+        const parsedPdfToJson = await this.#addPdfJsonAttachment(att);
+        if (!parsedPdfToJson && !isJson) {
           return void 0;
         }
+        att = parsedPdfToJson ?? att;
         const buf = Buffer.isBuffer(att.content) ? att.content : await new Promise((resolve, reject) => {
           const chunks = [];
           att.content?.on?.(
@@ -133,8 +146,38 @@ class Office365MailParser {
       })
     )).filter((att) => !!att);
   }
+  async #addPdfJsonAttachment(attachment) {
+    const isPdf = attachment.contentType?.toLowerCase().includes("application/pdf") || attachment.filename?.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      return null;
+    }
+    const buf = await this.#streamToBuffer(attachment.content);
+    const pdfParsed = await (0, import_pdf2md.default)(buf);
+    const filename = `${attachment.filename?.replace(/\.pdf$/i, "") || "attachment"}.json`;
+    return {
+      ...attachment,
+      filename,
+      contentType: "application/json",
+      content: Buffer.from(pdfParsed)
+    };
+  }
+  async #streamToBuffer(stream) {
+    if (Buffer.isBuffer(stream)) {
+      return stream;
+    }
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on("data", (c) => chunks.push(c));
+      stream.once(
+        "end",
+        () => resolve(Buffer.concat(chunks))
+      );
+      stream.once("error", reject);
+    });
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Office365MailParser
 });
+//# sourceMappingURL=office365-mail-parser.js.map

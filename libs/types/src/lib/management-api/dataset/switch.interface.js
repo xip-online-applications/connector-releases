@@ -31,3 +31,4 @@ const SwitchSchema = import_zod.z.object({
 0 && (module.exports = {
   SwitchSchema
 });
+//# sourceMappingURL=switch.interface.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/offset-store.sdk.interface.ts"],
+  "sourcesContent": ["export interface StoredOffset {\n  timestamp: number;\n  id: number | string;\n  isoDate?: string;\n  date?: string;\n  rawTimestamp?: number | string;\n}\n\nexport interface OffsetStoreSDKInterface {\n  getOffset(identifier: string): Promise<StoredOffset>;\n\n  setOffset(offset: StoredOffset, identifier: string): void;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

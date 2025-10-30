@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runner-samba-sink/src/lib/types.ts"],
+  "sourcesContent": ["import {\n  ActionConfig,\n  BaseConnectorConfig,\n  isActionConfigType,\n  isBaseConnectorConfigType\n} from '@xip-online-data/types';\nimport {isSambaConfig, SambaConfig} from \"@xip-online-data/samba-client\";\n\nexport interface SambaSinkConfig {\n  action: ActionConfig;\n  samba: SambaConfig;\n}\n\nexport function isSambaSinkConfigType(obj: SambaSinkConfig): obj is SambaSinkConfig {\n  return (\n    obj !== undefined &&\n    obj !== null &&\n    isActionConfigType(obj.action) &&\n    obj.samba !== undefined &&\n    isSambaConfig(obj.samba)\n  );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAKO;AACP,0BAAyC;AAOlC,SAAS,sBAAsB,KAA8C;AAClF,SACE,QAAQ,UACR,QAAQ,YACR,iCAAmB,IAAI,MAAM,KAC7B,IAAI,UAAU,cACd,mCAAc,IAAI,KAAK;AAE3B;",
+  "names": []
+}

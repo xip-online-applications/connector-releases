@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/samba-client/src/lib/execa.wrapper.ts"],
+  "sourcesContent": ["import { Options } from 'execa';\nimport { ExecaInterface } from './execa.interface';\n\nexport class ExecaWrapper implements ExecaInterface {\n  private execa: any;\n\n  constructor() {\n    const execa = import('execa');\n    execa\n      .then((execa) => {\n        this.execa = execa.execa;\n      })\n      .catch((error) => {\n        console.log(error);\n      });\n  }\n\n  async execute(\n    command: string,\n    args: string | Array<string>,\n    workingDir: Options,\n  ) {\n    return this.execa(command, args, workingDir);\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGO,MAAM,aAAuC;AAAA,EAGlD,cAAc;AACZ,UAAM,QAAQ,OAAO,OAAO;AAC5B,UACG,KAAK,CAACA,WAAU;AACf,WAAK,QAAQA,OAAM;AAAA,IACrB,CAAC,EACA,MAAM,CAAC,UAAU;AAChB,cAAQ,IAAI,KAAK;AAAA,IACnB,CAAC;AAAA,EACL;AAAA,EAEA,MAAM,QACJ,SACA,MACA,YACA;AACA,WAAO,KAAK,MAAM,SAAS,MAAM,UAAU;AAAA,EAC7C;AACF;",
+  "names": ["execa"]
+}

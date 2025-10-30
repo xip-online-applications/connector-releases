@@ -153,3 +153,4 @@ class FileHandler {
 0 && (module.exports = {
   FileHandler
 });
+//# sourceMappingURL=file-handler.js.map

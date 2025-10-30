@@ -92,3 +92,4 @@ SentryFilter = __decorateClass([
   init,
   register
 });
+//# sourceMappingURL=sentry.js.map

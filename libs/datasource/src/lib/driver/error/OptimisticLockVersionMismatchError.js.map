@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/OptimisticLockVersionMismatchError.ts"],
+  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when a version check on an object that uses optimistic locking through a version field fails.\n */\nexport class OptimisticLockVersionMismatchError extends TypeORMError {\n  constructor(\n    entity: string,\n    expectedVersion: number | Date,\n    actualVersion: number | Date,\n  ) {\n    super(\n      `The optimistic lock on entity ${entity} failed, version ${expectedVersion} was expected, but is actually ${actualVersion}.`,\n    );\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,2CAA2C,iCAAa;AAAA,EACnE,YACE,QACA,iBACA,eACA;AACA;AAAA,MACE,iCAAiC,MAAM,oBAAoB,eAAe,kCAAkC,aAAa;AAAA,IAC3H;AAAA,EACF;AACF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/relations.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\nimport { RelationInterface, RelationSchema } from './relation.interface';\n\nexport const RelationsSchema = z.record(\n  z.union([RelationSchema, z.literal(false)]),\n);\n\nexport interface RelationsInterface {\n  [key: string]: RelationInterface | false;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,sBAAkD;AAE3C,MAAM,kBAAkB,aAAE;AAAA,EAC/B,aAAE,MAAM,CAAC,gCAAgB,aAAE,QAAQ,KAAK,CAAC,CAAC;AAC5C;",
+  "names": []
+}

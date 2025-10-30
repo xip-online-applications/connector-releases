@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/microsoft-office365-mail-client/src/lib/mail-client.interface.ts"],
+  "sourcesContent": ["import { MailAttachment, MailMessage } from './types';\n\nexport interface MailClientInterface {\n  readMailbox(\n    mailbox: string,\n    lastSeenTimestamp?: number,\n    lastSeenId?: string,\n    limit?: number,\n  ): Promise<Array<MailMessage>>;\n\n  reply(\n    messageId: string,\n    from: string,\n    body: string,\n    concept?: boolean,\n  ): Promise<void>;\n\n  getAttachments(\n    mailbox: string,\n    messageId: string,\n  ): Promise<Array<MailAttachment>>;\n\n  addCategory(messageId: string, ...category: Array<string>): Promise<void>;\n\n  removeCategory(messageId: string, ...category: Array<string>): Promise<void>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

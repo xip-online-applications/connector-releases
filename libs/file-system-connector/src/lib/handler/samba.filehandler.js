@@ -32,6 +32,7 @@ __export(samba_filehandler_exports, {
 });
 module.exports = __toCommonJS(samba_filehandler_exports);
 var fs = __toESM(require("node:fs"));
+var import_node_path = __toESM(require("node:path"));
 var import_samba_client = require("@xip-online-data/samba-client");
 var import_uuid = require("uuid");
 var import_types = require("../types");
@@ -138,8 +139,8 @@ class SambaFilehandler {
     fs.writeFileSync(localFile, new Uint8Array(buffer));
     let success = false;
     try {
-      const path = remotePath === "" ? filename : `${remotePath}/${filename}`;
-      await this.#sambaClient.sendFile(localFile, path);
+      const path2 = remotePath === "" ? filename : `${remotePath}/${filename}`;
+      await this.#sambaClient.sendFile(localFile, path2);
       success = true;
     } catch (e) {
       console.error(e);
@@ -160,9 +161,18 @@ class SambaFilehandler {
   fileExists(location) {
     return this.#sambaClient.fileExists(location);
   }
+  pathAsDsn(filepath) {
+    const fullPath = import_node_path.default.join(
+      encodeURIComponent(this.#sambaConfig.domain ?? ""),
+      this.#sambaConfig.directory ?? "",
+      filepath
+    );
+    return `smb://${encodeURIComponent(this.#sambaConfig.address)}:${this.#sambaConfig.port}/${fullPath}`;
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   SambaFile,
   SambaFilehandler
 });
+//# sourceMappingURL=samba.filehandler.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../libs/types/src/lib/management-api/template-implementation-overrides.interface.ts"],
+  "sourcesContent": ["import { z } from 'zod';\n\nimport {\n  SemanticTriggersInterface,\n  SemanticTriggersSchema,\n  DatasetsInterface,\n  DatasetsSchema,\n  ConnectorsInterface,\n  ConnectorsSchema,\n} from './index';\n\nexport const TemplateImplementationOverridesSchema = z.object({\n  datasets: DatasetsSchema.optional(),\n  semanticTriggers: SemanticTriggersSchema.optional(),\n  connectors: ConnectorsSchema.optional(),\n});\n\nexport interface TemplateImplementationOverridesInterface {\n  datasets?: DatasetsInterface;\n  semanticTriggers?: SemanticTriggersInterface;\n  connectors?: ConnectorsInterface;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAElB,mBAOO;AAEA,MAAM,wCAAwC,aAAE,OAAO;AAAA,EAC5D,UAAU,4BAAe,SAAS;AAAA,EAClC,kBAAkB,oCAAuB,SAAS;AAAA,EAClD,YAAY,8BAAiB,SAAS;AACxC,CAAC;",
+  "names": []
+}

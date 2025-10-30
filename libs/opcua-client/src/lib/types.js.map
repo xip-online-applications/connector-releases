@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/opcua-client/src/lib/types.ts"],
+  "sourcesContent": ["export interface OpcUaConfig {\n  endpointUrl: string;\n  securityMode?: number;\n  securityPolicy?: string;\n  namespace?: string;\n  namespaceNodeId?: string;\n  applicationName?: string;\n  username?: string;\n  password?: string;\n  certificateFile?: string;\n  privateKeyFile?: string;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

@@ -63,7 +63,8 @@ class MailProcessor {
     } catch (error) {
       this.#logger.warn(
         `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`,
-        JSON.stringify(error)
+        error.message,
+        error
       );
       this.#processing = false;
       this.#processingTries += 1;
@@ -101,9 +102,17 @@ class MailProcessor {
     this.#logger.debug(
       `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sending as ${this.#mailboxConfig.type}`
     );
+    const preparedMessages = messages.map((message) => ({
+      ...message,
+      attachments: (message.attachments ?? []).map((attachment) => ({
+        ...attachment,
+        content: attachment.contentType === "application/json" ? attachment.content : void 0,
+        contentBytes: void 0
+      }))
+    }));
     if (this.#mailboxConfig.type === "metric") {
       await this.#sdk.sender.metricsLegacy(
-        messages,
+        preparedMessages,
         {
           keyField: "messageId",
           collection: this.#sdk.config.datasourceIdentifier
@@ -114,7 +123,7 @@ class MailProcessor {
       );
     } else {
       await this.#sdk.sender.documents(
-        messages,
+        preparedMessages,
         {
           keyField: "messageId",
           collection: this.#sdk.config.datasourceIdentifier
@@ -125,9 +134,9 @@ class MailProcessor {
       );
     }
     this.#logger.info(
-      `Fetched ${messages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sent as ${this.#mailboxConfig.type}`
+      `Fetched ${preparedMessages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sent as ${this.#mailboxConfig.type}`
     );
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = preparedMessages[preparedMessages.length - 1];
     this.#sdk.offsetStore.setOffset(
       {
         timestamp: lastMessage.deltaTimestamp,
@@ -139,38 +148,60 @@ class MailProcessor {
   }
   async #storeAttachments(mailbox, ...messages) {
     await Promise.all(
-      messages.filter((message) => (message.attachments ?? []).length !== 0).map(async (message) => {
+      messages.filter((message) => message.attachmentsCount > 0).map(async (message) => {
         const attachments = await this.#mailClient.getAttachments(
           mailbox,
-          message.messageId
+          message.id
         );
         if (attachments.length === 0) {
+          this.#logger.info(
+            `Somehow found ${attachments.length} of ${message.attachmentsCount} expected attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id}`
+          );
           return;
         }
         this.#logger.verbose(
-          `Found ${attachments.length} attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId}`
+          `Found ${attachments.length} attachments for mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id}`
         );
-        await Promise.all(
-          attachments.map(async (attachment) => {
-            if (!attachment.contentBytes) {
-              return;
+        const storedAttachments = await Promise.all(
+          attachments.map(
+            async (attachment) => {
+              if (!attachment.contentBytes) {
+                return;
+              }
+              const file = new import_file_system_connector.GenericActiveFileActiveFileHandler(
+                attachment.contentBytes
+              );
+              this.#logger.verbose(
+                `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} attachment "${attachment.id}--${attachment.filename}" using ${typeof this.#fileHandler}...`
+              );
+              await this.#fileHandler.writeFile(
+                file,
+                `${mailbox}/${message.id}`,
+                `${attachment.id}--${attachment.filename}`
+              ).catch((err) => {
+                this.#logger.error(
+                  `Failed to store attachment to ${mailbox}/${message.id}/${attachment.id}--${attachment.filename} due to: ${err.message}`,
+                  err
+                );
+              });
+              this.#logger.debug(
+                `Stored mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} attachment "${attachment.id}--${attachment.filename}"`
+              );
+              return {
+                id: attachment.id,
+                dsn: this.#fileHandler.pathAsDsn(
+                  `${mailbox}/${message.id}/${attachment.id}--${attachment.filename}`
+                ),
+                filename: attachment.filename,
+                contentType: attachment.contentType
+              };
             }
-            const file = new import_file_system_connector.GenericActiveFileActiveFileHandler(
-              attachment.contentBytes
-            );
-            this.#logger.verbose(
-              `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId} attachment "${attachment.id}--${attachment.filename}" using ${typeof this.#fileHandler}...`
-            );
-            await this.#fileHandler.writeFile(
-              file,
-              `${mailbox}/${message.messageId}`,
-              `${attachment.id}--${attachment.filename}`
-            );
-            this.#logger.debug(
-              `Stored mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.messageId} attachment "${attachment.id}--${attachment.filename}"`
-            );
-          })
+          )
         );
+        message.storedAttachments = [
+          ...message.storedAttachments ?? [],
+          ...storedAttachments
+        ];
       })
     );
   }
@@ -179,3 +210,4 @@ class MailProcessor {
 0 && (module.exports = {
   MailProcessor
 });
+//# sourceMappingURL=mail-processor.js.map

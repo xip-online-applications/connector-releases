@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/trigger-types.interface.ts"],
+  "sourcesContent": ["export enum TriggerType {\n  DASHBOARD_VISUALIZATION = 'dashboard_visualization',\n  FORM = 'form',\n  SEMANTIC_TRIGGER = 'semantic_trigger',\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,cAAL,kBAAKA,iBAAL;AACL,EAAAA,aAAA,6BAA0B;AAC1B,EAAAA,aAAA,UAAO;AACP,EAAAA,aAAA,sBAAmB;AAHT,SAAAA;AAAA,GAAA;",
+  "names": ["TriggerType"]
+}

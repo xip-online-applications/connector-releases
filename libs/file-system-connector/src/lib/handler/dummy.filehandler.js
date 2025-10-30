@@ -67,6 +67,9 @@ class DummyFilehandler {
   async fileExists() {
     return true;
   }
+  pathAsDsn(filepath) {
+    return `dummy:${filepath}`;
+  }
   async init() {
   }
 }
@@ -74,3 +77,4 @@ class DummyFilehandler {
 0 && (module.exports = {
   DummyFilehandler
 });
+//# sourceMappingURL=dummy.filehandler.js.map

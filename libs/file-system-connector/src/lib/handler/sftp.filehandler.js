@@ -112,8 +112,12 @@ class SftpFilehandler {
     const file = await this.sftpClient.exists(filepath);
     return file !== false;
   }
+  pathAsDsn(filepath) {
+    return `sftp://${encodeURIComponent(this.#config.host)}:${this.#config.port}/${filepath.replace(/^\//, "")}`;
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   SftpFilehandler
 });
+//# sourceMappingURL=sftp.filehandler.js.map

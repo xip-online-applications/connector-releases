@@ -98,8 +98,12 @@ class SftpReconnectFilehandler extends import_sftp.SftpFilehandler {
       await this.sftpClient.end();
     }
   }
+  pathAsDsn(filepath) {
+    return `sftp-reconnect:${encodeURIComponent(this.config.host)}:${this.config.port}/${filepath}`;
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   SftpReconnectFilehandler
 });
+//# sourceMappingURL=sftp-reconnect.filehandler.js.map

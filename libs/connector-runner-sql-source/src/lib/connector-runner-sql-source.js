@@ -64,3 +64,4 @@ class ConnectorRunnerSqlSource extends import_connector_runtime.ConnectorRuntime
 0 && (module.exports = {
   ConnectorRunnerSqlSource
 });
+//# sourceMappingURL=connector-runner-sql-source.js.map

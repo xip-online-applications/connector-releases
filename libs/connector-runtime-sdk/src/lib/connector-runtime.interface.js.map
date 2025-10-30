@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/connector-runtime-sdk/src/lib/connector-runtime.interface.ts"],
+  "sourcesContent": ["export interface ConnectorRuntimeInterface {\n  init(): Promise<void>;\n\n  start(): Promise<void>;\n\n  stop(): Promise<void>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

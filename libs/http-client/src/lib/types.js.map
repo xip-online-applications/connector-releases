@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/http-client/src/lib/types.ts"],
+  "sourcesContent": ["export interface HttpConfig {\n  host: string;\n  port?: number;\n  contentType?: string;\n  timeout?: number;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

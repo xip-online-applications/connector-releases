@@ -27,3 +27,4 @@ function isSambaConfig(obj) {
 0 && (module.exports = {
   isSambaConfig
 });
+//# sourceMappingURL=types.js.map

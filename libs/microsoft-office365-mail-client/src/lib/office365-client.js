@@ -32,7 +32,6 @@ __export(office365_client_exports, {
 module.exports = __toCommonJS(office365_client_exports);
 var import_node_https = __toESM(require("node:https"));
 var querystring = __toESM(require("node:querystring"));
-var import_pdf2md = __toESM(require("@opendocsg/pdf2md"));
 var import_mailparser = require("mailparser");
 var import_office365_types = require("./office365-types");
 class Office365Client {
@@ -46,8 +45,6 @@ class Office365Client {
   #token;
   #folderCache = {};
   #mailCache = {};
-  #fullMailCache = {};
-  #attachmentsCache = {};
   constructor(userPrincipalName, emlTestMode = false) {
     this.#base = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
       userPrincipalName
@@ -57,7 +54,6 @@ class Office365Client {
   async init(tenantId, clientId, clientSecret) {
     this.#folderCache = {};
     this.#mailCache = {};
-    this.#attachmentsCache = {};
     this.#token = await this.#getAccessToken(tenantId, clientId, clientSecret);
   }
   async getFolder(displayName, topMailboxes = 100) {
@@ -122,9 +118,7 @@ class Office365Client {
     if (!mimeBuf) {
       mimeBuf = await this.#downloadMessageMime(folder.id, mail.id);
     }
-    const parsed = await (0, import_mailparser.simpleParser)(mimeBuf);
-    parsed.attachments = await this.#addPdfJsonAttachments(parsed);
-    return parsed;
+    return (0, import_mailparser.simpleParser)(mimeBuf);
   }
   async getMailCategories(mail) {
     return this.#graphRequest(
@@ -313,45 +307,9 @@ class Office365Client {
     }
     return null;
   }
-  async #addPdfJsonAttachments(parsed) {
-    if (!Array.isArray(parsed.attachments) || parsed.attachments.length === 0) {
-      return [];
-    }
-    const jsonAtts = await Promise.all(
-      parsed.attachments.map(async (attachment) => {
-        const isPdf = attachment.contentType?.toLowerCase().includes("application/pdf") || attachment.filename?.toLowerCase().endsWith(".pdf");
-        if (!isPdf) {
-          return null;
-        }
-        const buf = await this.#streamToBuffer(attachment.content);
-        const pdfParsed = await (0, import_pdf2md.default)(buf);
-        const filename = `${attachment.filename?.replace(/\.pdf$/i, "") || "attachment"}.json`;
-        return {
-          ...attachment,
-          filename,
-          contentType: "application/json",
-          content: Buffer.from(pdfParsed)
-        };
-      })
-    );
-    return jsonAtts.filter((attachment) => !!attachment);
-  }
-  async #streamToBuffer(stream) {
-    if (Buffer.isBuffer(stream)) {
-      return stream;
-    }
-    return new Promise((resolve, reject) => {
-      const chunks = [];
-      stream.on("data", (c) => chunks.push(c));
-      stream.once(
-        "end",
-        () => resolve(Buffer.concat(chunks))
-      );
-      stream.once("error", reject);
-    });
-  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Office365Client
 });
+//# sourceMappingURL=office365-client.js.map
