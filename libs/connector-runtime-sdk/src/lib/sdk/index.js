@@ -31,4 +31,3 @@ __reExport(sdk_exports, require("./templating.sdk.interface"), module.exports);
   ...require("./sender.sdk.interface"),
   ...require("./templating.sdk.interface")
 });
-//# sourceMappingURL=index.js.map

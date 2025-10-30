@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/connector-runner-sql-sink"), module.expor
 0 && (module.exports = {
   ...require("./lib/connector-runner-sql-sink")
 });
-//# sourceMappingURL=index.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/connector-runner-samba-sink/src/index.ts"],
-  "sourcesContent": ["export * from './lib/connector-runner-samba-sink';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,8CAAd;",
-  "names": []
-}

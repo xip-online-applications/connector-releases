@@ -196,4 +196,3 @@ class SambaClient {
 0 && (module.exports = {
   SambaClient
 });
-//# sourceMappingURL=samba-client.js.map

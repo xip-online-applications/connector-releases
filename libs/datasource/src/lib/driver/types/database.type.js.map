@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/types/database.type.ts"],
-  "sourcesContent": ["export type DatabaseType = 'mysql' | 'postgres' | 'mariadb' | 'mssql';\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

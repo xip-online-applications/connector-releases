@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/postgres/postgres-connection.options.ts"],
-  "sourcesContent": ["import { BaseDatasourceOptions } from '../../base-datasource.options';\nimport { PostgresConnectionCredentialsOptions } from './postgres-connection-credentials.options';\n\nexport interface PostgresConnectionOptions\n  extends BaseDatasourceOptions,\n    PostgresConnectionCredentialsOptions {\n  readonly type: 'postgres';\n\n  /**\n   * sets the application_name var to help db administrators identify\n   * the service using this connection. Defaults to 'undefined'\n   */\n  readonly applicationName?: string;\n\n  readonly connectTimeoutMS?: number;\n\n  /**\n   * Include notification messages from Postgres server in client logs\n   */\n  readonly logNotifications?: boolean;\n\n  readonly disableParsing?: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

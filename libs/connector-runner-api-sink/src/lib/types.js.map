@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-api-sink/src/lib/types.ts"],
-  "sourcesContent": ["import { HttpConfig } from '@xip-online-data/http-client';\n\nexport interface ApiSinkConfig {\n  http: HttpConfig;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

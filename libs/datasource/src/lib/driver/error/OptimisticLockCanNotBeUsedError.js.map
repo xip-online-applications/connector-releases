@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/OptimisticLockCanNotBeUsedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when an optimistic lock cannot be used in query builder.\n */\nexport class OptimisticLockCanNotBeUsedError extends TypeORMError {\n  constructor() {\n    super(`The optimistic lock can be used only with getOne() method.`);\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,wCAAwC,iCAAa;AAAA,EAChE,cAAc;AACZ,UAAM,4DAA4D;AAAA,EACpE;AACF;",
-  "names": []
-}

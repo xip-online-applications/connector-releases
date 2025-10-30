@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-file-source/src/lib/types.ts"],
-  "sourcesContent": ["import {\n  BaseConnectorConfig,\n  FileActionType,\n  FileRegex,\n  isBaseConnectorConfigType,\n} from '@xip-online-data/types';\nimport { SftpConfig } from '@xip-online-data/sftp-client';\n\nexport interface FileSourceConfig {\n  directory: string;\n  recursive?: boolean;\n  fileSelector?: FileRegex;\n  action: FileActionType;\n  ftpIdentifier: string;\n  interval: number;\n  optionalHeaders?: Array<string>;\n  optionalSettings?: {\n    [key: string]: unknown;\n  };\n  indexes?: Array<string>;\n  delimiter?: string;\n  processedDirectory?: string;\n  type?: 'metric' | 'document';\n  root: string;\n}\n\nexport interface FileSourceProcessConfig {\n  sftpConfig: SftpConfig;\n  directories: Array<FileSourceConfig>;\n  forceReconnect?: boolean;\n}\n\nexport function isYamlConfigType(\n  obj: FileSourceProcessConfig,\n): obj is FileSourceProcessConfig {\n  return obj !== undefined && obj !== null;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAgCO,SAAS,iBACd,KACgC;AAChC,SAAO,QAAQ,UAAa,QAAQ;AACtC;",
-  "names": []
-}

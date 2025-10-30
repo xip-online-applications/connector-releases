@@ -66,4 +66,3 @@ const DimensionSchema = import_zod.z.object({
 0 && (module.exports = {
   DimensionSchema
 });
-//# sourceMappingURL=dimension.interface.js.map

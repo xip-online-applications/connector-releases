@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/file-system-connector/src/lib/file-handler.interface.ts"],
-  "sourcesContent": ["import { FileInfo } from './types';\n\nexport interface FileHandlerConfig {\n  type: 'samba' | 'dummy' | 'sftp' | 'sftp-reconnect' | string;\n  remoteDirectory?: string;\n  processedAction: 'move' | 'delete';\n  processedDirectory?: string;\n  processedPrefix?: string;\n}\n\nexport interface ActiveFileHandlerInterface {\n  get(): Buffer;\n  close(): boolean;\n}\n\nexport interface FileHandlerInterface {\n  init(): Promise<void>;\n  list(dir: string): Promise<Array<FileInfo>>;\n  readFile(filepath: string): Promise<ActiveFileHandlerInterface>;\n  writeFile(\n    data: ActiveFileHandlerInterface,\n    remotePath: string,\n    filename: string,\n  ): Promise<boolean>;\n  deleteFile(filepath: string): Promise<boolean>;\n  fileExists(location: string): Promise<boolean>;\n  pathAsDsn(filepath: string): string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

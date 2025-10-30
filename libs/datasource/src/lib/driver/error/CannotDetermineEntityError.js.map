@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CannotDetermineEntityError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when user tries to save/remove/etc. constructor-less object (object literal) instead of entity.\n */\nexport class CannotDetermineEntityError extends TypeORMError {\n  constructor(operation: string) {\n    super(\n      `Cannot ${operation}, given value must be instance of entity class, ` +\n        `instead object literal is given. Or you must specify an entity target to method call.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,mCAAmC,iCAAa;AAAA,EAC3D,YAAY,WAAmB;AAC7B;AAAA,MACE,UAAU,SAAS;AAAA,IAErB;AAAA,EACF;AACF;",
-  "names": []
-}

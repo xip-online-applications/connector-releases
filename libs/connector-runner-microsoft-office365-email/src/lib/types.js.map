@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-microsoft-office365-email/src/lib/types.ts"],
-  "sourcesContent": ["// eslint-disable-next-line @nx/enforce-module-boundaries\nimport { MailConfig } from '@xip-online-data/microsoft-office365-mail-client';\nimport { BaseConnectorConfig } from '@xip-online-data/types';\n\nexport interface MailboxConfig {\n  mailboxIdentifier: string;\n  mailbox: string;\n  offsetFilePrefix?: string;\n  type?: 'metric' | 'document';\n  interval?: number;\n  limit?: number;\n  attachmentDestination?: string;\n}\n\nexport interface ConnectorConfig extends BaseConnectorConfig {\n  mailboxes: Array<MailboxConfig>;\n  mailConfig: MailConfig;\n  attachmentDestination?: string;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

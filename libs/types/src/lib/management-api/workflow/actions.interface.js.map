@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/workflow/actions.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { ActionInterface, ActionSchema } from './action.interface';\n\nexport const ActionsSchema = z.record(ActionSchema.or(z.boolean()));\n\nexport interface ActionsInterface {\n  [key: string]: ActionInterface | boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,oBAA8C;AAEvC,MAAM,gBAAgB,aAAE,OAAO,2BAAa,GAAG,aAAE,QAAQ,CAAC,CAAC;",
-  "names": []
-}

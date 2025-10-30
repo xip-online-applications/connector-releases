@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/CannotGetEntityManagerNotConnectedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when consumer tries to access entity manager before connection is established.\n */\nexport class CannotGetEntityManagerNotConnectedError extends TypeORMError {\n  constructor(connectionName: string) {\n    super(\n      `Cannot get entity manager for \"${connectionName}\" connection because connection is not yet established.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,gDAAgD,iCAAa;AAAA,EACxE,YAAY,gBAAwB;AAClC;AAAA,MACE,kCAAkC,cAAc;AAAA,IAClD;AAAA,EACF;AACF;",
-  "names": []
-}

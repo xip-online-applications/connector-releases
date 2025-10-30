@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/index.ts"],
-  "sourcesContent": ["export * from './sdk.interface';\nexport * from './logger.sdk.interface';\nexport * from './offset-store.sdk.interface';\nexport * from './processing.sdk.interface';\nexport * from './receiver.sdk.interface';\nexport * from './sender.sdk.interface';\nexport * from './templating.sdk.interface';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,4BAAd;AACA,wBAAc,mCADd;AAEA,wBAAc,yCAFd;AAGA,wBAAc,uCAHd;AAIA,wBAAc,qCAJd;AAKA,wBAAc,mCALd;AAMA,wBAAc,uCANd;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/datasource/src/lib/driver/error/TransactionAlreadyStartedError.ts"],
-  "sourcesContent": ["import { TypeORMError } from './TypeORMError';\n\n/**\n * Thrown when transaction is already started and user tries to run it again.\n */\nexport class TransactionAlreadyStartedError extends TypeORMError {\n  constructor() {\n    super(\n      `Transaction already started for the given connection, commit current transaction before starting a new one.`,\n    );\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAA6B;AAKtB,MAAM,uCAAuC,iCAAa;AAAA,EAC/D,cAAc;AACZ;AAAA,MACE;AAAA,IACF;AAAA,EACF;AACF;",
-  "names": []
-}

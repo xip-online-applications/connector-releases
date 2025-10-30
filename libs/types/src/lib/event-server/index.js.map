@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/types/src/lib/event-server/index.ts"],
-  "sourcesContent": ["export * from './create-event.interface';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,iCAAc,qCAAd;",
-  "names": []
-}

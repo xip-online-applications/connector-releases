@@ -13,4 +13,3 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var database_type_exports = {};
 module.exports = __toCommonJS(database_type_exports);
-//# sourceMappingURL=database.type.js.map

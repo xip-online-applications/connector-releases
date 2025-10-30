@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/datasource/src/lib/base-datasource.options.ts"],
-  "sourcesContent": ["import { DatabaseType } from './driver/types/database.type';\n\nexport interface BaseDatasourceOptions {\n  readonly type: DatabaseType;\n  readonly name?: string;\n\n  /**\n   * Maximum number of clients the pool should contain.\n   */\n  readonly poolSize?: number;\n\n  readonly maxQueryExecutionTime?: number;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

@@ -128,4 +128,3 @@ class DiskFileHandler {
 0 && (module.exports = {
   DiskFileHandler
 });
-//# sourceMappingURL=disk.filehandler.js.map

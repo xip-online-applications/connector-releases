@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-cube-query/src/lib/types.ts"],
-  "sourcesContent": ["import { BaseConnectorConfig, CubeConfig } from '@xip-online-data/types';\n\nexport interface CubeQueryRunnerConfig extends BaseConnectorConfig {\n  cubeConfig: CubeConfig;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

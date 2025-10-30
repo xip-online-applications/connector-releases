@@ -165,11 +165,11 @@ class MailProcessor {
         const storedAttachments = await Promise.all(
           attachments.map(
             async (attachment) => {
-              if (!attachment.contentBytes) {
+              if (!attachment.contentBytes && !attachment.content) {
                 return;
               }
               const file = new import_file_system_connector.GenericActiveFileActiveFileHandler(
-                attachment.contentBytes
+                attachment.contentBytes ?? Buffer.from(attachment.content)
               );
               this.#logger.verbose(
                 `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} attachment "${attachment.id}--${attachment.filename}" using ${typeof this.#fileHandler}...`
@@ -210,4 +210,3 @@ class MailProcessor {
 0 && (module.exports = {
   MailProcessor
 });
-//# sourceMappingURL=mail-processor.js.map

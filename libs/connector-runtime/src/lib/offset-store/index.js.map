@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime/src/lib/offset-store/index.ts"],
-  "sourcesContent": ["export * from './persistent-offset-store.interface';\nexport * from './cloud-offset-store.service';\nexport * from './offset-store.service';\nexport * from './types';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,iCAAc,gDAAd;AACA,iCAAc,yCADd;AAEA,iCAAc,mCAFd;AAGA,iCAAc,oBAHd;",
-  "names": []
-}

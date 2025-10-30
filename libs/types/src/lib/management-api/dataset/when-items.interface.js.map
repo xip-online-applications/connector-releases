@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/when-items.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { WhenItemInterface, WhenItemSchema } from './when-item.interface';\n\nexport const WhenItemsSchema = z.record(\n  z.union([WhenItemSchema, z.literal(false)]),\n);\n\nexport interface WhenItemsInterface {\n  [key: string]: false | WhenItemInterface;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,uBAAkD;AAE3C,MAAM,kBAAkB,aAAE;AAAA,EAC/B,aAAE,MAAM,CAAC,iCAAgB,aAAE,QAAQ,KAAK,CAAC,CAAC;AAC5C;",
-  "names": []
-}

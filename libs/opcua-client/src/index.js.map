@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/opcua-client/src/index.ts"],
-  "sourcesContent": ["export * from './lib/opcua-client.interface';\nexport * from './lib/opcua-client';\nexport * from './lib/types';\n"],
-  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;AAAA,wBAAc,yCAAd;AACA,wBAAc,+BADd;AAEA,wBAAc,wBAFd;",
-  "names": []
-}

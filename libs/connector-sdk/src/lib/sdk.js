@@ -120,4 +120,3 @@ class TransAIConnectorSDK {
 0 && (module.exports = {
   TransAIConnectorSDK
 });
-//# sourceMappingURL=sdk.js.map

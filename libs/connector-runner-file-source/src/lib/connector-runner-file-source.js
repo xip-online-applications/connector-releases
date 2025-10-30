@@ -59,4 +59,3 @@ class ConnectorRunnerFileSource extends import_connector_runtime.ConnectorRuntim
 0 && (module.exports = {
   ConnectorRunnerFileSource
 });
-//# sourceMappingURL=connector-runner-file-source.js.map

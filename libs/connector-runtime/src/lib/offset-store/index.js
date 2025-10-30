@@ -25,4 +25,3 @@ __reExport(offset_store_exports, require("./types"), module.exports);
   ...require("./offset-store.service"),
   ...require("./types")
 });
-//# sourceMappingURL=index.js.map

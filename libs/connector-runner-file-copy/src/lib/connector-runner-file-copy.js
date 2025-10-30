@@ -224,4 +224,3 @@ class ConnectorRunnerFileCopy extends import_connector_runtime.ConnectorRuntime 
 0 && (module.exports = {
   ConnectorRunnerFileCopy
 });
-//# sourceMappingURL=connector-runner-file-copy.js.map

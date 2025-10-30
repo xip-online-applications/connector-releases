@@ -39,4 +39,3 @@ const fileHandlerFactory = (config) => {
 0 && (module.exports = {
   fileHandlerFactory
 });
-//# sourceMappingURL=file-handler.factory.js.map

@@ -19,4 +19,3 @@ __reExport(src_exports, require("./lib/sdk"), module.exports);
 0 && (module.exports = {
   ...require("./lib/sdk")
 });
-//# sourceMappingURL=index.js.map

@@ -36,4 +36,3 @@ const TemplateSchema = import_zod.z.object({
 0 && (module.exports = {
   TemplateSchema
 });
-//# sourceMappingURL=template.interface.js.map

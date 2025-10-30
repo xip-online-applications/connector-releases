@@ -27,4 +27,3 @@ function nameToId(name) {
 0 && (module.exports = {
   nameToId
 });
-//# sourceMappingURL=helper-functions.js.map

@@ -23,4 +23,3 @@ __reExport(src_exports, require("./lib/sdk"), module.exports);
   ...require("./lib/connector-runtime.interface"),
   ...require("./lib/sdk")
 });
-//# sourceMappingURL=index.js.map

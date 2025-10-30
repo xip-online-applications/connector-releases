@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-ai-agent/src/lib/types.ts"],
-  "sourcesContent": ["import { BaseConnectorConfig } from '@xip-online-data/types';\n\nexport interface AiAgentConfig extends BaseConnectorConfig {\n  openai: {\n    apiKey: string;\n    model:\n      | 'gpt-3.5-turbo'\n      | 'gpt-4'\n      | 'gpt-4-turbo'\n      | 'gpt-4o'\n      | 'gpt-4o-mini'\n      | 'o1-preview'\n      | 'o1-mini';\n    temperature?: number;\n    timeout?: number;\n  };\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

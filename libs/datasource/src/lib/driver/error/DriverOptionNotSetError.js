@@ -32,4 +32,3 @@ class DriverOptionNotSetError extends import_TypeORMError.TypeORMError {
 0 && (module.exports = {
   DriverOptionNotSetError
 });
-//# sourceMappingURL=DriverOptionNotSetError.js.map

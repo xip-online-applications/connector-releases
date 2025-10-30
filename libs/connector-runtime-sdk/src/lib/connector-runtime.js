@@ -101,4 +101,3 @@ class ConnectorRuntimeSDK {
 0 && (module.exports = {
   ConnectorRuntimeSDK
 });
-//# sourceMappingURL=connector-runtime.js.map

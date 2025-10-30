@@ -110,4 +110,3 @@ class MySqlConnectionDriver {
 0 && (module.exports = {
   MySqlConnectionDriver
 });
-//# sourceMappingURL=my-sql-connection.driver.js.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-samba-source/src/lib/helper.functions.ts"],
-  "sourcesContent": ["import { SambaSourceConfig } from \"./types\";\nimport { BaseConnectorConfig } from '@xip-online-data/types';\n\n\nexport function generateCollectionName(connectorConfig: BaseConnectorConfig, sourceConfig: SambaSourceConfig): string {\n  return `${connectorConfig.datasourceIdentifier}_${sourceConfig.sambaIdentifier}`;\n}\n\nexport function generateKafkaTopic(connectorConfig: BaseConnectorConfig, sourceConfig: SambaSourceConfig): string {\n  return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}_${sourceConfig.sambaIdentifier}`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAIO,SAAS,uBAAuB,iBAAsC,cAAyC;AACpH,SAAO,GAAG,gBAAgB,oBAAoB,IAAI,aAAa,eAAe;AAChF;AAEO,SAAS,mBAAmB,iBAAsC,cAAyC;AAChH,SAAO,GAAG,gBAAgB,gBAAgB,WAAW,gBAAgB,oBAAoB,IAAI,aAAa,eAAe;AAC3H;",
-  "names": []
-}

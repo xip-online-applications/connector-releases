@@ -23,4 +23,3 @@ __reExport(src_exports, require("./lib/driver/query-result"), module.exports);
   ...require("./lib/datasource.options"),
   ...require("./lib/driver/query-result")
 });
-//# sourceMappingURL=index.js.map

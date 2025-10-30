@@ -27,4 +27,3 @@ __reExport(semantic_trigger_exports, require("./semantic-triggers.interface"), m
   ...require("./semantic-trigger.interface"),
   ...require("./semantic-triggers.interface")
 });
-//# sourceMappingURL=index.js.map

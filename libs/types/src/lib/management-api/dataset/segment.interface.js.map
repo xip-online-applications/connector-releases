@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../libs/types/src/lib/management-api/dataset/segment.interface.ts"],
-  "sourcesContent": ["import { z } from 'zod';\nimport { FilterInterface, FilterSchema } from './filter.interface';\n\nexport const SegmentSchema = z.intersection(\n  FilterSchema,\n  z.object({\n    name: z.string().min(1).optional(),\n    description: z.string().min(1).optional(),\n    public: z.boolean().optional(),\n  }),\n);\n\nexport interface SegmentInterface extends FilterInterface {\n  name?: string;\n  description?: string;\n  public?: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,oBAA8C;AAEvC,MAAM,gBAAgB,aAAE;AAAA,EAC7B;AAAA,EACA,aAAE,OAAO;AAAA,IACP,MAAM,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,IACjC,aAAa,aAAE,OAAO,EAAE,IAAI,CAAC,EAAE,SAAS;AAAA,IACxC,QAAQ,aAAE,QAAQ,EAAE,SAAS;AAAA,EAC/B,CAAC;AACH;",
-  "names": []
-}

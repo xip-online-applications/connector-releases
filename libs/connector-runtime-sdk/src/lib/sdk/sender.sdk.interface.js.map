@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../libs/connector-runtime-sdk/src/lib/sdk/sender.sdk.interface.ts"],
-  "sourcesContent": ["export interface Metric {\n  key: string;\n  value: number;\n}\n\nexport type Metadata = { [key: string]: string };\n\nexport interface Context {\n  timestamp?: Date;\n  ttl?: number;\n  extraPayload?: { [key: string]: string };\n}\n\nexport type Result = boolean | { [index: number]: boolean };\n\nexport interface SenderSDKInterface {\n  metrics(\n    metrics: Array<Metric>,\n    metadata?: Metadata,\n    context?: Context,\n  ): Promise<Result>;\n\n  metricsLegacy(\n    metrics: Array<never>,\n    metadata?: Metadata,\n    context?: Context,\n  ): Promise<Result>;\n\n  documents(\n    metrics: Array<object>,\n    metadata?: Metadata,\n    context?: Context,\n  ): Promise<Result>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

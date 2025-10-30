@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/sftp-client/src/lib/sftp-interface.ts"],
-  "sourcesContent": ["import { FileInfo } from 'ssh2-sftp-client';\n\nexport interface SftpInterface {\n  init(): Promise<void>;\n\n  writeFile(destination: string, content: string): Promise<string>;\n\n  readFile(destination: string): Promise<Buffer>;\n\n  moveFile(path: string, file: FileInfo, destination: string): Promise<void>;\n\n  deleteFile(path: string): Promise<void>;\n\n  list(destination: string): Promise<Array<FileInfo>>;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

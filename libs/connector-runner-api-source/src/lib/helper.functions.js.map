@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../libs/connector-runner-api-source/src/lib/helper.functions.ts"],
-  "sourcesContent": ["import {ApiConfig, ApiSourceConfig} from \"./types\";\n\nexport function generateCollectionName(connectorConfig: ApiSourceConfig, sinkConfig: ApiConfig): string {\n  return `${connectorConfig.datasourceIdentifier}_${sinkConfig.name}`;\n}\n\nexport function generateKafkaTopic(connectorConfig: ApiSourceConfig): string {\n  return `${connectorConfig.tenantIdentifier}_SOURCE_${connectorConfig.datasourceIdentifier}`;\n}\n\nexport function generateOffsetIdentifier(apiConfig: ApiConfig): string {\n  return `${apiConfig.offsetFilePrefix ?? 'offset'}_${apiConfig.name}`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,SAAS,uBAAuB,iBAAkC,YAA+B;AACtG,SAAO,GAAG,gBAAgB,oBAAoB,IAAI,WAAW,IAAI;AACnE;AAEO,SAAS,mBAAmB,iBAA0C;AAC3E,SAAO,GAAG,gBAAgB,gBAAgB,WAAW,gBAAgB,oBAAoB;AAC3F;AAEO,SAAS,yBAAyB,WAA8B;AACrE,SAAO,GAAG,UAAU,oBAAoB,QAAQ,IAAI,UAAU,IAAI;AACpE;",
-  "names": []
-}

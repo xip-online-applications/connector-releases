@@ -38,4 +38,3 @@ const TemplateImplementationCreateSchema = TemplateImplementationSchema.extend({
   TemplateImplementationCreateSchema,
   TemplateImplementationSchema
 });
-//# sourceMappingURL=template-implementation.interface.js.map
