@@ -25,16 +25,17 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var samba_filehandler_exports = {};
-__export(samba_filehandler_exports, {
+var samba_handler_exports = {};
+__export(samba_handler_exports, {
   SambaFile: () => SambaFile,
-  SambaFilehandler: () => SambaFilehandler
+  SambaFileHandler: () => SambaFileHandler
 });
-module.exports = __toCommonJS(samba_filehandler_exports);
+module.exports = __toCommonJS(samba_handler_exports);
 var fs = __toESM(require("node:fs"));
 var import_node_path = __toESM(require("node:path"));
 var import_samba_client = require("@xip-online-data/samba-client");
 var import_uuid = require("uuid");
+var import_active_file = require("../active-file.handle");
 var import_types = require("../types");
 const mapFileInfo = (fileInfo) => {
   return {
@@ -44,15 +45,11 @@ const mapFileInfo = (fileInfo) => {
     type: fileInfo.type === "D" ? import_types.FileInfoEnum.DIRECTORY : import_types.FileInfoEnum.FILE
   };
 };
-class SambaFile {
-  #file;
+class SambaFile extends import_active_file.ActiveFileHandle {
   #tempFile;
   constructor(file, tempFile) {
-    this.#file = file;
+    super(file);
     this.#tempFile = tempFile;
-  }
-  get() {
-    return this.#file;
   }
   close() {
     let success = false;
@@ -62,7 +59,7 @@ class SambaFile {
     return success;
   }
 }
-class SambaFilehandler {
+class SambaFileHandler {
   static {
     this.DEFAULT_PORT = "445";
   }
@@ -85,25 +82,21 @@ class SambaFilehandler {
     const domain = pathnameWithoutPrefixSlash.split("/", 2)[0];
     const directory = pathnameWithoutPrefixSlash.substring(domain.length);
     const config = {
-      type: "samba",
-      processedAction: url.searchParams.get("processedAction") ?? "move",
       address: decodeURIComponent(url.hostname),
-      port: url.port === "" ? SambaFilehandler.DEFAULT_PORT : url.port,
-      directory: decodeURIComponent(directory),
+      port: url.port === "" ? SambaFileHandler.DEFAULT_PORT : url.port,
       username: decodeURIComponent(url.username),
       password: decodeURIComponent(url.password),
       domain: domain ? decodeURIComponent(domain) : void 0,
-      tmpDirectory: url.searchParams.get("tmpDirectory") ?? SambaFilehandler.DEFAULT_TMP_DIR,
+      directory: decodeURIComponent(directory),
+      tmpDirectory: url.searchParams.get("tmpDirectory") ?? SambaFileHandler.DEFAULT_TMP_DIR,
       timeout: url.searchParams.get("timeout") ?? void 0,
-      maskCmd: url.searchParams.get("maskCmd") !== null,
-      maxProtocol: url.searchParams.get("maxProtocol") ?? void 0
+      maskCmd: url.searchParams.get("mask") !== null,
+      maxProtocol: url.searchParams.get("protocol") ?? void 0
     };
-    return new SambaFilehandler(config);
+    return new SambaFileHandler(config);
   }
   get config() {
     return this.#sambaConfig;
-  }
-  async init() {
   }
   async list(dir) {
     const list = await this.#sambaClient.list(dir);
@@ -119,19 +112,17 @@ class SambaFilehandler {
     const buffer = fs.readFileSync(localFile);
     return new SambaFile(buffer, localFile);
   }
-  async writeFile(data, remotePath, filename) {
-    console.log(
-      `Writing file ${filename} to ${remotePath}, checking if directory exists`
-    );
+  async writeFile(remotePath, data) {
     let directoryExists = false;
     try {
-      const exist = await this.#sambaClient.fileExists(remotePath);
-      directoryExists = exist;
+      directoryExists = await this.#sambaClient.fileExists(
+        import_node_path.default.dirname(remotePath)
+      );
     } catch (e) {
       console.error(e);
     }
     if (!directoryExists) {
-      await this.#sambaClient.mkdir(remotePath);
+      await this.#sambaClient.mkdir(import_node_path.default.dirname(remotePath));
     }
     const buffer = data.get();
     const tempFilename = `${(0, import_uuid.v4)()}.tmp`;
@@ -139,8 +130,7 @@ class SambaFilehandler {
     fs.writeFileSync(localFile, new Uint8Array(buffer));
     let success = false;
     try {
-      const path2 = remotePath === "" ? filename : `${remotePath}/${filename}`;
-      await this.#sambaClient.sendFile(localFile, path2);
+      await this.#sambaClient.sendFile(localFile, remotePath);
       success = true;
     } catch (e) {
       console.error(e);
@@ -158,8 +148,8 @@ class SambaFilehandler {
     }
     return true;
   }
-  fileExists(location) {
-    return this.#sambaClient.fileExists(location);
+  fileExists(remoteFile) {
+    return this.#sambaClient.fileExists(remoteFile);
   }
   pathAsDsn(filepath) {
     const fullPath = import_node_path.default.join(
@@ -173,5 +163,5 @@ class SambaFilehandler {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   SambaFile,
-  SambaFilehandler
+  SambaFileHandler
 });

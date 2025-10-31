@@ -15,15 +15,15 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var dummy_filehandler_exports = {};
-__export(dummy_filehandler_exports, {
-  DummyFilehandler: () => DummyFilehandler
+var dummy_handler_exports = {};
+__export(dummy_handler_exports, {
+  DummyFileHandler: () => DummyFileHandler
 });
-module.exports = __toCommonJS(dummy_filehandler_exports);
+module.exports = __toCommonJS(dummy_handler_exports);
 var import_logger = require("@transai/logger");
-var import_generic_active_file = require("../generic-active-file.active-file-handler");
+var import_active_file = require("../active-file.handle");
 var import_types = require("../types");
-class DummyFilehandler {
+class DummyFileHandler {
   #dummyConfig;
   constructor(dummyConfig) {
     this.#dummyConfig = dummyConfig;
@@ -32,11 +32,9 @@ class DummyFilehandler {
     if (!dsn.startsWith("dummy:")) {
       return null;
     }
-    const dummyFiles = dsn.substring(0, dsn.indexOf("dummy:"));
-    return new DummyFilehandler({
-      type: "dummy",
-      dummyFiles: dummyFiles.split(","),
-      processedAction: "move"
+    const dummyFiles = dsn.substring(dsn.indexOf("dummy:") + 6);
+    return new DummyFileHandler({
+      dummyFiles: dummyFiles.split(",")
     });
   }
   async list() {
@@ -52,12 +50,10 @@ class DummyFilehandler {
   async readFile() {
     const randomData = Math.random().toString(36).substring(7);
     const buffer = Buffer.from(randomData);
-    return new import_generic_active_file.GenericActiveFileActiveFileHandler(buffer);
+    return new import_active_file.ActiveFileHandle(buffer);
   }
-  async writeFile(data, remotePath, filename) {
-    import_logger.Logger.getInstance().debug(
-      `Dummy write file to ${remotePath} / ${filename}`
-    );
+  async writeFile(filepath) {
+    import_logger.Logger.getInstance().debug(`Dummy write file to ${filepath}`);
     return true;
   }
   async deleteFile(filepath) {
@@ -70,10 +66,8 @@ class DummyFilehandler {
   pathAsDsn(filepath) {
     return `dummy:${filepath}`;
   }
-  async init() {
-  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  DummyFilehandler
+  DummyFileHandler
 });

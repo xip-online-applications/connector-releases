@@ -56,7 +56,7 @@ class Office365MailParser {
     return {
       deltaTimestamp: receivedFallback.getTime(),
       deltaId: mail.id,
-      id: mail.id,
+      id: parsed.messageId ?? mail.id,
       originalMessageId: mail.internetMessageId,
       attachmentsCount: (parsed.attachments ?? []).length,
       attachments: await this.#parseAttachments(parsed.attachments ?? []),

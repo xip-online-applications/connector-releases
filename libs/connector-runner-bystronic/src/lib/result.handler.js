@@ -110,16 +110,18 @@ class ResultHandler {
       incrementalField = this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION;
     }
     if (config.type === "metric") {
-      await this.#sdk.sender.metricsLegacy(
-        list,
-        config.metadata ?? {}
-      );
+      await this.#sdk.sender.metricsLegacy(list, {
+        ...config.metadata ?? {},
+        collection: this.#sdk.config.datasourceIdentifier,
+        keyField: config.keyField ?? "JobGuid",
+        incrementalField
+      });
     } else {
-      await this.#sdk.sender.documents(list, config.metadata, {
-        extraPayload: {
-          keyField: config.keyField ?? "",
-          incrementalField
-        }
+      await this.#sdk.sender.documents(list, {
+        ...config.metadata ?? {},
+        collection: this.#sdk.config.datasourceIdentifier,
+        keyField: config.keyField ?? "JobGuid",
+        incrementalField
       });
     }
     const item = list[list.length - 1];

@@ -84,6 +84,26 @@ class MailClient {
       throw new Error(message);
     }
   }
+  async getAttachments(messageId) {
+    const mail = await this.#office365Client.getMail(messageId);
+    if (!mail) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
+    const attachments = await this.#office365Client.listAttachments(mail);
+    return attachments.map((attachment) => ({
+      id: attachment.cid ?? attachment.id,
+      contentType: attachment.contentType,
+      filename: attachment.fileName,
+      content: attachment.contentBytes ? (
+        // @ts-expect-error contentBytes is base64-encoded string
+        Buffer.from(attachment.contentBytes, "base64").toString("utf-8")
+      ) : void 0,
+      contentBytes: attachment.contentBytes ? (
+        // @ts-expect-error contentBytes is base64-encoded string
+        Buffer.from(attachment.contentBytes, "base64")
+      ) : void 0
+    }));
+  }
   async reply(messageId, from, body, concept = true) {
     await this.#init();
     const originalMail = await this.#office365Client.getMail(messageId);
@@ -103,29 +123,6 @@ class MailClient {
       throw new Error("Folder not found: Drafts");
     }
     return this.#office365Client.moveMailToFolder(draftMail, draftsFolder);
-  }
-  async getAttachments(mailbox, messageId) {
-    const folder = await this.#office365Client.getFolder(mailbox);
-    if (!folder) {
-      throw new Error(`Mailbox folder not found: ${mailbox}`);
-    }
-    const attachments = await this.#office365Client.listAttachments(
-      folder.id,
-      messageId
-    );
-    return attachments.map((attachment) => ({
-      id: attachment.cid ?? attachment.id,
-      contentType: attachment.contentType,
-      filename: attachment.fileName,
-      content: attachment.contentBytes ? (
-        // @ts-expect-error contentBytes is base64-encoded string
-        Buffer.from(attachment.contentBytes, "base64").toString("utf-8")
-      ) : void 0,
-      contentBytes: attachment.contentBytes ? (
-        // @ts-expect-error contentBytes is base64-encoded string
-        Buffer.from(attachment.contentBytes, "base64")
-      ) : void 0
-    }));
   }
   async addCategory(messageId, ...category) {
     await this.#init();

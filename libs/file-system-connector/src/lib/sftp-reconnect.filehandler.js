@@ -34,72 +34,81 @@ class SftpReconnectFilehandler extends import_sftp.SftpFilehandler {
     this.#logger = import_logger.Logger.getInstance();
     this.#logger.info("SFTP Reconnect File handler setup!");
   }
-  static fromDsn(dsn) {
-    if (!dsn.startsWith("sftp-reconnect:")) {
-      return null;
-    }
-    const url = new URL(dsn);
-    const keepaliveInterval = url.searchParams.get("keepaliveInterval");
-    const config = {
-      type: "sftp-reconnect",
-      processedAction: url.searchParams.get("processedAction") ?? "move",
-      sftpIdentifier: decodeURIComponent(url.hostname),
-      host: decodeURIComponent(url.hostname),
-      port: url.port ? Number.parseInt(url.port, 10) : import_sftp.SftpFilehandler.DEFAULT_PORT,
-      username: decodeURIComponent(url.username),
-      password: decodeURIComponent(url.password),
-      protocol: url.searchParams.get("protocol") ?? void 0,
-      privateKey: url.searchParams.get("privateKey") ?? void 0,
-      keepaliveInterval: keepaliveInterval ? Number.parseInt(keepaliveInterval, 10) : void 0
-    };
-    return new SftpReconnectFilehandler(config);
-  }
   async init() {
     await super.init();
+    this.#logger.debug("SFTP Reconnect initialized! disconnecting client.");
     await this.sftpClient.end();
+    this.#logger.debug("SFTP Reconnect initialized! Client disconnected.");
   }
   async list(dir) {
+    this.#logger.debug(
+      `SFTP Reconnect listing directory: ${dir}. First connecting to SFTP server.`
+    );
     await this.sftpClient.connect(this.config);
+    this.#logger.debug("SFTP Reconnect connected to SFTP server.");
     try {
       return await super.list(dir);
     } finally {
+      this.#logger.debug("SFTP Reconnect disconnecting from SFTP server.");
       await this.sftpClient.end();
+      this.#logger.debug("SFTP Reconnect disconnected from SFTP server.");
     }
   }
   async readFile(filepath) {
+    this.#logger.debug(
+      `SFTP Reconnect reading file: ${filepath}. First connecting to SFTP server.`
+    );
     await this.sftpClient.connect(this.config);
+    this.#logger.debug("SFTP Reconnect connected to SFTP server.");
     try {
       return super.readFile(filepath);
     } finally {
+      this.#logger.debug("SFTP Reconnect disconnecting from SFTP server.");
       await this.sftpClient.end();
+      this.#logger.debug("SFTP Reconnect disconnected from SFTP server.");
     }
   }
   async writeFile(data, remotePath, filename) {
+    this.#logger.debug(
+      `SFTP Reconnect writing file: ${filename} to path: ${remotePath}. First connecting to SFTP server.`
+    );
     await this.sftpClient.connect(this.config);
+    this.#logger.debug("SFTP Reconnect connected to SFTP server.");
     try {
       return super.writeFile(data, remotePath, filename);
     } finally {
+      this.#logger.debug("SFTP Reconnect disconnecting from SFTP server.");
       await this.sftpClient.end();
+      this.#logger.debug("SFTP Reconnect disconnected from SFTP server.");
     }
   }
   async deleteFile(filepath) {
+    this.#logger.debug(
+      `SFTP Reconnect deleting file: ${filepath}. First connecting to SFTP server.`
+    );
     await this.sftpClient.connect(this.config);
+    this.#logger.debug("SFTP Reconnect connected to SFTP server.");
     try {
       return super.deleteFile(filepath);
     } finally {
+      this.#logger.debug("SFTP Reconnect disconnecting from SFTP server.");
       await this.sftpClient.end();
+      this.#logger.debug("SFTP Reconnect disconnected from SFTP server.");
     }
   }
   async fileExists(filepath) {
+    this.#logger.debug(
+      `SFTP Reconnect checking if file exists: ${filepath}. First connecting to SFTP server.`
+    );
     await this.sftpClient.connect(this.config);
+    this.#logger.debug("SFTP Reconnect connected to SFTP server.");
     try {
       return super.fileExists(filepath);
     } finally {
+      this.#logger.debug("SFTP Reconnect disconnecting from SFTP server.");
       await this.sftpClient.end();
+      this.#logger.debug("SFTP Reconnect disconnected from SFTP server.");
     }
-  }
-  pathAsDsn(filepath) {
-    return `sftp-reconnect:${encodeURIComponent(this.config.host)}:${this.config.port}/${filepath}`;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

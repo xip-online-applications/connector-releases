@@ -25,14 +25,14 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var disk_filehandler_exports = {};
-__export(disk_filehandler_exports, {
+var disk_handler_exports = {};
+__export(disk_handler_exports, {
   DiskFileHandler: () => DiskFileHandler
 });
-module.exports = __toCommonJS(disk_filehandler_exports);
+module.exports = __toCommonJS(disk_handler_exports);
 var fs = __toESM(require("node:fs"));
 var import_node_path = __toESM(require("node:path"));
-var import_generic_active_file = require("../generic-active-file.active-file-handler");
+var import_active_file = require("../active-file.handle");
 var import_types = require("../types");
 class DiskFileHandler {
   #config;
@@ -45,16 +45,14 @@ class DiskFileHandler {
     }
     const url = new URL(dsn);
     return new DiskFileHandler({
-      type: "disk",
-      path: url.pathname,
-      processedAction: url.searchParams.get("processedAction") ?? "move"
+      path: url.pathname
     });
   }
   get config() {
     return this.#config;
   }
   async list(dir) {
-    const fullPath = [this.#config.path, dir].filter(Boolean).join("/");
+    const fullPath = this.#getFullPath(dir);
     return new Promise((resolve, reject) => {
       fs.readdir(fullPath, (err, files) => {
         if (err) {
@@ -74,21 +72,21 @@ class DiskFileHandler {
     });
   }
   async readFile(filepath) {
-    const fullPath = [this.#config.path, filepath].filter(Boolean).join("/");
+    const fullPath = this.#getFullPath(filepath);
     return new Promise((resolve, reject) => {
       fs.readFile(fullPath, (err, files) => {
         if (err) {
           return reject(err);
         }
-        return resolve(new import_generic_active_file.GenericActiveFileActiveFileHandler(files));
+        return resolve(new import_active_file.ActiveFileHandle(files));
       });
     });
   }
-  async writeFile(data, remotePath, filename) {
-    const fullPath = [this.#config.path, remotePath, filename].filter(Boolean).join("/");
+  async writeFile(filepath, data) {
+    const fullPath = this.#getFullPath(filepath);
     return new Promise((resolve, reject) => {
       fs.mkdirSync(import_node_path.default.dirname(fullPath), { recursive: true });
-      fs.writeFile(fullPath, data.get(), "base64", (err) => {
+      fs.writeFile(fullPath, data.get(), (err) => {
         if (err) {
           return reject(err);
         }
@@ -97,7 +95,7 @@ class DiskFileHandler {
     });
   }
   async deleteFile(filepath) {
-    const fullPath = [this.#config.path, filepath].filter(Boolean).join("/");
+    const fullPath = this.#getFullPath(filepath);
     return new Promise((resolve, reject) => {
       fs.rm(fullPath, (err) => {
         if (err) {
@@ -108,7 +106,7 @@ class DiskFileHandler {
     });
   }
   async fileExists(location) {
-    const fullPath = [this.#config.path, location].filter(Boolean).join("/");
+    const fullPath = this.#getFullPath(location);
     return new Promise((resolve) => {
       fs.stat(fullPath, (err) => {
         if (err) {
@@ -119,9 +117,16 @@ class DiskFileHandler {
     });
   }
   pathAsDsn(filepath) {
-    return `file://${import_node_path.default.join(this.#config.path, filepath)}`;
+    return `file://${this.#getFullPath(filepath)}`;
   }
-  async init() {
+  #getFullPath(filepath) {
+    const fullPath = import_node_path.default.normalize(
+      import_node_path.default.join(this.#config.path ?? "", filepath)
+    );
+    if (fullPath.startsWith("/")) {
+      return fullPath;
+    }
+    return `/${fullPath}`;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

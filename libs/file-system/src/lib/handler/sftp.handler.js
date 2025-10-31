@@ -1,6 +1,8 @@
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -14,14 +16,23 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var sftp_filehandler_exports = {};
-__export(sftp_filehandler_exports, {
-  SftpFilehandler: () => SftpFilehandler
+var sftp_handler_exports = {};
+__export(sftp_handler_exports, {
+  SftpFileHandler: () => SftpFileHandler
 });
-module.exports = __toCommonJS(sftp_filehandler_exports);
+module.exports = __toCommonJS(sftp_handler_exports);
+var import_node_path = __toESM(require("node:path"));
 var import_logger = require("@transai/logger");
-var import_generic_active_file = require("../generic-active-file.active-file-handler");
+var import_active_file = require("../active-file.handle");
 var import_types = require("../types");
 const sftp = require("ssh2-sftp-client");
 const mapFileInfo = (fileInfo) => {
@@ -32,7 +43,7 @@ const mapFileInfo = (fileInfo) => {
     type: fileInfo.type === "-" ? import_types.FileInfoEnum.FILE : import_types.FileInfoEnum.DIRECTORY
   };
 };
-class SftpFilehandler {
+class SftpFileHandler {
   static {
     this.DEFAULT_PORT = 22;
   }
@@ -40,7 +51,7 @@ class SftpFilehandler {
   constructor(config) {
     this.#config = config;
     this.#config.privateKey = this.#config.privateKey?.replace(/\\n/g, "\n");
-    this.sftpClient = new sftp(this.#config.sftpIdentifier);
+    this.sftpClient = new sftp(this.#config.host);
   }
   static fromDsn(dsn) {
     if (!dsn.startsWith("sftp:")) {
@@ -49,18 +60,15 @@ class SftpFilehandler {
     const url = new URL(dsn);
     const keepaliveInterval = url.searchParams.get("keepaliveInterval");
     const config = {
-      type: "sftp",
-      processedAction: url.searchParams.get("processedAction") ?? "move",
-      sftpIdentifier: decodeURIComponent(url.hostname),
       host: decodeURIComponent(url.hostname),
-      port: url.port ? Number.parseInt(url.port, 10) : SftpFilehandler.DEFAULT_PORT,
+      port: url.port ? Number.parseInt(url.port, 10) : SftpFileHandler.DEFAULT_PORT,
       username: decodeURIComponent(url.username),
       password: decodeURIComponent(url.password),
-      protocol: url.searchParams.get("protocol") ?? void 0,
+      directory: url.pathname,
       privateKey: url.searchParams.get("privateKey") ?? void 0,
       keepaliveInterval: keepaliveInterval ? Number.parseInt(keepaliveInterval, 10) : void 0
     };
-    return new SftpFilehandler(config);
+    return new SftpFileHandler(config);
   }
   get config() {
     return this.#config;
@@ -69,25 +77,30 @@ class SftpFilehandler {
     await this.sftpClient.connect(this.#config);
   }
   async list(dir) {
-    const listings = await this.sftpClient.list(dir);
+    await this.init();
+    const listings = await this.sftpClient.list(this.#getFullPath(dir));
     return listings.filter((entity) => entity.type !== "l").map(mapFileInfo);
   }
   async readFile(filepath) {
-    const content = await this.sftpClient.get(filepath);
+    await this.init();
+    const content = await this.sftpClient.get(this.#getFullPath(filepath));
     if (typeof content === "string") {
-      return new import_generic_active_file.GenericActiveFileActiveFileHandler(
-        Buffer.from(content, "utf-8")
-      );
+      return new import_active_file.ActiveFileHandle(Buffer.from(content, "utf-8"));
     }
     if (Buffer.isBuffer(content)) {
-      return new import_generic_active_file.GenericActiveFileActiveFileHandler(content);
+      return new import_active_file.ActiveFileHandle(content);
     }
     throw new Error(
       `Unexpected content type received from SFTP: ${typeof content}`
     );
   }
-  async writeFile(data, remotePath, filename) {
-    await this.sftpClient.put(data.get(), `${remotePath}/${filename}`, {
+  async writeFile(filepath, data) {
+    await this.init();
+    const fullPath = this.#getFullPath(filepath);
+    if (!await this.sftpClient.exists(import_node_path.default.dirname(fullPath))) {
+      await this.sftpClient.mkdir(import_node_path.default.dirname(fullPath), true);
+    }
+    await this.sftpClient.put(data.get(), fullPath, {
       writeStreamOptions: {
         flags: "w",
         // w - write and a - append
@@ -98,8 +111,9 @@ class SftpFilehandler {
     return true;
   }
   async deleteFile(filepath) {
+    await this.init();
     try {
-      await this.sftpClient.delete(filepath);
+      await this.sftpClient.delete(this.#getFullPath(filepath));
       return true;
     } catch (error) {
       if (error instanceof Error) {
@@ -109,14 +123,24 @@ class SftpFilehandler {
     }
   }
   async fileExists(filepath) {
-    const file = await this.sftpClient.exists(filepath);
+    await this.init();
+    const file = await this.sftpClient.exists(this.#getFullPath(filepath));
     return file !== false;
   }
   pathAsDsn(filepath) {
-    return `sftp://${encodeURIComponent(this.#config.host)}:${this.#config.port}/${filepath.replace(/^\//, "")}`;
+    return `sftp://${encodeURIComponent(this.#config.host)}:${this.#config.port}${this.#getFullPath(filepath)}`;
+  }
+  #getFullPath(filepath) {
+    const fullPath = import_node_path.default.normalize(
+      import_node_path.default.join(this.#config.directory ?? "", filepath)
+    );
+    if (fullPath.startsWith("/")) {
+      return fullPath;
+    }
+    return `/${fullPath}`;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  SftpFilehandler
+  SftpFileHandler
 });
