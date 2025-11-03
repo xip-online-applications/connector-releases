@@ -109,18 +109,19 @@ class ResultHandler {
     if (!incrementalField || incrementalField.length === 0) {
       incrementalField = this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION;
     }
+    const collection = `${this.#sdk.config.datasourceIdentifier}_${config.name}`;
     if (config.type === "metric") {
       await this.#sdk.sender.metricsLegacy(list, {
         ...config.metadata ?? {},
-        collection: this.#sdk.config.datasourceIdentifier,
         keyField: config.keyField ?? "JobGuid",
+        collection,
         incrementalField
       });
     } else {
       await this.#sdk.sender.documents(list, {
         ...config.metadata ?? {},
-        collection: this.#sdk.config.datasourceIdentifier,
         keyField: config.keyField ?? "JobGuid",
+        collection,
         incrementalField
       });
     }

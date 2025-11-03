@@ -32,8 +32,14 @@ __export(workflow_parameter_parser_exports, {
 module.exports = __toCommonJS(workflow_parameter_parser_exports);
 var import_jsonata = __toESM(require("jsonata"));
 async function getValueFromMessage(message, selector) {
-  const expression = (0, import_jsonata.default)(selector);
-  return expression.evaluate(message);
+  try {
+    const expression = (0, import_jsonata.default)(selector);
+    return expression.evaluate(message);
+  } catch (error) {
+    throw new Error(
+      `Error evaluating JSONata expression "${selector}" on "${JSON.stringify(message)?.slice(0, 200)}, ${error?.message}`
+    );
+  }
 }
 async function parseMessageToInput(message, mapper) {
   const requiredInputs = Object.keys(mapper);
