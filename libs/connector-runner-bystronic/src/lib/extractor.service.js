@@ -52,7 +52,7 @@ class ExtractorService {
     } catch (error) {
       this.#sdk.logger.error(
         "Failed to retrieve and process data from OPC UA source service",
-        error
+        { error }
       );
     } finally {
       this.#sdk.logger.debug(
