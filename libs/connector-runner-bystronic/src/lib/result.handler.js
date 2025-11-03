@@ -43,7 +43,7 @@ class ResultHandler {
     this.#opcuaClient = opcuaClient;
   }
   async handleResult(result, opcUaCallConfig) {
-    this.#sdk.logger.debug(`Handling result for ${opcUaCallConfig.name}`);
+    this.#sdk.logger.verbose(`Handling result for ${opcUaCallConfig.name}`);
     const data = JSON.parse(
       result
     );
@@ -55,7 +55,7 @@ class ResultHandler {
     await this.#sendBatch(messages, opcUaCallConfig);
   }
   async #processResultItemsIntoMessages(data) {
-    this.#sdk.logger.debug(`Processing sub-queries for results`);
+    this.#sdk.logger.verbose(`Processing sub-queries for results`);
     return Promise.all(
       data.map(async (item) => {
         this.#sdk.logger.verbose("Processing item", item);
@@ -81,9 +81,7 @@ class ResultHandler {
             result[0]
           );
           const matchingPart = parsed.find((pi) => pi.PartId === item.PartId) ?? {};
-          const merged = { ...item, ...matchingPart };
-          this.#sdk.logger.debug({ merged }, "Data to send");
-          return merged;
+          return { ...item, ...matchingPart };
         } catch (e) {
           this.#sdk.logger.warn(
             "Invalid JSON in OPC UA response; returning original item",
@@ -109,31 +107,52 @@ class ResultHandler {
     this.#sdk.logger.debug(
       `Sending ${list.length} items, total size ${JSON.stringify(list).length}, to collection ${collection} with config ${JSON.stringify(config)}`
     );
-    let result;
-    if (config.type === "metric") {
-      result = await this.#sdk.sender.metricsLegacy(list, {
-        ...config.metadata ?? {},
+    this.#sdk.logger.verbose({
+      list: list[0],
+      keyField: config.keyField ?? "JobGuid",
+      collection,
+      incrementalField
+    });
+    try {
+      let result;
+      if (config.type === "metric") {
+        result = await this.#sdk.sender.metricsLegacy(list, {
+          ...config.metadata ?? {},
+          keyField: config.keyField ?? "JobGuid",
+          collection,
+          incrementalField
+        }).catch((err) => {
+          this.#sdk.logger.error("Error sending metrics", { err });
+          this.#sdk.logger.error(err);
+          throw err;
+        });
+      } else {
+        result = await this.#sdk.sender.documents(list, {
+          ...config.metadata ?? {},
+          keyField: config.keyField ?? "JobGuid",
+          collection,
+          incrementalField
+        }).catch((err) => {
+          this.#sdk.logger.error("Error sending documents", { err });
+          this.#sdk.logger.error(err);
+          throw err;
+        });
+      }
+      this.#sdk.logger.debug(
+        "Documents have been sent, updating offset",
+        result
+      );
+    } catch (error) {
+      this.#sdk.logger.error("Failed to send data batch", {
+        error,
+        list: list[0],
         keyField: config.keyField ?? "JobGuid",
         collection,
         incrementalField
-      }).catch((err) => {
-        this.#sdk.logger.error("Error sending metrics", { err });
-        this.#sdk.logger.error(err);
-        throw err;
       });
-    } else {
-      result = await this.#sdk.sender.documents(list, {
-        ...config.metadata ?? {},
-        keyField: config.keyField ?? "JobGuid",
-        collection,
-        incrementalField
-      }).catch((err) => {
-        this.#sdk.logger.error("Error sending documents", { err });
-        this.#sdk.logger.error(err);
-        throw err;
-      });
+      this.#sdk.logger.error(error);
+      throw error;
     }
-    this.#sdk.logger.debug("Documents have been sent, updating offset", result);
     const item = list[list.length - 1];
     const expression = (0, import_jsonata.default)(incrementalField);
     const value = await expression.evaluate(item);

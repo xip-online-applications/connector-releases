@@ -47,7 +47,7 @@ class ExtractorService {
         this.#sdk.logger.error("Failed to initialize OPC UA client", { err });
         throw err;
       });
-      this.#sdk.logger.debug(
+      this.#sdk.logger.verbose(
         `Executing query for: ${this.#opcUaCallConfig.name}`
       );
       await this.#performOpcUaCalls(latestOffset).catch((error) => {
@@ -61,9 +61,6 @@ class ExtractorService {
         { error }
       );
     } finally {
-      this.#sdk.logger.debug(
-        `Disconnecting from OPCUA for: ${this.#opcUaCallConfig.name}`
-      );
       await this.#opcUaClient.disconnect();
     }
   }
