@@ -51,7 +51,11 @@ class ResultHandler {
       await this.#sendBatch(data, opcUaCallConfig);
       return;
     }
-    const messages = await this.#processResultItemsIntoMessages(data);
+    const dataWithIds = data.map((item) => ({
+      ...item,
+      Id: `${item.JobGuid}_${item.PartId}_${item.PartNumber}`
+    }));
+    const messages = await this.#processResultItemsIntoMessages(dataWithIds);
     await this.#sendBatch(messages, opcUaCallConfig);
   }
   async #processResultItemsIntoMessages(data) {
@@ -85,7 +89,7 @@ class ResultHandler {
         } catch (e) {
           this.#sdk.logger.warn(
             "Invalid JSON in OPC UA response; returning original item",
-            { err: e, jsonPreview: result[0].slice(0, 200) }
+            { err: e, jsonPreview: result[0]?.slice(0, 200) }
           );
           return item;
         }
@@ -129,7 +133,7 @@ class ResultHandler {
       } else {
         result = await this.#sdk.sender.documents(list, {
           ...config.metadata ?? {},
-          keyField: config.keyField ?? "JobGuid",
+          keyField: config.keyField ?? "Id",
           collection,
           incrementalField
         }).catch((err) => {
@@ -146,7 +150,7 @@ class ResultHandler {
       this.#sdk.logger.error("Failed to send data batch", {
         error,
         list: list[0],
-        keyField: config.keyField ?? "JobGuid",
+        keyField: config.keyField ?? "Id",
         collection,
         incrementalField
       });
