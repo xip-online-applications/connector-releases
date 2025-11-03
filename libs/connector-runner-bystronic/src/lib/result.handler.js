@@ -109,15 +109,20 @@ class ResultHandler {
     this.#sdk.logger.debug(
       `Sending ${list.length} items, total size ${JSON.stringify(list).length}, to collection ${collection} with config ${JSON.stringify(config)}`
     );
+    let result;
     if (config.type === "metric") {
-      await this.#sdk.sender.metricsLegacy(list, {
+      result = await this.#sdk.sender.metricsLegacy(list, {
         ...config.metadata ?? {},
         keyField: config.keyField ?? "JobGuid",
         collection,
         incrementalField
+      }).catch((err) => {
+        this.#sdk.logger.error("Error sending metrics", { err });
+        this.#sdk.logger.error(err);
+        throw err;
       });
     } else {
-      await this.#sdk.sender.documents(list, {
+      result = await this.#sdk.sender.documents(list, {
         ...config.metadata ?? {},
         keyField: config.keyField ?? "JobGuid",
         collection,
@@ -128,6 +133,7 @@ class ResultHandler {
         throw err;
       });
     }
+    this.#sdk.logger.debug("Documents have been sent, updating offset", result);
     const item = list[list.length - 1];
     const expression = (0, import_jsonata.default)(incrementalField);
     const value = await expression.evaluate(item);
