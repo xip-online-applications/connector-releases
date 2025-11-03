@@ -150,7 +150,7 @@ class ClusterManager {
             "Error while getting last updated timestamp",
             error
           );
-          return this.#lastUpdatedTimestamp;
+          return (/* @__PURE__ */ new Date()).toISOString();
         });
         if (newLastUpdatedTimestamp === this.#lastUpdatedTimestamp) {
           this.#logger.debug(
