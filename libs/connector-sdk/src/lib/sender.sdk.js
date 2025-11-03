@@ -34,15 +34,15 @@ class SenderSDKService {
         type: "SOURCE",
         eventId: (0, import_uuid.v4)(),
         eventType: "event.metric",
-        created: context.timestamp?.getTime() ?? Date.now(),
-        ttl: context.ttl ?? -1,
+        created: context?.timestamp?.getTime() ?? Date.now(),
+        ttl: context?.ttl ?? -1,
         tenantIdentifier: this.#connectorConfig.tenantIdentifier,
         payload: {
-          ...context.extraPayload ?? {},
+          ...context?.extraPayload ?? {},
           body: {
             [body.key]: body.value
           },
-          metadata
+          ...metadata ? { metadata } : {}
         }
       })
     );
@@ -57,13 +57,13 @@ class SenderSDKService {
         type: "SOURCE",
         eventId: (0, import_uuid.v4)(),
         eventType: "event.metric",
-        created: context.timestamp?.getTime() ?? Date.now(),
-        ttl: context.ttl ?? -1,
+        created: context?.timestamp?.getTime() ?? Date.now(),
+        ttl: context?.ttl ?? -1,
         tenantIdentifier: this.#connectorConfig.tenantIdentifier,
         payload: {
-          ...context.extraPayload ?? {},
+          ...context?.extraPayload ?? {},
           body,
-          metadata
+          ...metadata ? { metadata } : {}
         }
       })
     );
@@ -78,14 +78,14 @@ class SenderSDKService {
         type: "SOURCE",
         eventId: (0, import_uuid.v4)(),
         eventType: "event.source-sink.kafka",
-        created: context.timestamp?.getTime() ?? Date.now(),
-        ttl: context.ttl ?? 36e5,
+        created: context?.timestamp?.getTime() ?? Date.now(),
+        ttl: context?.ttl ?? 36e5,
         // 1 month
         tenantIdentifier: this.#connectorConfig.tenantIdentifier,
         payload: {
-          ...context.extraPayload ?? {},
+          ...context?.extraPayload ?? {},
           body: record,
-          metadata
+          ...metadata ? { metadata } : {}
         }
       };
     });
