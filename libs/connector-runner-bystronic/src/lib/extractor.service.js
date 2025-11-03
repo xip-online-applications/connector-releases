@@ -43,11 +43,17 @@ class ExtractorService {
       const latestOffset = await this.#sdk.offsetStore.getOffset(
         `${this.#opcUaCallConfig.offsetFilePrefix ?? "offset"}_${this.#opcUaCallConfig.name}`
       );
-      await this.#opcUaClient.init();
+      await this.#opcUaClient.init().catch((err) => {
+        this.#sdk.logger.error("Failed to initialize OPC UA client", { err });
+        throw err;
+      });
       this.#sdk.logger.debug(
         `Executing query for: ${this.#opcUaCallConfig.name}`
       );
-      await this.#performOpcUaCalls(latestOffset);
+      await this.#performOpcUaCalls(latestOffset).catch((error) => {
+        this.#sdk.logger.error("Failed to perform OPC UA calls", { error });
+        throw error;
+      });
       this.#sdk.logger.debug(`Ran query for: ${this.#opcUaCallConfig.name}`);
     } catch (error) {
       this.#sdk.logger.error(
