@@ -58,9 +58,8 @@ class ResultHandler {
     this.#sdk.logger.debug(`Processing sub-queries for results`);
     return Promise.all(
       data.map(async (item) => {
-        this.#sdk.logger.debug("Processing item", item);
+        this.#sdk.logger.verbose("Processing item", item);
         const id = await this.#idExpression.evaluate(item);
-        this.#sdk.logger.debug({ id }, "Extracted id");
         const result = await this.#opcuaClient.callMethod(
           `History`,
           "GetPartInfos",
@@ -96,9 +95,6 @@ class ResultHandler {
     );
   }
   async #sendBatch(list, config) {
-    this.#sdk.logger.debug(
-      `Sending ${JSON.stringify(list)} with config ${JSON.stringify(config)}`
-    );
     if (!(list && Array.isArray(list))) {
       this.#sdk.logger.debug(
         `No records found, skipping. ${JSON.stringify(list)}`
@@ -110,6 +106,9 @@ class ResultHandler {
       incrementalField = this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION;
     }
     const collection = `${this.#sdk.config.datasourceIdentifier}_${config.name}`;
+    this.#sdk.logger.debug(
+      `Sending ${list.length} items, total size ${JSON.stringify(list).length}, to collection ${collection} with config ${JSON.stringify(config)}`
+    );
     if (config.type === "metric") {
       await this.#sdk.sender.metricsLegacy(list, {
         ...config.metadata ?? {},
@@ -123,6 +122,10 @@ class ResultHandler {
         keyField: config.keyField ?? "JobGuid",
         collection,
         incrementalField
+      }).catch((err) => {
+        this.#sdk.logger.error("Error sending documents", { err });
+        this.#sdk.logger.error(err);
+        throw err;
       });
     }
     const item = list[list.length - 1];
