@@ -32,6 +32,9 @@ class ConnectorApiClient extends import_management_api_client.AbstractManagement
       enabled: true
     });
   }
+  getConnector(identifier) {
+    return this.get(`/v1/connectors/${identifier}`);
+  }
   writeOffsets(connectorIdentifier, offsetIdentifier, offsetData) {
     return this.put(
       `/v1/connectors/${connectorIdentifier}/offsets/${offsetIdentifier}`,

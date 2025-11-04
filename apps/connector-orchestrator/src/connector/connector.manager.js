@@ -23,65 +23,108 @@ module.exports = __toCommonJS(connector_manager_exports);
 var import_connector_runtime_sdk = require("@transai/connector-runtime-sdk");
 var import_connector_sdk = require("@transai/connector-sdk");
 var import_logger = require("@transai/logger");
+var import_management_api_client = require("@transai/management-api-client");
 var import_connector_type = require("./connector-type");
 class ConnectorManager {
-  constructor(node, connectorData) {
+  constructor(node, tenantIdentifier, connectorIdentifier, orchestratorConfig) {
     this.start = async () => {
       this.#logger.info(
-        `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} started`
+        `Worker ${this.#connectorIdentifier} ${this.#node.process.pid} started`
       );
-      const connector = (0, import_connector_type.getConnectorType)(this.#connectorData, this.#connectorSDK);
+      this.#logger.debug(
+        `Worker ${this.#connectorIdentifier} get config from API`
+      );
+      const connectorConfig = await this.#connectorApiClient.getConnector(
+        this.#connectorIdentifier
+      );
+      const connectorData = this.#buildConnectorConfiguration(connectorConfig);
+      this.#logger.debug(
+        `Worker ${this.#connectorIdentifier} Received config from API`
+      );
+      const sdk = new import_connector_sdk.TransAIConnectorSDK(connectorData, this.#logger);
+      const connector = (0, import_connector_type.getConnectorType)(connectorData, sdk);
       this.#node.process.on("SIGINT", async () => {
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGINT signal. Start graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGINT signal. Start graceful shutdown`
         );
         await connector.stop();
-        await this.#connectorSDK.stop();
+        await sdk.stop();
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGINT signal and finished graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGINT signal and finished graceful shutdown`
         );
         this.#node.process.exit(0);
       });
       this.#node.process.on("SIGTERM", async () => {
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGTERM. Start graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGTERM. Start graceful shutdown`
         );
         await connector.stop();
-        await this.#connectorSDK.stop();
+        await sdk.stop();
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received SIGTERM and finished graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGTERM and finished graceful shutdown`
         );
         this.#node.process.exit(0);
       });
       this.#node.process.on("uncaughtException", async (error) => {
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received uncaughtException signal. Start graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received uncaughtException signal. Start graceful shutdown`
         );
         this.#logger.error(error);
         await connector.stop();
-        await this.#connectorSDK.stop();
+        await sdk.stop();
         this.#logger.warn(
-          `Worker ${this.#connectorData.connectorType}, ${this.#connectorData.identifier} ${this.#node.process.pid} received uncaughtException and finished graceful shutdown`
+          `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received uncaughtException and finished graceful shutdown`
         );
         this.#node.process.exit(1);
       });
       if (connector instanceof import_connector_runtime_sdk.ConnectorRuntimeSDK) {
         await connector.init();
       }
-      await Promise.all([this.#connectorSDK.start(), connector.start()]);
+      await Promise.all([sdk.start(), connector.start()]);
+    };
+    this.#buildConnectorConfiguration = (connector) => {
+      const tenantIdentifier = this.#tenantIdentifier ?? connector.tenantIdentifier;
+      const awsAccessKeyId = connector.config.kafka?.sasl?.accessKeyId ?? process.env["AWS_ACCESS_KEY_ID"] ?? this.#orchestratorConfig.awsAccessKeyId;
+      const awsSecretAccessKey = connector.config.kafka?.sasl?.secretAccessKey ?? process.env["AWS_SECRET_ACCESS_KEY"] ?? this.#orchestratorConfig.awsSecretAccessKey;
+      return {
+        ...connector,
+        tenantIdentifier,
+        config: {
+          ...connector.config,
+          tenantIdentifier,
+          processIdentifier: connector.config.processIdentifier ?? `${tenantIdentifier}-${connector.identifier}`,
+          kafka: {
+            ...connector.config.kafka ?? {},
+            brokers: connector.config.kafka?.brokers ?? this.#orchestratorConfig.kafkaBrokers,
+            groupId: connector.config.kafka?.groupId ?? `${tenantIdentifier}-${connector.identifier}-group`,
+            clientId: connector.config.kafka?.clientId ?? `${tenantIdentifier}-${connector.identifier}-client`,
+            useConfluentLibrary: connector.config.kafka?.useConfluentLibrary ?? true,
+            ...awsAccessKeyId && awsSecretAccessKey ? {
+              sasl: {
+                region: connector.config.kafka?.sasl?.region ?? process.env["AWS_REGION"] ?? this.#orchestratorConfig.awsRegion ?? "eu-west-1",
+                accessKeyId: awsAccessKeyId,
+                secretAccessKey: awsSecretAccessKey,
+                mechanism: "aws"
+              }
+            } : {}
+          }
+        }
+      };
     };
     this.#node = node;
-    this.#connectorData = connectorData;
+    this.#tenantIdentifier = tenantIdentifier;
+    this.#orchestratorConfig = orchestratorConfig;
+    this.#connectorIdentifier = connectorIdentifier;
+    this.#connectorApiClient = new import_management_api_client.ConnectorApiClient();
     this.#logger = import_logger.Logger.getInstance();
-    this.#connectorSDK = new import_connector_sdk.TransAIConnectorSDK(
-      this.#connectorData,
-      this.#logger
-    );
   }
   #node;
-  #connectorData;
-  #connectorSDK;
+  #connectorApiClient;
+  #orchestratorConfig;
+  #tenantIdentifier;
+  #connectorIdentifier;
   #logger;
+  #buildConnectorConfiguration;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

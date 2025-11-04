@@ -23,24 +23,27 @@ async function main() {
     });
     new import_cluster.ClusterManager(node, new import_management_api_client.ConnectorApiClient()).start().subscribe();
   } else {
-    const connectorData = JSON.parse(
-      node.process.env.CONNECTOR
-    );
+    const tenantIdentifier = process.env.TENANT_IDENTIFIER;
+    const connectorIdentifier = process.env.CONNECTOR_IDENTIFIER;
     const orchestratorConfig = JSON.parse(
       node.process.env.ORCHESTRATOR_CONFIG
     );
     import_logger.Logger.getInstance(
-      `[${node.process.pid}] ${connectorData.identifier}`
+      `[${node.process.pid}] ${connectorIdentifier}`
     ).setDatadogTransport({
-      apiKey: orchestratorConfig.datadogApiKey,
       service: "connector-manager",
       source: "connector-orchestrator",
       tags: {
-        connector: connectorData.identifier,
-        tenantIdentifier: connectorData.tenantIdentifier
+        connector: connectorIdentifier,
+        tenantIdentifier
       }
     });
-    await new import_connector.ConnectorManager(node, connectorData).start();
+    await new import_connector.ConnectorManager(
+      node,
+      tenantIdentifier,
+      connectorIdentifier,
+      orchestratorConfig
+    ).start();
   }
 }
 main().catch((error) => {
