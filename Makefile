@@ -1,6 +1,6 @@
 install:
 	git reset --hard
-	git fetch && git pull
+	git pull
 	npm install --legacy-peer-deps
 	$(MAKE) start
 
@@ -16,5 +16,8 @@ status:
 logs:
 	tail -f /var/log/transai*
 
+logsj:
+	journalctl -u  transai.service -f -n 100
+
 cleanup:
-	rm -rf apps libs main.js package*
+	rm -rf apps libs main.js* package*

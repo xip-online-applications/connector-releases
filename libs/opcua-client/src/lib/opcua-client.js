@@ -41,7 +41,7 @@ class OpcuaClient {
   }
   async init() {
     try {
-      this.#logger.info(
+      this.#logger.verbose(
         `Connecting to OPC UA server ${this.#opcuaConfig.endpointUrl}...`
       );
       await this.#client.connect(this.#opcuaConfig.endpointUrl);
@@ -51,7 +51,7 @@ class OpcuaClient {
           this.#opcuaConfig.namespace
         );
       }
-      this.#logger.info(
+      this.#logger.debug(
         `Connected to OPC UA server ${this.#opcuaConfig.endpointUrl}.`
       );
     } catch (error) {
@@ -75,7 +75,7 @@ class OpcuaClient {
     if ("disconnect" in this.#client) {
       await this.#client.disconnect();
     }
-    this.#logger.info(
+    this.#logger.verbose(
       `Disconnected from OPC UA server ${this.#opcuaConfig.endpointUrl}.`
     );
   }
@@ -116,13 +116,11 @@ class OpcuaClient {
   }
   async callFromDsl(dsl) {
     const parsed = this.#parseDslWithNamespaceUri(dsl);
-    this.#logger.debug(parsed);
     const nsIndex = await this.#resolveNamespaceIndex(parsed.namespaceUri);
-    this.#logger.debug("Resolved namespace index:", nsIndex);
     const objectId = parsed.objectNodeId?.replace("ns=0", `ns=${nsIndex}`);
     const methodId = parsed.methodNodeId?.replace("ns=0", `ns=${nsIndex}`);
-    this.#logger.debug(
-      `Resolved objectId ${objectId} and methodId ${methodId}`
+    this.#logger.verbose(
+      `Resolved nxIndex ${nsIndex}, objectId ${objectId} and methodId ${methodId}`
     );
     return new Promise((resolve, reject) => {
       this.#getClientSession.call(
@@ -191,29 +189,6 @@ class OpcuaClient {
   async browseNode(nodeId, depth = 0) {
     const indentation = " ".repeat(depth * 2);
     try {
-      const nodeToRead = [
-        { nodeId, attributeId: import_node_opcua.AttributeIds.BrowseName },
-        { nodeId, attributeId: import_node_opcua.AttributeIds.DisplayName },
-        { nodeId, attributeId: import_node_opcua.AttributeIds.Description },
-        { nodeId, attributeId: import_node_opcua.AttributeIds.NodeClass },
-        { nodeId, attributeId: import_node_opcua.AttributeIds.DataType },
-        { nodeId, attributeId: import_node_opcua.AttributeIds.Value }
-      ];
-      const dataValues = await this.#getClientSession.read(nodeToRead);
-      const browseName = dataValues[0]?.value?.value ?? "N/A";
-      const displayName = dataValues[1]?.value?.value ?? "N/A";
-      const description = dataValues[2]?.value?.value ?? "";
-      const nodeClass = import_node_opcua.NodeClass[dataValues[3]?.value?.value] ?? "Unknown";
-      const dataType = dataValues[4]?.value?.value ?? "N/A";
-      const value = dataValues[5]?.value?.value ?? "N/A";
-      this.#logger.debug(`${indentation}${browseName} | NodeId: ${nodeId}`);
-      this.#logger.debug(`${indentation}  DisplayName : ${displayName}`);
-      this.#logger.debug(`${indentation}  Description : ${description}`);
-      this.#logger.debug(`${indentation}  NodeClass   : ${nodeClass}`);
-      this.#logger.debug(`${indentation}  DataType    : ${dataType}`);
-      this.#logger.debug(
-        `${indentation}  Value       : ${JSON.stringify(value)}`
-      );
       const browseResult = await this.#getClientSession.browse({
         nodeId,
         referenceTypeId: null,
@@ -328,7 +303,7 @@ class OpcuaClient {
     const namespaces = await this.readValue(
       this.#opcuaConfig.namespaceNodeId ?? this.#OPCUA_NAMESPACE_NODE_ID
     );
-    this.#logger.debug("Retrieved namespaces:", namespaces);
+    this.#logger.verbose("Retrieved namespaces:", namespaces);
     const index = namespaces?.indexOf(namespaceUri);
     if (index === void 0 || index === -1) {
       this.#logger.error("Namespace URI not found:", namespaceUri, namespaces);

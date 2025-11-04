@@ -86,7 +86,7 @@ class ClusterManager {
               (p) => p.connectorType === connector.connectorType && p.identifier === connector.identifier
             );
             if (isAlreadyStarted) {
-              this.#logger.info(
+              this.#logger.warn(
                 `There is already a connector running with ${connector.identifier}, ${connector.connectorType}. Do not start this again.`
               );
               return;
@@ -95,7 +95,7 @@ class ClusterManager {
               (c) => c.connectorType === connector.connectorType && c.identifier === connector.identifier
             );
             if (!connectorEnabled) {
-              this.#logger.info(
+              this.#logger.warn(
                 `Could not find connector ${connector.identifier}, ${connector.connectorType}. Not enabled so not restarting.`
               );
             } else {
@@ -139,14 +139,12 @@ class ClusterManager {
         }
       };
       const checkConnectors = async () => {
-        const test = Object.entries(this.#node.cluster.workers).length;
-        if (test !== this.#enabledConnectors.length) {
+        const currentWorkersAmount = Object.entries(
+          this.#node.cluster.workers
+        ).length;
+        if (currentWorkersAmount !== this.#enabledConnectors.length || this.#startedConnectorProcesses.length !== this.#enabledConnectors.length) {
           this.#logger.error(
-            `Number of workers: ${test}, Number of configured workers ${this.#enabledConnectors.length}, number of started workers ${this.#startedConnectorProcesses.length}`
-          );
-        } else {
-          this.#logger.info(
-            `Number of workers: ${test}, Number of configured workers ${this.#enabledConnectors.length}, number of started workers ${this.#startedConnectorProcesses.length}`
+            `Number of running workers doesn't match expected: ${currentWorkersAmount}/${this.#enabledConnectors.length} (${this.#startedConnectorProcesses.length})`
           );
         }
         const newLastUpdatedTimestamp = await this.#managementApiClient.getLastUpdatedTimestamp().catch((error) => {
@@ -157,12 +155,12 @@ class ClusterManager {
           return (/* @__PURE__ */ new Date()).toISOString();
         });
         if (newLastUpdatedTimestamp === this.#lastUpdatedTimestamp) {
-          this.#logger.debug(
-            "Last updated timestamp has not changed. No need to check for new or changed connectors"
+          this.#logger.info(
+            `Last updated timestamp has not changed. Current number of connector running: ${currentWorkersAmount}/${this.#enabledConnectors.length}`
           );
           return;
         }
-        this.#logger.info(
+        this.#logger.verbose(
           "Last updated timestamp has changed. Check for new or changed connectors"
         );
         const fullOrchestratorConfig = await this.#managementApiClient.getActiveConnectors().catch((error) => {
@@ -191,10 +189,12 @@ class ClusterManager {
             defaultTenantIdentifier
           )
         );
-        this.#logger.info(`received ${newConnectors.length} enabled connectors`);
         const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
           this.#enabledConnectors,
           newConnectors
+        );
+        this.#logger.info(
+          `Received ${newConnectors.length} enabled connectors, stopping ${comparisonResult.onlyInA.length}, starting ${comparisonResult.onlyInB.length}`
         );
         const toRemove = comparisonResult.onlyInA;
         const toAdd = comparisonResult.onlyInB;
@@ -224,7 +224,7 @@ class ClusterManager {
         this.#lastUpdatedTimestamp = newLastUpdatedTimestamp;
       };
       let mutex = false;
-      this.#logger.info("Starting process to check connectors");
+      this.#logger.info("Starting process to check connectors...");
       return (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
         (0, import_rxjs.catchError)((e) => {
           this.#logger.error(`Error while checking connectors ${e?.message}`, e);
@@ -239,7 +239,7 @@ class ClusterManager {
             mutex = true;
             checkConnectors().then(() => {
               mutex = false;
-              this.#logger.debug("Checked connectors");
+              this.#logger.verbose("Checked connectors");
             }).catch((e) => {
               mutex = false;
               this.#logger.error(
