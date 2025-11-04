@@ -219,7 +219,7 @@ class ClusterManager {
             }).catch((e) => {
               mutex = false;
               this.#logger.error(
-                `Error while checking connectors, ${JSON.parse(e)}`
+                `Error while checking connectors, ${JSON.stringify(e)}`
               );
               return null;
             });
