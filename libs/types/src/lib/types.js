@@ -48,6 +48,7 @@ var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
   ConfiguredConnectorTypes2["OPCUA_SINK"] = "opcua-sink";
   ConfiguredConnectorTypes2["AI_AGENT"] = "ai-agent";
   ConfiguredConnectorTypes2["MICROSOFT_OFFICE365_EMAIL"] = "microsoft-office365-email";
+  ConfiguredConnectorTypes2["MKG"] = "mkg";
   return ConfiguredConnectorTypes2;
 })(ConfiguredConnectorTypes || {});
 function isTopicRegex(obj) {

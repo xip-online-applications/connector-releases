@@ -37,7 +37,11 @@ class ClusterManager {
       };
       const startProcess = (connector) => {
         this.#logger.info(
-          `Starting process type: ${connector.connectorType}, Identifier: ${connector.identifier}`
+          `Starting process type: ${connector.connectorType}, Identifier: ${connector.identifier}`,
+          {
+            CONNECTOR: JSON.stringify(connector).length,
+            ORCHESTRATOR_CONFIG: JSON.stringify(this.#orchestratorConfig).length
+          }
         );
         const newProcess = this.#node.cluster.fork({
           CONNECTOR: JSON.stringify(connector),
@@ -194,8 +198,28 @@ class ClusterManager {
         );
         const toRemove = comparisonResult.onlyInA;
         const toAdd = comparisonResult.onlyInB;
-        toRemove.forEach(stopProcess);
-        toAdd.forEach(startProcess);
+        toRemove.forEach((config) => {
+          try {
+            stopProcess(config);
+          } catch (error) {
+            this.#logger.error(
+              `Error while stopping process for connector ${config.identifier}, ${config.connectorType} ${JSON.stringify(
+                error
+              )}`
+            );
+          }
+        });
+        toAdd.forEach((config) => {
+          try {
+            startProcess(config);
+          } catch (error) {
+            this.#logger.error(
+              `Error while starting process for connector ${config.identifier}, ${config.connectorType} ${JSON.stringify(
+                error
+              )}`
+            );
+          }
+        });
         this.#enabledConnectors = [...newConnectors];
         this.#lastUpdatedTimestamp = newLastUpdatedTimestamp;
       };
