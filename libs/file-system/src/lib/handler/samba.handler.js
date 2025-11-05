@@ -149,9 +149,8 @@ class SambaFileHandler {
         );
       });
       success = true;
-    } catch (e) {
-      import_logger.Logger.getInstance().error("Error writing file to samba:");
-      console.error(e);
+    } catch (error) {
+      import_logger.Logger.getInstance().error("Error writing file to samba:", { error });
     } finally {
       fs.unlinkSync(localFile);
     }
@@ -188,8 +187,7 @@ class SambaFileHandler {
     const splittedPath = dirpath.split("/");
     for (let i = 1; i <= splittedPath.length; i++) {
       const segment = splittedPath.slice(0, i).join("/");
-      await this.#sambaClient.mkdir(this.#fullPath(segment)).catch(() => {
-      });
+      await this.#sambaClient.mkdir(this.#fullPath(segment));
     }
   }
 }

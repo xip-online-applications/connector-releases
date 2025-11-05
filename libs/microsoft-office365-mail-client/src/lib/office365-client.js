@@ -178,8 +178,10 @@ class Office365Client {
     if (this.#attachmentsCache[mail.id]) {
       return this.#attachmentsCache[mail.id];
     }
+    const params = new URLSearchParams();
+    params.set("$top", limit.toString());
     const data = await this.#graphRequest(
-      `${this.#base}/messages/${encodeURIComponent(mail.id)}/attachments?$expand=microsoft.graph.itemAttachment/item&$top=${limit}`,
+      `${this.#base}/messages/${encodeURIComponent(mail.id)}/attachments?${params.toString()}`,
       "GET"
     );
     const attachments = data?.value || [];

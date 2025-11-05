@@ -90,10 +90,10 @@ class MailClient {
       throw new Error(`Message with ID ${messageId} not found`);
     }
     const attachments = await this.#office365Client.listAttachments(mail);
-    return attachments.map((attachment) => ({
+    return attachments.filter((attachment) => attachment.isInline !== true).map((attachment) => ({
       id: attachment.cid ?? attachment.id,
       contentType: attachment.contentType,
-      filename: attachment.fileName,
+      filename: attachment.fileName ?? attachment.name,
       content: attachment.contentBytes ? (
         // @ts-expect-error contentBytes is base64-encoded string
         Buffer.from(attachment.contentBytes, "base64").toString("utf-8")
