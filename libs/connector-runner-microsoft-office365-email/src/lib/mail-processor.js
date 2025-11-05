@@ -186,7 +186,7 @@ class MailProcessor {
             const file = new import_file_system.ActiveFileHandle(
               attachment.contentBytes ?? Buffer.from(attachment.content)
             );
-            const path = `${mailbox}/${message.id}/${attachment.filename}`;
+            const path = `${mailbox}/${encodeURIComponent(message.id)}/${attachment.filename}`;
             this.#logger.verbose(
               `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} attachment "${path}"...`
             );
