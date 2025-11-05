@@ -72,7 +72,14 @@ class SambaFileHandler {
   constructor(sambaConfig) {
     this.#sambaConfig = sambaConfig;
     fs.mkdirSync(this.#sambaConfig.tmpDirectory, { recursive: true });
-    this.#sambaClient = new import_samba_client.SambaClient(this.#sambaConfig);
+    this.#sambaClient = new import_samba_client.SambaClient(
+      // @ts-expect-error this is correct!
+      Object.fromEntries(
+        Object.entries(this.#sambaConfig).filter(
+          ([key]) => key !== "directory"
+        )
+      )
+    );
   }
   static fromDsn(dsn) {
     if (!dsn.startsWith("smb:")) {
