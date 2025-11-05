@@ -33,6 +33,7 @@ __export(samba_handler_exports, {
 module.exports = __toCommonJS(samba_handler_exports);
 var fs = __toESM(require("node:fs"));
 var import_node_path = __toESM(require("node:path"));
+var import_logger = require("@transai/logger");
 var import_samba_client = require("@xip-online-data/samba-client");
 var import_uuid = require("uuid");
 var import_active_file = require("../active-file.handle");
@@ -118,11 +119,15 @@ class SambaFileHandler {
       directoryExists = await this.#sambaClient.fileExists(
         import_node_path.default.dirname(remotePath)
       );
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      import_logger.Logger.getInstance().error("Error checking for existing file", { error });
     }
     if (!directoryExists) {
-      await this.#sambaClient.mkdir(import_node_path.default.dirname(remotePath));
+      await this.#sambaClient.mkdir(import_node_path.default.dirname(remotePath)).catch((error) => {
+        import_logger.Logger.getInstance().error("Error creating directory on samba:", {
+          error
+        });
+      });
     }
     const buffer = data.get();
     const tempFilename = `${(0, import_uuid.v4)()}.tmp`;
@@ -130,9 +135,17 @@ class SambaFileHandler {
     fs.writeFileSync(localFile, new Uint8Array(buffer));
     let success = false;
     try {
-      await this.#sambaClient.sendFile(localFile, remotePath);
+      await this.#sambaClient.sendFile(localFile, remotePath).catch((error) => {
+        import_logger.Logger.getInstance().error(
+          `Error writing local file ${localFile} file to ${remotePath}:`,
+          {
+            error
+          }
+        );
+      });
       success = true;
     } catch (e) {
+      import_logger.Logger.getInstance().error("Error writing file to samba:");
       console.error(e);
     } finally {
       fs.unlinkSync(localFile);
