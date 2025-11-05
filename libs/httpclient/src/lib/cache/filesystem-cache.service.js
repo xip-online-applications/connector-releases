@@ -29,7 +29,6 @@ class FileSystemCacheService {
   constructor(options) {
     this.#options = options;
     this.#logger = import_logger.Logger.getInstance();
-    this.#logger.info("Loaded filesystem-cache");
   }
   async get(key) {
     await this.#init();
@@ -53,7 +52,7 @@ class FileSystemCacheService {
     return Promise.resolve();
   }
   async #init() {
-    this.#logger.debug("try to init FileSystemCacheService");
+    this.#logger.verbose("try to init FileSystemCacheService");
     if (this.#initRun) {
       return;
     }
@@ -68,7 +67,7 @@ class FileSystemCacheService {
       }
     });
     if (!locExist) {
-      import_logger.Logger.getInstance().debug(`OffsetStore create ${this.#options.path}`);
+      this.#logger.debug(`OffsetStore create ${this.#options.path}`);
       await import_fs.promises.mkdir(this.#options.path);
     }
     this.#logger.debug("Init run successfully. directory exists");

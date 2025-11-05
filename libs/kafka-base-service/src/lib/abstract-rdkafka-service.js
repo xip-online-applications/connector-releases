@@ -38,7 +38,7 @@ const getAwsCredentials = (awsSasl) => () => {
 const oauthBearerTokenProvider = (awsSasl) => async () => {
   const principal = process.env["AWS_ROLE_SESSION_NAME"] ?? "";
   if (awsSasl?.accessKeyId && awsSasl?.secretAccessKey) {
-    import_logger.Logger.getInstance().info(
+    import_logger.Logger.getInstance().verbose(
       `Generating OAuth Bearer token using ENV variables and principal: ${principal}`
     );
     const authTokenResponse2 = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthTokenFromCredentialsProvider)({
@@ -48,7 +48,7 @@ const oauthBearerTokenProvider = (awsSasl) => async () => {
         secretAccessKey: awsSasl.secretAccessKey
       })
     });
-    import_logger.Logger.getInstance().info(
+    import_logger.Logger.getInstance().debug(
       `Token using Default Credentials Provider ${authTokenResponse2.expiryTime} - ${authTokenResponse2.expiryTime - Date.now()}ms`
     );
     return {
@@ -57,7 +57,7 @@ const oauthBearerTokenProvider = (awsSasl) => async () => {
       lifetime: authTokenResponse2.expiryTime
     };
   }
-  import_logger.Logger.getInstance().info(
+  import_logger.Logger.getInstance().verbose(
     `Generating OAuth Bearer token using Default Credentials Provider and principal: ${principal}`
   );
   const authTokenResponse = await (0, import_aws_msk_iam_sasl_signer_js.generateAuthToken)({
@@ -66,7 +66,7 @@ const oauthBearerTokenProvider = (awsSasl) => async () => {
     logger: import_logger.Logger.getInstance(),
     awsDebugCreds: true
   });
-  import_logger.Logger.getInstance().info(
+  import_logger.Logger.getInstance().debug(
     `Token using Default Credentials Provider ${authTokenResponse.expiryTime} - ${authTokenResponse.expiryTime - Date.now()}ms`
   );
   return {
@@ -89,17 +89,17 @@ class AbstractRdKafkaService {
       this.logger.warn(
         `Got ${type}. Graceful shutdown Kafka start ${(/* @__PURE__ */ new Date()).toISOString()}`
       );
-      this.logger.info("Disconnecting consumer and producer");
+      this.logger.debug("Disconnecting consumer and producer");
       try {
         await this.consumer?.disconnect();
-        this.logger.info("Consumer disconnected");
+        this.logger.debug("Consumer disconnected");
       } catch (error) {
         this.logger.error("Error while disconnecting consumer");
         console.error(error);
       }
       try {
         await this.producer?.disconnect();
-        this.logger.info("Producer disconnected");
+        this.logger.debug("Producer disconnected");
       } catch (error) {
         this.logger.error("Error while disconnecting producer");
         console.error(error);
@@ -150,7 +150,7 @@ class AbstractRdKafkaService {
       }
     };
     this.logger = import_logger.Logger.getInstance();
-    this.logger.info("RUNNING RDKAFKA SERVICE");
+    this.logger.debug("RUNNING RDKAFKA SERVICE");
     const { kafka: kafkaConfig } = baseYamlConfig;
     const kafkaJS = {
       brokers: kafkaConfig.brokers,
@@ -177,7 +177,7 @@ class AbstractRdKafkaService {
       }
     };
     if (baseYamlConfig.kafka.newConsumerProtocol) {
-      this.logger.info("Using new consumer protocol");
+      this.logger.debug("Using new consumer protocol");
       consumerConfig["group.protocol"] = "consumer";
       consumerConfig["group.protocol.type"] = "consumer";
       consumerConfig["group.remote.assignor"] = "uniform";
@@ -200,7 +200,7 @@ class AbstractRdKafkaService {
       });
     }
     if (process) {
-      this.logger.info("Setting up gracefull shutdown for kafka...");
+      this.logger.debug("Setting up gracefull shutdown for kafka...");
       this.errorTypes.forEach((type) => {
         process.on(type, async (e) => {
           try {
