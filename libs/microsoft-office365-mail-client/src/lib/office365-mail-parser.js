@@ -62,8 +62,8 @@ class Office365MailParser {
       attachments: await this.#parseAttachments(parsed.attachments ?? []),
       headers,
       headerLines,
-      subject: parsed.subject || void 0,
-      references: parsed.references || void 0,
+      subject: parsed.subject,
+      references: parsed.references,
       date,
       to,
       from,
@@ -72,8 +72,9 @@ class Office365MailParser {
       replyTo,
       text: (text || "").trim(),
       html,
-      messageId: parsed.messageId || void 0,
-      inReplyTo: parsed.inReplyTo || void 0
+      messageId: parsed.messageId,
+      inReplyTo: parsed.inReplyTo,
+      categories: mail.categories
     };
   }
   formatMailReplyBody(orig, body) {
