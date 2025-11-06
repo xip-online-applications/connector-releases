@@ -27,19 +27,35 @@ class OpcuaClient {
   #opcuaConfig;
   #logger;
   #client;
+  #initialized = false;
   #clientSession;
   #namespaceIndex;
   #nodeSubscriptions = {};
+  #sessionOpen = false;
   constructor(opcuaConfig, logger = import_logger.Logger.getInstance(), client = void 0) {
     this.#logger = logger;
     this.#opcuaConfig = opcuaConfig;
     this.#client = client ?? import_node_opcua.OPCUAClient.create({
+      applicationName: "TransAI Bystronic OPC UA Client",
       endpointMustExist: false,
-      securityMode: this.#opcuaConfig.securityMode,
-      securityPolicy: this.#opcuaConfig.securityPolicy
+      securityMode: this.#opcuaConfig.securityMode ?? import_node_opcua.MessageSecurityMode.None,
+      securityPolicy: this.#opcuaConfig.securityPolicy ?? import_node_opcua.SecurityPolicy.None
     });
   }
+  /**
+   * Initialize the OPC UA client and connect to the server. This method
+   * must be called before any other operations. It establishes a session and
+   * retrieves the namespace index for the configured namespace URI.
+   *
+   * @throws Will throw an error if the connection fails.
+   */
   async init() {
+    if (this.#initialized) {
+      this.#logger.verbose(
+        `OPC UA client already initialized and connected to ${this.#opcuaConfig.endpointUrl}.`
+      );
+      return;
+    }
     try {
       this.#logger.verbose(
         `Connecting to OPC UA server ${this.#opcuaConfig.endpointUrl}...`
@@ -51,6 +67,49 @@ class OpcuaClient {
           this.#opcuaConfig.namespace
         );
       }
+      this.#sessionOpen = true;
+      this.#initialized = true;
+      this.#logger.verbose(
+        `Setting up OPC UA client listeners to ${this.#opcuaConfig.endpointUrl}.`
+      );
+      this.#client.on("connection_failed", (status) => {
+        this.#logger.warn(
+          `OPC UA client connection failed: ${status.toString()}`
+        );
+        this.#sessionOpen = false;
+      });
+      this.#client.on("connection_lost", () => {
+        this.#logger.warn("OPC UA client connection lost");
+        this.#sessionOpen = false;
+      });
+      this.#client.on("start_reconnection", () => {
+        this.#logger.warn("OPC UA client reconnected");
+        this.#sessionOpen = false;
+      });
+      this.#client.on("close", () => {
+        this.#logger.warn("OPC UA session closed");
+        this.#sessionOpen = false;
+      });
+      this.#client.on("after_reconnection", (err) => {
+        this.#logger.warn(`OPC UA client reconnected: ${err?.message}`, err);
+        this.#sessionOpen = err === void 0;
+      });
+      this.#client.on("connected", () => {
+        this.#logger.warn("OPC UA client connected");
+        this.#sessionOpen = true;
+      });
+      this.#client.on("connection_reestablished", () => {
+        this.#logger.warn("OPC UA client connection reestablished");
+        this.#sessionOpen = true;
+      });
+      this.#clientSession.on("session_closed", (status) => {
+        this.#logger.warn(`OPC UA session closed: ${status.toString()}`);
+        this.#sessionOpen = false;
+      });
+      this.#clientSession.on("session_restored", () => {
+        this.#logger.debug("OPC UA session restored");
+        this.#sessionOpen = true;
+      });
       this.#logger.debug(
         `Connected to OPC UA server ${this.#opcuaConfig.endpointUrl}.`
       );
@@ -64,16 +123,34 @@ class OpcuaClient {
     }
   }
   async disconnect() {
+    this.#initialized = false;
+    this.#sessionOpen = false;
     await Promise.all(
-      Object.keys(this.#nodeSubscriptions).map(
-        (nodeId) => this.unsubscribeFromNode(nodeId)
-      )
+      Object.keys(this.#nodeSubscriptions).map(async (nodeId) => {
+        try {
+          await this.unsubscribeFromNode(nodeId);
+        } catch (error) {
+          this.#logger.error(
+            `Failed to unsubscribe from node ${nodeId}:`,
+            error
+          );
+        }
+      })
     );
     this.#nodeSubscriptions = {};
-    await this.#clientSession?.close();
-    this.#clientSession = void 0;
+    try {
+      await this.#clientSession?.close(true);
+    } catch (error) {
+      this.#logger.error("Failed to close client session:", error);
+    } finally {
+      this.#clientSession = void 0;
+    }
     if ("disconnect" in this.#client) {
-      await this.#client.disconnect();
+      try {
+        await this.#client.disconnect();
+      } catch (error) {
+        this.#logger.error("Failed to disconnect client:", error);
+      }
     }
     this.#logger.verbose(
       `Disconnected from OPC UA server ${this.#opcuaConfig.endpointUrl}.`
@@ -84,6 +161,9 @@ class OpcuaClient {
       throw new Error("No active session.");
     }
     return this.#clientSession;
+  }
+  async isConnected() {
+    return this.#initialized && this.#sessionOpen;
   }
   async readValue(nodeId) {
     let dataValue;

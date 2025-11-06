@@ -32,39 +32,52 @@ class ExtractorService {
     this.#opcUaClient = opcUaClient;
     this.#opcUaResultHandler = apiResultHandler;
     this.#sdk.logger.info(
-      `OPC UA extractor service [${this.#opcUaCallConfig.name}] initialized with interval of ${this.#opcUaCallConfig.interval} seconds`
+      `[OPC UA] [${this.#opcUaCallConfig.name}] Extractor service initialized with interval of ${this.#opcUaCallConfig.interval} seconds`
+    );
+  }
+  async onInit() {
+    await this.#opcUaClient.init().catch((error) => {
+      this.#sdk.logger.error(
+        `[OPC UA] [${this.#opcUaCallConfig.name}] Failed to initialize client during onInit.`,
+        { error }
+      );
+    });
+  }
+  async onRun() {
+    await this.#opcUaClient.init().catch((error) => {
+      this.#sdk.logger.error(
+        `[OPC UA] [${this.#opcUaCallConfig.name}] Failed to initialize client.`,
+        { error }
+      );
+      throw error;
+    });
+    const latestOffset = await this.#sdk.offsetStore.getOffset(
+      `${this.#opcUaCallConfig.offsetFilePrefix ?? "offset"}_${this.#opcUaCallConfig.name}`
+    );
+    this.#sdk.logger.verbose(
+      `[OPC UA] [${this.#opcUaCallConfig.name}] Executing query`
+    );
+    await this.#performOpcUaCalls(latestOffset).catch((error) => {
+      this.#sdk.logger.error(
+        `[OPC UA] [${this.#opcUaCallConfig.name}] Failed to perform calls`,
+        { error }
+      );
+      throw error;
+    });
+    this.#sdk.logger.debug(
+      `[OPC UA] [${this.#opcUaCallConfig.name}] Ran query`
     );
   }
   async onStop() {
     await this.#opcUaClient.disconnect();
   }
-  async onRun() {
-    try {
-      const latestOffset = await this.#sdk.offsetStore.getOffset(
-        `${this.#opcUaCallConfig.offsetFilePrefix ?? "offset"}_${this.#opcUaCallConfig.name}`
-      );
-      await this.#opcUaClient.init().catch((error) => {
-        this.#sdk.logger.error("Failed to initialize OPC UA client", { error });
-        throw error;
-      });
-      this.#sdk.logger.verbose(
-        `Executing query for: ${this.#opcUaCallConfig.name}`
-      );
-      await this.#performOpcUaCalls(latestOffset).catch((error) => {
-        this.#sdk.logger.error("Failed to perform OPC UA calls", { error });
-        throw error;
-      });
-      this.#sdk.logger.debug(`Ran query for: ${this.#opcUaCallConfig.name}`);
-    } catch (error) {
-      this.#sdk.logger.error(
-        "Failed to retrieve and process data from OPC UA source service",
-        { error }
-      );
-    } finally {
-      await this.#opcUaClient.disconnect();
-    }
-  }
   async #performOpcUaCalls(latestOffset) {
+    if (!await this.#opcUaClient.isConnected()) {
+      this.#sdk.logger.warn(
+        `[OPC UA] [${this.#opcUaCallConfig.name}] Skipping run because client is not connected`
+      );
+      return;
+    }
     const result = await this.#opcUaClient.callMethod(
       `History`,
       "GetRunPartHistory",

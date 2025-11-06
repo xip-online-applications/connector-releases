@@ -74,6 +74,9 @@ class JwtTokenService {
       })
     };
     const { data } = await import_axios.default.request(requestConfig).catch((error) => {
+      this.#log.error(
+        `Error fetching token url ${this.#options.tokenUrl} for audience ${audience} and tenantIdentifier ${tenantId}: ${error.message}`
+      );
       throw new Error("Error fetching token");
     });
     this.#cachedTokens[cacheKey] = {

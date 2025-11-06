@@ -10,16 +10,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var src_exports = {};
-module.exports = __toCommonJS(src_exports);
-__reExport(src_exports, require("./lib/http-client"), module.exports);
-__reExport(src_exports, require("./lib/http-client.interface"), module.exports);
-__reExport(src_exports, require("./lib/types"), module.exports);
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  ...require("./lib/http-client"),
-  ...require("./lib/http-client.interface"),
-  ...require("./lib/types")
-});
+var http_client_interface_exports = {};
+module.exports = __toCommonJS(http_client_interface_exports);

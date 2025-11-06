@@ -43,7 +43,9 @@ class ResultHandler {
     this.#opcuaClient = opcuaClient;
   }
   async handleResult(result, opcUaCallConfig) {
-    this.#sdk.logger.verbose(`Handling result for ${opcUaCallConfig.name}`);
+    this.#sdk.logger.verbose(
+      `[OPC UA] [${opcUaCallConfig.name}] Handling result`
+    );
     const data = JSON.parse(
       result
     );
@@ -55,14 +57,22 @@ class ResultHandler {
       ...item,
       Id: `${item.JobGuid}_${item.PartId}_${item.PartNumber}`
     }));
-    const messages = await this.#processResultItemsIntoMessages(dataWithIds);
+    const messages = await this.#processResultItemsIntoMessages(
+      dataWithIds,
+      opcUaCallConfig
+    );
     await this.#sendBatch(messages, opcUaCallConfig);
   }
-  async #processResultItemsIntoMessages(data) {
-    this.#sdk.logger.verbose(`Processing sub-queries for results`);
+  async #processResultItemsIntoMessages(data, opcUaCallConfig) {
+    this.#sdk.logger.verbose(
+      `[OPC UA] [${opcUaCallConfig.name}] Processing sub-queries for results`
+    );
     return Promise.all(
       data.map(async (item) => {
-        this.#sdk.logger.verbose("Processing item", item);
+        this.#sdk.logger.verbose(
+          `[OPC UA] [${opcUaCallConfig.name}] Processing item`,
+          item
+        );
         const id = await this.#idExpression.evaluate(item);
         const result = await this.#opcuaClient.callMethod(
           `History`,
@@ -76,7 +86,7 @@ class ResultHandler {
         );
         if (!result || result.length === 0) {
           this.#sdk.logger.debug(
-            "No output arguments found for sub-query, sending original item"
+            `[OPC UA] [${opcUaCallConfig.name}] No output arguments found for sub-query, sending original item`
           );
           return item;
         }
@@ -86,75 +96,81 @@ class ResultHandler {
           );
           const matchingPart = parsed.find((pi) => pi.PartId === item.PartId) ?? {};
           return { ...item, ...matchingPart };
-        } catch (e) {
+        } catch (error) {
           this.#sdk.logger.warn(
-            "Invalid JSON in OPC UA response; returning original item",
-            { err: e, jsonPreview: result[0]?.slice(0, 200) }
+            `[OPC UA] [${opcUaCallConfig.name}] Invalid JSON in OPC UA response; returning original item`,
+            { error, jsonPreview: result[0]?.slice(0, 200) }
           );
           return item;
         }
       })
     );
   }
-  async #sendBatch(list, config) {
+  async #sendBatch(list, opcUaCallConfig) {
     if (!(list && Array.isArray(list))) {
       this.#sdk.logger.debug(
-        `No records found, skipping. ${JSON.stringify(list)}`
+        `[OPC UA] [${opcUaCallConfig.name}] No records found, skipping. ${JSON.stringify(list)}`
       );
       return;
     }
-    let { incrementalField } = config;
+    let { incrementalField } = opcUaCallConfig;
     if (!incrementalField || incrementalField.length === 0) {
       incrementalField = this.#INCREMENTAL_FIELD_JSONATA_EXPRESSION;
     }
-    const collection = `${this.#sdk.config.datasourceIdentifier}_${config.name}`;
+    const collection = `${this.#sdk.config.datasourceIdentifier}_${opcUaCallConfig.name}`;
     this.#sdk.logger.debug(
-      `Sending ${list.length} items, total size ${JSON.stringify(list).length}, to collection ${collection} with config ${JSON.stringify(config)}`
+      `[OPC UA] [${opcUaCallConfig.name}] Sending ${list.length} items, total size ${JSON.stringify(list).length}, to collection ${collection} with config ${JSON.stringify(opcUaCallConfig)}`
     );
     this.#sdk.logger.verbose({
       list: list[0],
-      keyField: config.keyField ?? "JobGuid",
+      keyField: opcUaCallConfig.keyField ?? "JobGuid",
       collection,
       incrementalField
     });
     try {
       let result;
-      if (config.type === "metric") {
+      if (opcUaCallConfig.type === "metric") {
         result = await this.#sdk.sender.metricsLegacy(list, {
-          ...config.metadata ?? {},
-          keyField: config.keyField ?? "JobGuid",
+          ...opcUaCallConfig.metadata ?? {},
+          keyField: opcUaCallConfig.keyField ?? "JobGuid",
           collection,
           incrementalField
-        }).catch((err) => {
-          this.#sdk.logger.error("Error sending metrics", { err });
-          this.#sdk.logger.error(err);
-          throw err;
+        }).catch((error) => {
+          this.#sdk.logger.error(
+            `[OPC UA] [${opcUaCallConfig.name}] Error sending metrics`,
+            { error }
+          );
+          throw error;
         });
       } else {
         result = await this.#sdk.sender.documents(list, {
-          ...config.metadata ?? {},
-          keyField: config.keyField ?? "Id",
+          ...opcUaCallConfig.metadata ?? {},
+          keyField: opcUaCallConfig.keyField ?? "Id",
           collection,
           incrementalField
-        }).catch((err) => {
-          this.#sdk.logger.error("Error sending documents", { err });
-          this.#sdk.logger.error(err);
-          throw err;
+        }).catch((error) => {
+          this.#sdk.logger.error(
+            `[OPC UA] [${opcUaCallConfig.name}] Error sending documents`,
+            { error }
+          );
+          throw error;
         });
       }
       this.#sdk.logger.debug(
-        "Documents have been sent, updating offset",
+        `[OPC UA] [${opcUaCallConfig.name}] Documents have been sent, updating offset`,
         result
       );
     } catch (error) {
-      this.#sdk.logger.error("Failed to send data batch", {
-        error,
-        list: list[0],
-        keyField: config.keyField ?? "Id",
-        collection,
-        incrementalField
-      });
-      this.#sdk.logger.error(error);
+      this.#sdk.logger.error(
+        `[OPC UA] [${opcUaCallConfig.name}] Failed to send data batch`,
+        {
+          error,
+          list: list[0],
+          keyField: opcUaCallConfig.keyField ?? "Id",
+          collection,
+          incrementalField
+        }
+      );
       throw error;
     }
     const item = list[list.length - 1];
@@ -166,7 +182,7 @@ class ResultHandler {
         id: 0,
         rawTimestamp: value || ""
       },
-      `${config.offsetFilePrefix ?? "offset"}_${config.name}`
+      `${opcUaCallConfig.offsetFilePrefix ?? "offset"}_${opcUaCallConfig.name}`
     );
   }
 }

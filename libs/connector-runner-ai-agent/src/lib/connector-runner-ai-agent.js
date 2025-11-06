@@ -31,6 +31,12 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
     this.init = async () => {
       this.#logger.debug("Initializing AI Agent Connector Runner");
       this.callbackFunction = async (message, action) => {
+        const debugMessageInterval = setInterval(() => {
+          this.#logger.debug(
+            `AI agent still processing for message ID: ${message.eventId}`
+          );
+        }, 1e4);
+        const clearDebugInterval = () => clearInterval(debugMessageInterval);
         const systemPrompt = action.config["systemPrompt"];
         if (!systemPrompt || systemPrompt.trim() === "") {
           return this.connectorSDK.receiver.responses.unprocessableEntity(
@@ -60,7 +66,8 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
           model: this.langchain,
           responseFormat: (0, import_langchain.toolStrategy)(outputSchema),
           systemPrompt: processedSystemPrompt,
-          tools: []
+          tools: [],
+          middleware: [this.#langchainLoggingMiddleware]
         });
         try {
           this.#logger.info("Invoking AI agent...");
@@ -81,6 +88,8 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
           return this.connectorSDK.receiver.responses.internalServerError(
             `Error processing AI agent request: ${error}`
           )(message);
+        } finally {
+          clearDebugInterval();
         }
       };
     };
@@ -91,14 +100,28 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
     );
     this.#langchainInstance = injectedLangchainInstance ?? new import_openai.ChatOpenAI({
       apiKey: this.#openAISettings.apiKey,
-      model: this.#openAISettings.model || "gpt-3.5-turbo",
-      temperature: this.#openAISettings.temperature || 0,
+      model: this.#openAISettings.model || "gpt-4.1-mini",
+      temperature: this.#openAISettings.temperature || 1,
       timeout: this.#openAISettings.timeout || 6e4
+    });
+    this.#langchainLoggingMiddleware = (0, import_langchain.createMiddleware)({
+      name: "LoggingMiddleware",
+      beforeModel: (state) => {
+        this.#logger.debug(
+          `Invoking model: ${state.messages[state.messages.length - 1].text.slice(0, 100)}...`
+        );
+      },
+      afterModel: (state) => {
+        this.#logger.debug(
+          `Model invocation completed: ${state.messages[state.messages.length - 1].text.slice(0, 100)}...`
+        );
+      }
     });
   }
   #logger;
   #openAISettings;
   #langchainInstance;
+  #langchainLoggingMiddleware;
   get langchain() {
     if (this.#langchainInstance === void 0) {
       throw new Error("Langchain instance not initialized");

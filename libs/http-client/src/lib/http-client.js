@@ -31,42 +31,64 @@ __export(http_client_exports, {
 });
 module.exports = __toCommonJS(http_client_exports);
 var import_axios = __toESM(require("axios"));
-var import_logger = require("@transai/logger");
 class HttpClient {
   #config;
+  #axios;
   constructor(config) {
     this.#config = config;
+    this.#axios = import_axios.default.create({
+      baseURL: this.#config.baseUrl,
+      timeout: this.#config.timeout
+    });
   }
-  async init() {
-    import_logger.Logger.getInstance().info("Initializing http: ", this.#config.host);
+  get config() {
+    return this.#config;
   }
-  async post(destination, content) {
+  async get(destination, options) {
+    return this.request("GET", destination, options);
+  }
+  async post(destination, data, options) {
+    return this.request("POST", destination, {
+      ...options ?? {},
+      data: typeof data === "string" ? data : JSON.stringify(data)
+    });
+  }
+  async put(destination, data, options) {
+    return this.request("PUT", destination, {
+      ...options ?? {},
+      data: typeof data === "string" ? data : JSON.stringify(data)
+    });
+  }
+  async delete(destination, options) {
+    return this.request("DELETE", destination, options);
+  }
+  async request(method, url, options) {
     try {
-      const url = `${this.#config.host}${destination}`;
-      import_logger.Logger.getInstance().debug(`POSTing to ${url} with content: ${content}`);
-      const res = await import_axios.default.post(url, content, {
-        timeout: this.#config.timeout ?? 5e3,
-        headers: {
-          // Overwrite Axios's automatically set Content-Type
-          "Content-Type": this.#config.contentType ?? "application/json"
-        }
-      });
-      import_logger.Logger.getInstance().debug(
-        `Response from ${url}: ${JSON.stringify(res.data)}`
-      );
+      const response = await this.doRequest(method, url, options);
       return {
-        success: res.status >= 200 && res.status < 300,
-        status: res.status,
-        data: JSON.stringify(res.data)
+        success: response.status >= 200 && response.status < 300,
+        status: response.status,
+        data: response.data
       };
     } catch (error) {
       const err = error;
       return {
         success: false,
         status: err.response?.status ?? 500,
-        data: JSON.stringify(err.response?.data) ?? err.message
+        error: JSON.stringify(err.response?.data) ?? err.message
       };
     }
+  }
+  async doRequest(method, url, options) {
+    return this.#axios.request({
+      method,
+      url,
+      ...options ?? {},
+      headers: {
+        "Content-Type": this.#config.contentType ?? "application/json",
+        ...options?.headers ?? {}
+      }
+    });
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

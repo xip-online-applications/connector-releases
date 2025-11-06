@@ -31,9 +31,14 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
     this.CONNECTOR_INSTANCE = "XOD_CONNECTOR_API_SINK_CONFIG";
     this.init = async () => {
       if (this.httpClientInstance === void 0) {
-        this.httpClientInstance = new import_http_client.HttpClient(this.config.http);
+        const httpConfig = this.config.http;
+        const legacyHost = httpConfig.host;
+        const clientConfig = {
+          ...httpConfig,
+          baseUrl: httpConfig.baseUrl ?? legacyHost
+        };
+        this.httpClientInstance = new import_http_client.HttpClient(clientConfig);
       }
-      await this.httpClient.init();
       const jobCallbackFunction = (callbackFunction) => {
         return async (m) => {
           if (m.type !== "JOB") {
@@ -70,7 +75,9 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
             if (result.success) {
               return callbackFunction(message);
             }
-            return (0, import_kafka_base_service.InternalServerError)(result.data)(message);
+            return (0, import_kafka_base_service.InternalServerError)(
+              String(result["error"] ?? "Unknown error")
+            )(message);
           } catch (error) {
             if (error instanceof Error) {
               return (0, import_kafka_base_service.InternalServerError)(error.message)(message);
@@ -96,7 +103,9 @@ class ConnectorRunnerApiSink extends import_connector_runtime.ConnectorRuntime {
             if (result.success) {
               return callbackFunction(message);
             }
-            return (0, import_kafka_base_service.InternalServerError)(result.data)(message);
+            return (0, import_kafka_base_service.InternalServerError)(
+              String(result["error"] ?? "Unknown error")
+            )(message);
           } catch (error) {
             if (error instanceof Error) {
               return (0, import_kafka_base_service.InternalServerError)(error.message)(message);

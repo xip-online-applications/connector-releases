@@ -257,6 +257,16 @@ class ConnectorRuntime {
   async getConfig() {
     let config;
     const configSource = process.env["TRANSAI_CONFIG_SOURCE"] || process.env["XOD_CONFIG_SOURCE"];
+    if (process.env["XOD_CONFIG_SOURCE"] !== void 0) {
+      this.log.warn(
+        "Environment variable XOD_CONFIG_SOURCE is deprecated. Please use TRANSAI_CONFIG_SOURCE instead."
+      );
+    }
+    if (configSource !== "api") {
+      this.log.warn(
+        'Using config source other than "api" is deprecated. Please use TRANSAI_CONFIG_SOURCE=api instead.'
+      );
+    }
     if (configSource === "json") {
       config = JSON.parse(process.env[this.CONNECTOR_INSTANCE]);
       if (!this.checkConfig(config)) {

@@ -146,7 +146,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
       };
       const topic = `${message.tenantIdentifier}${this.processedTopic}`;
       import_logger.Logger.getInstance().debug(
-        `Sending message to logs topic ${topic} ${JSON.stringify(returnMessage)}`
+        `Sending message to logs topic ${topic}, messageId: ${message.eventId}, ${result.statusCode}, ${JSON.stringify(result.message).slice(0, 100)}...`
       );
       await this.producer.send({
         topic,

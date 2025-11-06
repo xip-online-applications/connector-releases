@@ -39,15 +39,6 @@ class ProcessingSDKService {
     };
     return name;
   }
-  async #runHandler(handler) {
-    try {
-      await handler.onRun();
-    } catch (error) {
-      this.#logger.error(
-        `Error running interval handler ${handler.name}: ${error.message}`
-      );
-    }
-  }
   async stopInterval(name) {
     const interval2 = this.#intervals[name];
     if (!interval2) {
@@ -62,21 +53,62 @@ class ProcessingSDKService {
         if (intervalData.subscription) {
           return;
         }
+        if (intervalData.handler.onInit) {
+          try {
+            await intervalData.handler.onInit();
+          } catch (error) {
+            this.#logger.error(
+              `Error during onInit of interval handler ${intervalData.handler.name}: ${error.message}`
+            );
+            return;
+          }
+        }
         intervalData.subscription = (0, import_rxjs.interval)(
           intervalData.interval * 1e3
         ).subscribe(async () => {
-          await this.#runHandler(intervalData.handler);
+          await this.#runHandler(intervalData.handler).catch(
+            (error) => {
+              this.#logger.error(
+                `Interval run failed for ${intervalData.handler.name}:`,
+                error?.message ?? error
+              );
+            }
+          );
         });
         if (intervalData.handler.onStop) {
           intervalData.subscription.add(async () => {
-            await intervalData.handler.onStop();
+            try {
+              await intervalData.handler.onStop();
+            } catch (error) {
+              this.#logger.error(
+                `Interval stop failed for ${intervalData.handler.name}:`,
+                error?.message ?? error
+              );
+            }
           });
         }
         if (intervalData.options?.immediate) {
-          await this.#runHandler(intervalData.handler);
+          await this.#runHandler(intervalData.handler).catch(
+            (error) => {
+              this.#logger.error(
+                `Immediate run failed for ${intervalData.handler.name}:`,
+                error?.message ?? error
+              );
+            }
+          );
         }
       })
     );
+  }
+  async #runHandler(handler) {
+    try {
+      await handler.onRun();
+    } catch (error) {
+      this.#logger.error(
+        `Error running interval handler ${handler.name}: ${error?.message}`,
+        { error }
+      );
+    }
   }
   stopAll() {
     const stopPromises = Object.keys(this.#intervals).map(
