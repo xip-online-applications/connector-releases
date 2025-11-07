@@ -91,7 +91,7 @@ class QueryResultHandler {
       return newField;
     });
     if (queryConfig.incrementalField !== "" && newestTimeStamp.id === previousOffset?.id && newestTimeStamp.timestamp === previousOffset?.timestamp && result.affected !== 0) {
-      import_logger.Logger.getInstance().warn(
+      import_logger.Logger.getInstance().debug(
         `${queryConfig.queryIdentifier} runned successfully. But offset is not changed ${JSON.stringify(newestTimeStamp)}`
       );
       return false;

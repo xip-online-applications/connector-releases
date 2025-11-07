@@ -57,15 +57,17 @@ class TelemetryService {
     const allGaugesToFlush = this.#gaugeQueue.slice();
     const allIncrementsToFlush = { ...this.#incrementQueue };
     this.#incrementQueue = {};
-    this.#logger.info("sdk.telemetry", {
-      tenantIdentifier: this.#connector.tenantIdentifier,
-      connectorIdentifier: this.#connector.identifier,
-      connectorName: this.#connector.name,
-      telemetry: {
-        gauge: allGaugesToFlush,
-        increment: allIncrementsToFlush
-      }
-    });
+    if (allGaugesToFlush.length > 0 || Object.keys(allIncrementsToFlush).length > 0) {
+      this.#logger.info("sdk.telemetry", {
+        tenantIdentifier: this.#connector.tenantIdentifier,
+        connectorIdentifier: this.#connector.identifier,
+        connectorName: this.#connector.name,
+        telemetry: {
+          ...allGaugesToFlush.length > 0 ? { gauge: allGaugesToFlush } : {},
+          ...allIncrementsToFlush.length > 0 ? { increment: allIncrementsToFlush } : {}
+        }
+      });
+    }
     this.#gaugeQueue.splice(0, allGaugesToFlush.length);
   }
 }
