@@ -55,12 +55,14 @@ class TelemetryService {
       ...allGaugesToFlush.length > 0 ? { gauge: allGaugesToFlush } : {},
       ...Object.keys(allIncrementsToFlush).length > 0 ? { increment: allIncrementsToFlush } : {}
     };
-    this.#logger.info("sdk.telemetry", {
-      tenantIdentifier: this.#connector.tenantIdentifier,
-      connectorIdentifier: this.#connector.identifier,
-      connectorName: this.#connector.name,
-      telemetry
-    });
+    if (Object.entries(telemetry).length > 0) {
+      this.#logger.info("sdk.telemetry", {
+        tenantIdentifier: this.#connector.tenantIdentifier,
+        connectorIdentifier: this.#connector.identifier,
+        connectorName: this.#connector.name,
+        telemetry
+      });
+    }
     this.#gaugeQueue.splice(0, allGaugesToFlush.length);
   }
 }
