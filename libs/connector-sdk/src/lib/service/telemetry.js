@@ -53,7 +53,7 @@ class TelemetryService {
     this.#incrementQueue = {};
     const telemetry = {
       ...allGaugesToFlush.length > 0 ? { gauge: allGaugesToFlush } : {},
-      ...allIncrementsToFlush.length > 0 ? { increment: allIncrementsToFlush } : {}
+      ...Object.keys(allIncrementsToFlush).length > 0 ? { increment: allIncrementsToFlush } : {}
     };
     this.#logger.info("sdk.telemetry", {
       tenantIdentifier: this.#connector.tenantIdentifier,
