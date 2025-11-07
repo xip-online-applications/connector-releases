@@ -26,12 +26,14 @@ var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_processing = require("./processing.sdk");
 var import_receiver = require("./receiver.sdk");
 var import_sender = require("./sender.sdk");
+var import_telemetry = require("./service/telemetry");
 var import_templating = require("./templating.sdk");
 class TransAIConnectorSDK {
   #DEFAULT_OFFSETS_DIR = "/var/transai/offsets";
   #apiConfig;
   #logger;
   #kafkaServiceInstance;
+  #telemetryService;
   #sender;
   #templating;
   #offsetStore;
@@ -40,6 +42,7 @@ class TransAIConnectorSDK {
   constructor(connector, logger) {
     this.#logger = logger;
     this.#apiConfig = connector.config;
+    this.#telemetryService = new import_telemetry.TelemetryService(connector, logger);
     const connectorTopic = (0, import_helper_functions.buildConnectorTopic)({
       tenantIdentifier: connector.tenantIdentifier,
       identifier: connector.identifier,
@@ -51,20 +54,29 @@ class TransAIConnectorSDK {
     );
     this.#sender = new import_sender.SenderSDKService(
       this.#apiConfig,
-      this.#kafkaServiceInstance
+      this.#kafkaServiceInstance,
+      this.#telemetryService
     );
     this.#templating = new import_templating.TemplatingSDKService();
-    this.#processing = new import_processing.ProcessingSDKService(this.logger);
+    this.#processing = new import_processing.ProcessingSDKService(
+      this.logger,
+      this.#telemetryService
+    );
     this.#receiver = new import_receiver.ReceiverSDKService(
       this.#apiConfig,
       this.#kafkaServiceInstance,
+      this.#telemetryService,
       connector.actions
     );
     this.#offsetStore = new import_connector_runtime.CloudOffsetStoreService(
       process.env["TRANSAI_TMP_DIR"] ?? this.#DEFAULT_OFFSETS_DIR,
       this.#apiConfig,
       connector.identifier
-    );
+    ).on("telemetry", (stats) => {
+      Object.entries(stats).forEach(([key, value]) => {
+        this.#telemetryService.increment(`sdk.${key}`, value);
+      });
+    });
     this.#offsetStore.init().then(async () => {
       this.logger.debug("Offset store initialized. write start time");
       try {

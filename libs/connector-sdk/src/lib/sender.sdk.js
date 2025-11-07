@@ -24,11 +24,13 @@ var import_uuid = require("uuid");
 class SenderSDKService {
   #connectorConfig;
   #kafkaServiceInstance;
-  constructor(apiConfig, kafkaServiceInstance) {
+  #telemetryService;
+  constructor(apiConfig, kafkaServiceInstance, telemetryService) {
     this.#connectorConfig = apiConfig;
     this.#kafkaServiceInstance = kafkaServiceInstance;
+    this.#telemetryService = telemetryService;
   }
-  metrics(metrics, metadata, context) {
+  async metrics(metrics, metadata, context) {
     const kafkaPayload = metrics.map(
       (body) => ({
         type: "SOURCE",
@@ -46,12 +48,14 @@ class SenderSDKService {
         }
       })
     );
-    return this.#kafkaServiceInstance.send(
+    const value = await this.#kafkaServiceInstance.send(
       kafkaPayload,
       `${this.#connectorConfig.tenantIdentifier}_SOURCE_${this.#connectorConfig.datasourceIdentifier}`
     );
+    this.#telemetryService.increment("sdk.sender.metrics", kafkaPayload.length);
+    return value;
   }
-  metricsLegacy(metrics, metadata, context) {
+  async metricsLegacy(metrics, metadata, context) {
     const kafkaPayload = metrics.map(
       (body) => ({
         type: "SOURCE",
@@ -67,12 +71,17 @@ class SenderSDKService {
         }
       })
     );
-    return this.#kafkaServiceInstance.send(
+    const value = await this.#kafkaServiceInstance.send(
       kafkaPayload,
       `${this.#connectorConfig.tenantIdentifier}_SOURCE_${this.#connectorConfig.datasourceIdentifier}`
     );
+    this.#telemetryService.increment(
+      "sdk.sender.metrics_legacy",
+      kafkaPayload.length
+    );
+    return value;
   }
-  documents(records, metadata, context) {
+  async documents(records, metadata, context) {
     const kafkaPayload = records.map((record) => {
       return {
         type: "SOURCE",
@@ -89,10 +98,12 @@ class SenderSDKService {
         }
       };
     });
-    return this.#kafkaServiceInstance.send(
+    const value = await this.#kafkaServiceInstance.send(
       kafkaPayload,
       `${this.#connectorConfig.tenantIdentifier}_SOURCE_${this.#connectorConfig.datasourceIdentifier}`
     );
+    this.#telemetryService.increment("sdk.sender.documents", records.length);
+    return value;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

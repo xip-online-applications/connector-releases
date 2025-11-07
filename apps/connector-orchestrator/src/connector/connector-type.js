@@ -31,6 +31,7 @@ var import_connector_runner_file_copy = require("@transai/connector-runner-file-
 var import_connector_runner_file_sink = require("@transai/connector-runner-file-sink");
 var import_connector_runner_file_source = require("@transai/connector-runner-file-source");
 var import_connector_runner_microsoft_office365_email = require("@transai/connector-runner-microsoft-office365-email");
+var import_connector_runner_mkg = require("@transai/connector-runner-mkg");
 var import_connector_runner_mqtt = require("@transai/connector-runner-mqtt");
 var import_connector_runner_samba_sink = require("@transai/connector-runner-samba-sink");
 var import_connector_runner_samba_source = require("@transai/connector-runner-samba-source");
@@ -124,6 +125,8 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig,
         connectorSDK
       );
+    case import_types.ConfiguredConnectorTypes.MKG:
+      return new import_connector_runner_mkg.ConnectorRunnerMkg(connectorConfig, connectorSDK);
     default:
       throw new Error(
         `Unknown connector type ${connectorConfig.connectorType}`

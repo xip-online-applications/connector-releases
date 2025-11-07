@@ -30,18 +30,20 @@ __export(cloud_offset_store_service_exports, {
   CloudOffsetStoreService: () => CloudOffsetStoreService
 });
 module.exports = __toCommonJS(cloud_offset_store_service_exports);
+var import_node_events = require("node:events");
 var process = __toESM(require("node:process"));
 var import_logger = require("@transai/logger");
 var import_management_api_client = require("@transai/management-api-client");
 var import_rxjs = require("rxjs");
 var import_offset_store = require("./offset-store.service");
-class CloudOffsetStoreService {
+class CloudOffsetStoreService extends import_node_events.EventEmitter {
   #managementApiClient = new import_management_api_client.ConnectorApiClient();
   #log = import_logger.Logger.getInstance();
   #connectorIdentifier;
   #offsetStore;
   #initialized = false;
   constructor(offsetDirectory, connectorConfig, connectorIdentifier) {
+    super();
     this.#offsetStore = new import_offset_store.OffsetStoreService(
       offsetDirectory,
       connectorConfig
@@ -100,14 +102,18 @@ class CloudOffsetStoreService {
   }
   async #syncAllOffsets() {
     await this.#updateUserOverruledOffsets();
-    await this.#syncOffsets();
+    const offsetsSynced = await this.#syncOffsets();
+    this.emit("telemetry", {
+      "offsets.synced.cloud": offsetsSynced
+    });
   }
   async #syncOffsets() {
     try {
       const offsetsValues = this.#offsetStore.offsetValues;
-      if (offsetsValues.length === 0) {
+      const numberOfOffsets = offsetsValues.length;
+      if (numberOfOffsets === 0) {
         this.#log.debug("No offsets to sync.");
-        return;
+        return numberOfOffsets;
       }
       const offsets = await Promise.all(
         offsetsValues.map(async (o) => ({
@@ -122,9 +128,11 @@ class CloudOffsetStoreService {
       this.#log.debug(
         `Successfully synced ${offsets.length} offsets for ${this.#connectorIdentifier}.`
       );
+      return numberOfOffsets;
     } catch (error) {
       this.#log.error("Error syncing offsets.", error);
     }
+    return 0;
   }
   async #updateUserOverruledOffsets() {
     try {

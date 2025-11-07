@@ -1,8 +1,6 @@
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -16,25 +14,16 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var receiver_sdk_exports = {};
 __export(receiver_sdk_exports, {
   ReceiverSDKService: () => ReceiverSDKService
 });
 module.exports = __toCommonJS(receiver_sdk_exports);
-var process = __toESM(require("node:process"));
 var import_helper_functions = require("@xip-online-data/helper-functions");
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 class ReceiverSDKService {
-  constructor(apiConfig, kafkaServiceInstance, actions) {
+  constructor(apiConfig, kafkaServiceInstance, telemetryService, actions) {
     this.#IPC_CHANNEL = "connector-runtime";
     this.responses = {
       ok: import_kafka_base_service.Ok,
@@ -46,18 +35,22 @@ class ReceiverSDKService {
     };
     this.#connectorConfig = apiConfig;
     this.#kafkaServiceInstance = kafkaServiceInstance;
+    this.#telemetryService = telemetryService;
     this.#actionConfigs = actions;
   }
   #IPC_CHANNEL;
   #connectorConfig;
   #kafkaServiceInstance;
+  #telemetryService;
   #actionConfigs;
   registerCallback(callbackFunction, eventType, identifier) {
     this.#kafkaServiceInstance.setCallbackFunction(
-      this.#validateJobMessage(
-        (0, import_helper_functions.expirationValidatorInLine)(
-          this.#connectorConfig.action?.timeSensitive === true,
-          callbackFunction
+      this.#receivedMessageTelemetry(
+        this.#validateJobMessage(
+          (0, import_helper_functions.expirationValidatorInLine)(
+            this.#connectorConfig.action?.timeSensitive === true,
+            callbackFunction
+          )
         )
       ),
       eventType,
@@ -86,6 +79,14 @@ class ReceiverSDKService {
         message
       });
     }
+  }
+  #receivedMessageTelemetry(callbackFunction) {
+    return async (message) => {
+      this.#telemetryService.increment(
+        `sdk.receiver.message.${message.type.toLowerCase()}`
+      );
+      return callbackFunction(message);
+    };
   }
   #validateJobMessage(callbackFunction) {
     return async (message) => {

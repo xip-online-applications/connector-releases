@@ -23,9 +23,11 @@ module.exports = __toCommonJS(processing_sdk_exports);
 var import_rxjs = require("rxjs");
 class ProcessingSDKService {
   #logger;
+  #telemetryService;
   #intervals = {};
-  constructor(logger) {
+  constructor(logger, telemetryService) {
     this.#logger = logger;
+    this.#telemetryService = telemetryService;
   }
   async registerInterval(intervalSeconds, handler, options) {
     const name = handler?.name ?? `interval-${Object.keys(this.#intervals).length + 1}`;
@@ -103,11 +105,13 @@ class ProcessingSDKService {
   async #runHandler(handler) {
     try {
       await handler.onRun();
+      this.#telemetryService.increment("sdk.processing.runs.success");
     } catch (error) {
       this.#logger.error(
         `Error running interval handler ${handler.name}: ${error?.message}`,
         { error }
       );
+      this.#telemetryService.increment("sdk.processing.runs.error");
     }
   }
   stopAll() {

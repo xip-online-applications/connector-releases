@@ -25,8 +25,6 @@ var import_rxjs = require("rxjs");
 var import_check_two_arrays = require("../util/check-two-arrays");
 class ClusterManager {
   constructor(node, managementApiClient) {
-    // As a backup we use eu-west-1 as default region
-    this.#DEFAULT_AWS_REGION = "eu-west-1";
     this.#enabledConnectors = [];
     this.#startedConnectorProcesses = [];
     this.start = () => {
@@ -141,9 +139,7 @@ class ClusterManager {
         }
       };
       const checkConnectors = async () => {
-        const currentWorkersAmount = Object.entries(
-          this.#node.cluster.workers
-        ).length;
+        const currentWorkersAmount = this.#numberOfAliveWorkers();
         if (currentWorkersAmount !== this.#enabledConnectors.length || this.#startedConnectorProcesses.length !== this.#enabledConnectors.length) {
           this.#logger.error(
             `Number of running workers doesn't match expected: ${currentWorkersAmount}/${this.#enabledConnectors.length} (${this.#startedConnectorProcesses.length})`
@@ -179,10 +175,6 @@ class ClusterManager {
             service: "cluster-manager",
             source: "connector-orchestrator"
           });
-        }
-        let defaultTenantIdentifier = process.env["TENANT_IDENTIFIER"] ?? null;
-        if (defaultTenantIdentifier === "") {
-          defaultTenantIdentifier = null;
         }
         const newConnectors = fullOrchestratorConfig.connectors ?? this.#enabledConnectors;
         const comparisonResult = (0, import_check_two_arrays.checkTwoArrays)(
@@ -226,6 +218,7 @@ class ClusterManager {
           this.#logger.error(`Error while checking connectors ${e?.message}`, e);
           return (0, import_rxjs.of)(null);
         }),
+        (0, import_rxjs.tap)(() => this.#emitTelemetry()),
         (0, import_rxjs.tap)(() => {
           try {
             if (mutex) {
@@ -253,7 +246,6 @@ class ClusterManager {
     this.#managementApiClient = managementApiClient;
     this.#logger = import_logger.Logger.getInstance();
   }
-  #DEFAULT_AWS_REGION;
   #node;
   #managementApiClient;
   #logger;
@@ -261,6 +253,20 @@ class ClusterManager {
   #orchestratorConfig;
   #enabledConnectors;
   #startedConnectorProcesses;
+  #emitTelemetry() {
+    this.#logger.info("cluster_manager.telemetry", {
+      tenantIdentifier: process.env["TENANT_IDENTIFIER"] ?? null,
+      lastUpdatedTimestamp: this.#lastUpdatedTimestamp,
+      workers: this.#numberOfAliveWorkers(),
+      connectors: this.#enabledConnectors.length,
+      startedProcesses: this.#startedConnectorProcesses.length
+    });
+  }
+  #numberOfAliveWorkers() {
+    return Object.values(this.#node.cluster.workers ?? {}).filter(
+      (worker) => worker.isConnected() && !worker.isDead()
+    ).length;
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
