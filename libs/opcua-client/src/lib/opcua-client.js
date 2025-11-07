@@ -83,7 +83,7 @@ class OpcuaClient {
         this.#sessionOpen = false;
       });
       this.#client.on("start_reconnection", () => {
-        this.#logger.warn("OPC UA client reconnected");
+        this.#logger.warn("OPC UA client starting reconnection");
         this.#sessionOpen = false;
       });
       this.#client.on("close", () => {
@@ -91,7 +91,10 @@ class OpcuaClient {
         this.#sessionOpen = false;
       });
       this.#client.on("after_reconnection", (err) => {
-        this.#logger.warn(`OPC UA client reconnected: ${err?.message}`, err);
+        this.#logger.warn(
+          `OPC UA client reconnected: ${err?.message ?? "NO_MESSAGE"}`,
+          err
+        );
         this.#sessionOpen = err === void 0;
       });
       this.#client.on("connected", () => {
