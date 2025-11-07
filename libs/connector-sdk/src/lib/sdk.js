@@ -94,6 +94,7 @@ class TransAIConnectorSDK {
     });
   }
   async start() {
+    this.#telemetryService.start();
     await Promise.all([
       this.#processing.start(),
       this.#kafkaServiceInstance.init()
@@ -105,6 +106,7 @@ class TransAIConnectorSDK {
       this.#kafkaServiceInstance.exitProcess("stop"),
       this.#offsetStore.deInit()
     ]);
+    this.#telemetryService.stop();
   }
   get logger() {
     return this.#logger;

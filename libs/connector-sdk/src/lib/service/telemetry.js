@@ -33,21 +33,15 @@ class TelemetryService {
   constructor(connector, logger) {
     this.#connector = connector;
     this.#logger = logger;
+  }
+  start() {
     this.#sendTelemetrySubscription = (0, import_rxjs.interval)(
       TelemetryService.SEND_INTERVAL_SEC * 1e3
-    ).pipe(
-      (0, import_rxjs.catchError)((error) => {
-        this.#logger.error(
-          `Error while trying to send telemetry ${error?.message}`,
-          error
-        );
-        return (0, import_rxjs.of)(null);
-      })
     ).subscribe(() => this.#emitTelemetry());
-    this.#sendTelemetrySubscription.add(() => this.#emitTelemetry());
+    this.#sendTelemetrySubscription?.add(() => this.#emitTelemetry());
   }
   stop() {
-    this.#sendTelemetrySubscription.unsubscribe();
+    this.#sendTelemetrySubscription?.unsubscribe();
   }
   increment(key, value = 1) {
     this.#incrementQueue[key] = // eslint-disable-next-line security/detect-object-injection
@@ -61,14 +55,12 @@ class TelemetryService {
       ...allGaugesToFlush.length > 0 ? { gauge: allGaugesToFlush } : {},
       ...allIncrementsToFlush.length > 0 ? { increment: allIncrementsToFlush } : {}
     };
-    if (Object.entries(telemetry).length > 0) {
-      this.#logger.info("sdk.telemetry", {
-        tenantIdentifier: this.#connector.tenantIdentifier,
-        connectorIdentifier: this.#connector.identifier,
-        connectorName: this.#connector.name,
-        telemetry
-      });
-    }
+    this.#logger.info("sdk.telemetry", {
+      tenantIdentifier: this.#connector.tenantIdentifier,
+      connectorIdentifier: this.#connector.identifier,
+      connectorName: this.#connector.name,
+      telemetry
+    });
     this.#gaugeQueue.splice(0, allGaugesToFlush.length);
   }
 }
