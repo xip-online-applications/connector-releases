@@ -15,11 +15,15 @@ async function main() {
     });
   }
   if (node.cluster.isPrimary) {
+    const tenantIdentifier = process.env.TENANT_IDENTIFIER;
     import_logger.Logger.getInstance(
       `[${node.process.pid}] connector-orchestrator`
     ).setDatadogTransport({
       service: "cluster-manager",
-      source: "connector-orchestrator"
+      source: "connector-orchestrator",
+      tags: {
+        tenantIdentifier
+      }
     });
     new import_cluster.ClusterManager(node, new import_management_api_client.ConnectorApiClient()).start().subscribe();
   } else {
