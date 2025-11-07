@@ -218,7 +218,6 @@ class ClusterManager {
           this.#logger.error(`Error while checking connectors ${e?.message}`, e);
           return (0, import_rxjs.of)(null);
         }),
-        (0, import_rxjs.tap)(() => this.#emitTelemetry()),
         (0, import_rxjs.tap)(() => {
           try {
             if (mutex) {
@@ -239,7 +238,8 @@ class ClusterManager {
           } catch (error) {
             this.#logger.error("Error while checking connectors", error);
           }
-        })
+        }),
+        (0, import_rxjs.tap)(() => this.#emitTelemetry())
       );
     };
     this.#node = node;
