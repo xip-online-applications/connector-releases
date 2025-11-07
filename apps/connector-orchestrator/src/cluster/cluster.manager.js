@@ -173,7 +173,10 @@ class ClusterManager {
           this.#logger.setDatadogTransport({
             apiKey: this.#orchestratorConfig.datadogApiKey,
             service: "cluster-manager",
-            source: "connector-orchestrator"
+            source: "connector-orchestrator",
+            tags: {
+              tenantIdentifier: process.env["TENANT_IDENTIFIER"]
+            }
           });
         }
         const newConnectors = fullOrchestratorConfig.connectors ?? this.#enabledConnectors;
