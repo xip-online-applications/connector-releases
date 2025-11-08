@@ -35,6 +35,9 @@ class ExtractorService {
       `[OPC UA] [${this.#opcUaCallConfig.name}] Extractor service initialized with interval of ${this.#opcUaCallConfig.interval} seconds`
     );
   }
+  get name() {
+    return `extractor-bystronic-${this.#opcUaCallConfig.name}`;
+  }
   async onInit() {
     await this.#opcUaClient.init().catch((error) => {
       this.#sdk.logger.error(
