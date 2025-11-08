@@ -57,7 +57,7 @@ class ProcessingSDKService {
         }
         if (intervalData.handler.onInit) {
           try {
-            this.#logger.verbose(
+            this.#logger.debug(
               `Running onInit for ${intervalData.handler.name}`
             );
             await intervalData.handler.onInit();
@@ -67,7 +67,7 @@ class ProcessingSDKService {
             );
           }
         }
-        this.#logger.verbose(
+        this.#logger.debug(
           `Subscribing interval for ${intervalData.handler.name}`
         );
         intervalData.subscription = (0, import_rxjs.interval)(
@@ -82,13 +82,13 @@ class ProcessingSDKService {
             }
           );
         });
-        this.#logger.verbose(
+        this.#logger.debug(
           `Interval for ${intervalData.handler.name} subscribed every ${intervalData.interval} seconds`
         );
         if (intervalData.handler.onStop) {
           intervalData.subscription.add(async () => {
             try {
-              this.#logger.verbose(
+              this.#logger.debug(
                 `Running onStop for ${intervalData.handler.name}`
               );
               await intervalData.handler.onStop();
@@ -101,7 +101,7 @@ class ProcessingSDKService {
           });
         }
         if (intervalData.options?.immediate) {
-          this.#logger.verbose(
+          this.#logger.debug(
             `Running interval immediately for ${intervalData.handler.name}`
           );
           await this.#runHandler(intervalData.handler).catch(
