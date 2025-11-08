@@ -44,6 +44,7 @@ class TelemetryService {
     this.#sendTelemetrySubscription?.unsubscribe();
   }
   increment(key, value = 1) {
+    this.#logger.info(`increment ${key}: ${value}`);
     this.#incrementQueue[key] = // eslint-disable-next-line security/detect-object-injection
     (this.#incrementQueue[key] ?? 0) + value;
   }

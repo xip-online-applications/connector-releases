@@ -74,7 +74,9 @@ class TransAIConnectorSDK {
       connector.identifier
     ).on("telemetry", (stats) => {
       Object.entries(stats).forEach(([key, value]) => {
-        this.#telemetryService.increment(`sdk.${key}`, value);
+        if (value > 0) {
+          this.#telemetryService.increment(`sdk.${key}`, value);
+        }
       });
     });
     this.#offsetStore.init().then(async () => {

@@ -103,6 +103,7 @@ class ProcessingSDKService {
     );
   }
   async #runHandler(handler) {
+    this.#logger.info(`Running interval handler ${handler.name}`);
     try {
       await handler.onRun();
       this.#telemetryService.increment("sdk.processing.runs.success");
