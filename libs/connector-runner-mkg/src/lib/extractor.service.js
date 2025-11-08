@@ -34,6 +34,9 @@ class ExtractorService {
     this.#table = table;
     this.#fieldsList = table.fields.join(",");
   }
+  get name() {
+    return `mkg-extractor-${this.#tableIdentifier}`;
+  }
   async onRun() {
     try {
       const now = /* @__PURE__ */ new Date();

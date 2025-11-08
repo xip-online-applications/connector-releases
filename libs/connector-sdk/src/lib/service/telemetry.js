@@ -44,7 +44,6 @@ class TelemetryService {
     this.#sendTelemetrySubscription?.unsubscribe();
   }
   increment(key, value = 1) {
-    this.#logger.info(`increment ${key}: ${value}`);
     if (value === 0) {
       return;
     }

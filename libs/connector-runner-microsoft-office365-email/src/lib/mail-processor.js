@@ -42,6 +42,9 @@ class MailProcessor {
   #fileHandler;
   #processing;
   #processingTries;
+  get name() {
+    return `mail-processor-${this.#mailboxConfig.mailboxIdentifier}-${this.#mailboxConfig.mailbox}`;
+  }
   async onRun() {
     if (this.#processing) {
       if (this.#processingTries > this.MAX_PROCESSING_TRIES) {

@@ -36,7 +36,7 @@ class ExtractorService {
     );
   }
   get name() {
-    return `extractor-bystronic-${this.#opcUaCallConfig.name}`;
+    return `bystronic-extractor-${this.#opcUaCallConfig.name}`;
   }
   async onInit() {
     await this.#opcUaClient.init().catch((error) => {

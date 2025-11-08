@@ -141,7 +141,7 @@ class ClusterManager {
       const checkConnectors = async () => {
         const currentWorkersAmount = this.#numberOfAliveWorkers();
         if (currentWorkersAmount !== this.#enabledConnectors.length || this.#startedConnectorProcesses.length !== this.#enabledConnectors.length) {
-          this.#logger.error(
+          this.#logger.warn(
             `Number of running workers doesn't match expected: ${currentWorkersAmount}/${this.#enabledConnectors.length} (${this.#startedConnectorProcesses.length})`
           );
         }
@@ -153,7 +153,7 @@ class ClusterManager {
           return (/* @__PURE__ */ new Date()).toISOString();
         });
         if (newLastUpdatedTimestamp === this.#lastUpdatedTimestamp) {
-          this.#logger.info(
+          this.#logger.verbose(
             `Last updated timestamp has not changed. Current number of connector running: ${currentWorkersAmount}/${this.#enabledConnectors.length}`
           );
           return;
@@ -215,7 +215,7 @@ class ClusterManager {
         this.#lastUpdatedTimestamp = newLastUpdatedTimestamp;
       };
       let mutex = false;
-      this.#logger.info("Starting process to check connectors...");
+      this.#logger.debug("Starting process to check connectors...");
       return (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
         (0, import_rxjs.catchError)((e) => {
           this.#logger.error(`Error while checking connectors ${e?.message}`, e);
