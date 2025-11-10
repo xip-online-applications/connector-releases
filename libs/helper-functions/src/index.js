@@ -21,6 +21,7 @@ __reExport(src_exports, require("./lib/sentry"), module.exports);
 __reExport(src_exports, require("./lib/cube-query-helper"), module.exports);
 __reExport(src_exports, require("./lib/connector-config-placeholder-parser"), module.exports);
 __reExport(src_exports, require("./lib/workflow-parameter-parser"), module.exports);
+__reExport(src_exports, require("./lib/workflow-run-generator"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./lib/build-connector-topic"),
@@ -29,5 +30,6 @@ __reExport(src_exports, require("./lib/workflow-parameter-parser"), module.expor
   ...require("./lib/sentry"),
   ...require("./lib/cube-query-helper"),
   ...require("./lib/connector-config-placeholder-parser"),
-  ...require("./lib/workflow-parameter-parser")
+  ...require("./lib/workflow-parameter-parser"),
+  ...require("./lib/workflow-run-generator")
 });

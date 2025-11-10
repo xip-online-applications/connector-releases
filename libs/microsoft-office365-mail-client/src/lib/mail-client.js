@@ -24,10 +24,6 @@ var import_logger = require("@transai/logger");
 var import_office365_client = require("./office365-client");
 var import_office365_mail_parser = require("./office365-mail-parser");
 class MailClient {
-  /**
-   * 6 hours (tune if needed)
-   */
-  #OVERLAP_MS = 216e5;
   #office365Client;
   #office365Parser;
   #config;
@@ -44,40 +40,26 @@ class MailClient {
       throw new Error("Graph requires tenantId, clientId, and clientSecret");
     }
   }
-  async readMailbox(mailbox, lastSeenTimestamp = 0, lastSeenId = void 0, limit = 10) {
+  async readMailbox(mailbox, lastDelta, limit = 10) {
     try {
       await this.#init();
-      const fromEpoch = Math.max(
-        0,
-        (lastSeenTimestamp || 0) - this.#OVERLAP_MS
-      );
       const folder = await this.#office365Client.getFolder(mailbox);
       if (!folder) {
         throw new Error(`Mailbox folder not found: ${mailbox}`);
       }
-      const mails = await this.#office365Client.getMails(
+      const { mails, deltaLink } = await this.#office365Client.getMails(
         folder,
-        limit,
-        fromEpoch
+        lastDelta,
+        limit
       );
-      const seenIds = /* @__PURE__ */ new Set();
-      const messages = await Promise.all(
-        mails.filter((office365Mail) => !!office365Mail).filter((office365Mail) => !seenIds.has(office365Mail.id)).map(
-          async (office365Mail) => this.#parseEmail(
-            office365Mail,
-            folder,
-            seenIds,
-            lastSeenTimestamp,
-            lastSeenId
-          )
-        )
-      );
-      return messages.filter((gm) => !!gm).sort((a, b) => {
-        if (a.deltaTimestamp !== b.deltaTimestamp) {
-          return a.deltaTimestamp - b.deltaTimestamp;
+      const results = [];
+      for (const office365Mail of mails.filter(Boolean)) {
+        const msg = await this.#parseEmail(office365Mail, folder, deltaLink);
+        if (msg) {
+          results.push(msg);
         }
-        return a.deltaId.localeCompare(b.deltaId);
-      });
+      }
+      return results.sort((a, b) => a.date.getTime() - b.date.getTime());
     } catch (err) {
       const message = `Failed to read email from mailbox ${mailbox}`;
       this.#logger.warn(message, err);
@@ -161,38 +143,26 @@ class MailClient {
       `Microsoft Office 365 mail client initialized for ${this.#config.username}`
     );
   }
-  #isAfterCursor(t, id, lastTime, lastId) {
-    if (t > lastTime)
-      return true;
-    if (t < lastTime)
-      return false;
-    if (!lastId)
-      return true;
-    return id > lastId;
-  }
-  async #parseEmail(office365Mail, office365Folder, seenIds, lastSeenTimestamp, lastSeenId) {
-    const receivedMs = office365Mail.receivedDateTime ? new Date(office365Mail.receivedDateTime).getTime() : office365Mail.sentDateTime ? new Date(office365Mail.sentDateTime).getTime() : 0;
-    if (!this.#isAfterCursor(
-      receivedMs,
-      office365Mail.id,
-      lastSeenTimestamp,
-      lastSeenId
-    )) {
-      return void 0;
-    }
+  async #parseEmail(office365Mail, office365Folder, deltaLink) {
     try {
       const fullMail = await this.#office365Client.getFullMail(
         office365Folder,
         office365Mail
       );
-      seenIds.add(office365Mail.id);
+      let extraData = null;
+      if (this.#config.emlTestMode) {
+        const extraDataBuf = await this.#office365Client.getExtraData(office365Folder, office365Mail).catch(() => {
+          return null;
+        });
+        extraData = extraDataBuf?.toString();
+      }
       return this.#office365Parser.parsedToMailMessage(
         office365Mail,
         fullMail,
-        new Date(receivedMs)
+        deltaLink,
+        extraData
       );
     } catch (err) {
-      seenIds.delete(office365Mail.id);
       this.#logger.warn(
         `Failed to read full mail and parse: [${office365Folder.id}] ${office365Folder.displayName} // [${office365Mail.id}] ${office365Mail.subject}`,
         err

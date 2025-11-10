@@ -81,16 +81,13 @@ class MailProcessor {
     const lastOffset = await this.#sdk.offsetStore.getOffset(
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );
-    const lastMessageId = lastOffset?.id || "";
-    const lastMessageTimestamp = lastOffset?.timestamp || 0;
+    const lastDelta = lastOffset?.deltaLink;
     this.#logger.verbose(
-      `Last message ID of mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}:`,
-      lastMessageId
+      `Last message ID of mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}: ${lastDelta}`
     );
     const messages = await this.#mailClient.readMailbox(
       config.mailbox,
-      lastMessageTimestamp,
-      lastMessageId,
+      lastDelta ? String(lastDelta) : void 0,
       config.limit ?? 10
     );
     if (messages.length === 0) {
@@ -140,9 +137,9 @@ class MailProcessor {
     const lastMessage = preparedMessages[preparedMessages.length - 1];
     this.#sdk.offsetStore.setOffset(
       {
-        timestamp: lastMessage.deltaTimestamp,
-        id: lastMessage.deltaId,
-        rawTimestamp: (/* @__PURE__ */ new Date()).toISOString()
+        timestamp: Date.now(),
+        id: lastMessage.originalMessageId,
+        deltaLink: lastMessage.deltaLink
       },
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );

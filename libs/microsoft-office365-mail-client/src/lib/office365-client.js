@@ -91,23 +91,29 @@ class Office365Client {
     this.#mailCache[messageId] = mail;
     return mail;
   }
-  async getMails(folder, limit = 100, fromEpochMs = 0) {
-    const iso = new Date(fromEpochMs).toISOString();
+  async getMails(folder, prevDeltaLink, limit = 10) {
     const params = new URLSearchParams();
     params.set("$select", import_office365_types.EMAIL_SELECTABLE_FIELD.join(","));
-    params.set("$orderby", "lastModifiedDateTime asc");
-    params.set("$filter", `lastModifiedDateTime ge ${iso}`);
     params.set("$top", limit.toString());
-    const out = [];
-    let url = `${this.#base}/mailFolders/${folder.id}/messages?${params.toString()}`;
-    while (url && url !== "") {
-      const page = await this.#graphRequest(url);
-      if (page?.value?.length) {
-        out.push(...page.value);
-      }
-      url = page?.["@odata.nextLink"] || null;
+    if (!prevDeltaLink) {
+      params.set("$orderby", "receivedDateTime DESC");
+      params.set("$filter", `receivedDateTime ge ${(/* @__PURE__ */ new Date()).toISOString()}`);
     }
-    return out;
+    let url = prevDeltaLink ?? `${this.#base}/mailFolders/${folder.id}/messages/delta?${params.toString()}`;
+    const mails = [];
+    let deltaLink;
+    while (url) {
+      const page = await this.#graphRequest(url);
+      mails.push(...(page?.value ?? []).filter((item) => !item["@removed"]));
+      if (page?.["@odata.deltaLink"]) {
+        deltaLink = page?.["@odata.deltaLink"];
+      }
+      url = page?.["@odata.nextLink"];
+    }
+    return {
+      mails,
+      deltaLink: deltaLink ?? prevDeltaLink ?? `${this.#base}/mailFolders/${folder.id}/messages/delta?${params.toString()}`
+    };
   }
   async getFullMail(folder, mail) {
     let mimeBuf = null;
@@ -118,6 +124,9 @@ class Office365Client {
       mimeBuf = await this.#downloadMessageMime(folder.id, mail.id);
     }
     return (0, import_mailparser.simpleParser)(mimeBuf);
+  }
+  async getExtraData(folder, mail) {
+    return this.#tryGetJsonExtraDataBuffer(folder.id, mail);
   }
   async getMailCategories(mail) {
     return this.#graphRequest(
@@ -305,6 +314,29 @@ class Office365Client {
     }
     const item = attachments.find(
       (a) => a["@odata.type"] === "#microsoft.graph.itemAttachment" && (a.item?.["@odata.type"] === "#microsoft.graph.message" || a.contentType === "message/rfc822")
+    );
+    if (item?.id) {
+      return this.#graphRequest(
+        `${this.#base}/mailFolders/${folderId}/messages/${mail.id}/attachments/${encodeURIComponent(item.id)}/$value`
+      );
+    }
+    return null;
+  }
+  async #tryGetJsonExtraDataBuffer(folderId, mail) {
+    const attachments = await this.listAttachments(mail);
+    const fileJson = attachments.find(
+      (attachment) => attachment["@odata.type"] === "#microsoft.graph.fileAttachment" && (attachment.contentType || "").toLowerCase() === "application/json" && String(attachment.name || attachment.fileName || "").toLowerCase() === "extradata.json"
+    );
+    if (fileJson?.contentBytes) {
+      return Buffer.from(fileJson.contentBytes, "base64");
+    }
+    if (fileJson?.id) {
+      return this.#graphRequest(
+        `${this.#base}/mailFolders/${folderId}/messages/${mail.id}/attachments/${encodeURIComponent(fileJson.id)}/$value`
+      );
+    }
+    const item = attachments.find(
+      (a) => a["@odata.type"] === "#microsoft.graph.itemAttachment" && (a.item?.["@odata.type"] === "#microsoft.graph.message" || a.contentType === "application/json")
     );
     if (item?.id) {
       return this.#graphRequest(

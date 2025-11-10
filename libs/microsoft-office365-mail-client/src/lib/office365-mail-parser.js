@@ -33,8 +33,7 @@ module.exports = __toCommonJS(office365_mail_parser_exports);
 var import_pdf2md = __toESM(require("@opendocsg/pdf2md"));
 var import_html_to_text = require("html-to-text");
 class Office365MailParser {
-  async parsedToMailMessage(mail, parsed, receivedFallback) {
-    const date = parsed.date ?? receivedFallback;
+  async parsedToMailMessage(mail, parsed, deltaLink, extraData) {
     const headers = [];
     const headerLines = [];
     parsed.headers.forEach((value, key) => {
@@ -54,8 +53,8 @@ class Office365MailParser {
     const html = typeof parsed.html === "string" ? parsed.html : void 0;
     const text = parsed.text || (html ? (0, import_html_to_text.htmlToText)(html) : "");
     return {
-      deltaTimestamp: receivedFallback.getTime(),
-      deltaId: mail.id,
+      deltaLink,
+      extraData,
       id: parsed.messageId ?? mail.id,
       originalMessageId: mail.internetMessageId,
       attachmentsCount: (parsed.attachments ?? []).length,
@@ -64,7 +63,7 @@ class Office365MailParser {
       headerLines,
       subject: parsed.subject,
       references: parsed.references,
-      date,
+      date: new Date(parsed.date ?? mail.sentDateTime ?? /* @__PURE__ */ new Date()),
       to,
       from,
       cc,

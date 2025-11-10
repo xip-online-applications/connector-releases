@@ -66,7 +66,7 @@ class DatasourceExtractorService {
     });
     this.#validateTemplate();
     import_logger.Logger.getInstance().debug(
-      `Sink Service build. Go init now: ${queryConfig.queryIdentifier}`
+      `Source Service build. Go init now: ${queryConfig.queryIdentifier}`
     );
   }
   async init() {

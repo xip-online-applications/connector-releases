@@ -131,7 +131,7 @@ class OffsetStoreService {
       this.setOffset(defaultOffset, identifier);
       await this.#storeOffsetFileSystem();
       return defaultOffset;
-    } catch (error) {
+    } catch {
       const date = /* @__PURE__ */ new Date();
       const timestamp = date.getTime();
       const rawTimestamp = date.toISOString();
