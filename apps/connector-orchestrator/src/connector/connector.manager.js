@@ -79,8 +79,9 @@ class ConnectorManager {
       });
       if (connector instanceof import_connector_runtime_sdk.ConnectorRuntimeSDK) {
         await connector.init();
+        await sdk.start();
       }
-      await Promise.all([sdk.start(), connector.start()]);
+      await connector.start();
     };
     this.#buildConnectorConfiguration = (connector) => {
       const tenantIdentifier = this.#tenantIdentifier ?? connector.tenantIdentifier;
