@@ -72,6 +72,17 @@ class CloudOffsetStoreService extends import_node_events.EventEmitter {
   setOffset(offset, identifier) {
     this.#offsetStore.setOffset(offset, identifier);
   }
+  async testWriteFile() {
+    try {
+      await this.#offsetStore.writeFile(this.#connectorIdentifier, {
+        start: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      this.#log.verbose("Start time written");
+    } catch (err) {
+      this.#log.error("Error writing start time");
+      throw err;
+    }
+  }
   async #initializeOffsets() {
     this.#log.verbose(`Initializing offset for ${this.#connectorIdentifier}`);
     await this.#initOffsetsFromCloud();

@@ -78,7 +78,7 @@ class ConnectorManager {
         this.#node.process.exit(1);
       });
       if (connector instanceof import_connector_runtime_sdk.ConnectorRuntimeSDK) {
-        await connector.init();
+        await Promise.all([sdk.init(), connector.init()]);
         await sdk.start();
       }
       await connector.start();

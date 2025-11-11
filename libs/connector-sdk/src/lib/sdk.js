@@ -79,17 +79,11 @@ class TransAIConnectorSDK {
         }
       });
     });
-    this.#offsetStore.init().then(async () => {
-      this.logger.debug("Offset store initialized. write start time");
-      try {
-        await this.#offsetStore.writeFile(connector.identifier, {
-          start: (/* @__PURE__ */ new Date()).toISOString()
-        });
-      } catch (err) {
-        this.logger.error("Error writing start time");
-        throw err;
-      }
-      this.logger.debug("Start time written");
+  }
+  async init() {
+    await this.#offsetStore.init().then(async () => {
+      this.logger.debug("Offset store initialized.");
+      await this.#offsetStore.testWriteFile();
     }).catch((err) => {
       this.logger.error("Error init offset store");
       throw err;
