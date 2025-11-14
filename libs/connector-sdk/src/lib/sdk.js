@@ -26,6 +26,7 @@ var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_processing = require("./processing.sdk");
 var import_receiver = require("./receiver.sdk");
 var import_sender = require("./sender.sdk");
+var import_http_client = require("./service/http-client");
 var import_telemetry = require("./service/telemetry");
 var import_templating = require("./templating.sdk");
 class TransAIConnectorSDK {
@@ -101,7 +102,9 @@ class TransAIConnectorSDK {
       this.#processing.stopAll(),
       this.#kafkaServiceInstance.exitProcess("stop"),
       this.#offsetStore.deInit()
-    ]);
+    ]).catch((err) => {
+      this.logger.error("Error stopping SDK services", err);
+    });
     this.#telemetryService.stop();
   }
   get logger() {
@@ -124,6 +127,9 @@ class TransAIConnectorSDK {
   }
   get offsetStore() {
     return this.#offsetStore;
+  }
+  httpClient(httpConfig) {
+    return new import_http_client.HttpClientSDK(httpConfig, this.#telemetryService);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

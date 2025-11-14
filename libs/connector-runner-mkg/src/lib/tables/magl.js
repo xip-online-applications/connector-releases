@@ -20,8 +20,8 @@ __export(magl_exports, {
   MKG_TABLE_MAGL: () => MKG_TABLE_MAGL
 });
 module.exports = __toCommonJS(magl_exports);
-var import_base = require("./_base");
-const MKG_TABLE_MAGL = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_MAGL = new import_table.MkgTable({
   identifier: "magl",
   fields: [
     "magl_memo",

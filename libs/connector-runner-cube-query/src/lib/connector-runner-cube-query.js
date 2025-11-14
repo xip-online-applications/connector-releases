@@ -34,7 +34,6 @@ var import_core = __toESM(require("@cubejs-client/core"));
 var import_connector_runtime_sdk = require("@transai/connector-runtime-sdk");
 var import_helper_functions = require("@xip-online-data/helper-functions");
 var import_httpclient = require("@xip-online-data/httpclient");
-var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 class ConnectorRunnerCubeQuery extends import_connector_runtime_sdk.ConnectorRuntimeSDK {
   constructor(connector, connectorSDK) {
     super(connector, connectorSDK);
@@ -87,7 +86,9 @@ class ConnectorRunnerCubeQuery extends import_connector_runtime_sdk.ConnectorRun
               errorMessage += error.message;
             }
             this.#logger.error(errorMessage);
-            return (0, import_kafka_base_service.BadRequest)(errorMessage)(message);
+            return this.connectorSDK.receiver.responses.badRequest(errorMessage)(
+              message
+            );
           }
           const result = queryResult.serialize().loadResponse.results;
           this.#logger.info("Cube query executed successfully", result);

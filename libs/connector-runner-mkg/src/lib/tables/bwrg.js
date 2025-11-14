@@ -20,8 +20,8 @@ __export(bwrg_exports, {
   MKG_TABLE_BWRG: () => MKG_TABLE_BWRG
 });
 module.exports = __toCommonJS(bwrg_exports);
-var import_base = require("./_base");
-const MKG_TABLE_BWRG = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_BWRG = new import_table.MkgTable({
   identifier: "bwrg",
   fields: [
     "bwrg_inkoopofferte",

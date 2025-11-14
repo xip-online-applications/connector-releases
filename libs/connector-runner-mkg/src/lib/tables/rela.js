@@ -20,8 +20,8 @@ __export(rela_exports, {
   MKG_TABLE_RELA: () => MKG_TABLE_RELA
 });
 module.exports = __toCommonJS(rela_exports);
-var import_base = require("./_base");
-const MKG_TABLE_RELA = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_RELA = new import_table.MkgTable({
   identifier: "rela",
   fields: [
     "rela_vrij_datum_4",

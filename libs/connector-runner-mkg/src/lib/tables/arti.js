@@ -20,8 +20,8 @@ __export(arti_exports, {
   MKG_TABLE_ARTI: () => MKG_TABLE_ARTI
 });
 module.exports = __toCommonJS(arti_exports);
-var import_base = require("./_base");
-const MKG_TABLE_ARTI = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_ARTI = new import_table.MkgTable({
   identifier: "arti",
   interval: 300,
   fields: [

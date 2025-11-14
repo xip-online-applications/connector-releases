@@ -20,8 +20,8 @@ __export(clch_exports, {
   MKG_TABLE_CLCH: () => MKG_TABLE_CLCH
 });
 module.exports = __toCommonJS(clch_exports);
-var import_base = require("./_base");
-const MKG_TABLE_CLCH = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_CLCH = new import_table.MkgTable({
   identifier: "clch",
   interval: 60,
   fields: [

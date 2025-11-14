@@ -21,13 +21,14 @@ __export(connector_config_placeholder_parser_exports, {
 });
 module.exports = __toCommonJS(connector_config_placeholder_parser_exports);
 function replacePlaceholdersInConfig(config, inputs) {
-  const placeholderRegex = /{{message\.(\w+)}}/;
+  const placeholderRegex = /{{\s*(message|inputs)\.(\w+)\s*}}/;
   const replacePlaceholders = (value) => {
     if (typeof value === "string") {
       const match = value.match(placeholderRegex);
       if (match) {
-        const messageKey = match[1];
-        return inputs[messageKey] !== void 0 ? inputs[messageKey] : value;
+        const identifier = match[1];
+        const key = match[2];
+        return inputs[key] !== void 0 ? inputs[key] : value;
       }
       return value;
     }

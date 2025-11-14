@@ -15,23 +15,34 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var artg_exports = {};
-__export(artg_exports, {
-  MKG_TABLE_ARTG: () => MKG_TABLE_ARTG
+var parl_exports = {};
+__export(parl_exports, {
+  MKG_TABLE_PARL: () => MKG_TABLE_PARL
 });
-module.exports = __toCommonJS(artg_exports);
+module.exports = __toCommonJS(parl_exports);
+var import_action = require("./base/action");
 var import_table = require("./base/table");
-const MKG_TABLE_ARTG = new import_table.MkgTable({
-  identifier: "artg",
+const ACTION_MOVE = new import_action.MkgAction({
+  identifier: "move",
+  method: "PUT",
   fields: [
-    "artg_num",
-    "artg_rela",
-    "artg_cred",
-    "artg_oms",
-    "artg_inkoopofferte"
-  ]
+    "admi_num",
+    "part_num",
+    "magl_code",
+    "t_doel_magl",
+    "t_doel_aantal",
+    "RowKey"
+  ],
+  path: () => "parl/0/Service/s_partij_verplaatsen"
 });
+const MKG_TABLE_PARL = new import_table.MkgTable(
+  {
+    identifier: "parl",
+    fields: []
+  },
+  [ACTION_MOVE]
+);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  MKG_TABLE_ARTG
+  MKG_TABLE_PARL
 });

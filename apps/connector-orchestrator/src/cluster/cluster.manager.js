@@ -152,6 +152,7 @@ class ClusterManager {
           );
           return (/* @__PURE__ */ new Date()).toISOString();
         });
+        this.#lastCheckTimestamp = (/* @__PURE__ */ new Date()).toISOString();
         if (newLastUpdatedTimestamp === this.#lastUpdatedTimestamp) {
           this.#logger.verbose(
             `Last updated timestamp has not changed. Current number of connector running: ${currentWorkersAmount}/${this.#enabledConnectors.length}`
@@ -216,7 +217,12 @@ class ClusterManager {
       };
       let mutex = false;
       this.#logger.debug("Starting process to check connectors...");
-      return (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
+      const telemetryTimer = (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
+        (0, import_rxjs.map)((num) => `Telemetry tick ${num}`),
+        (0, import_rxjs.tap)(() => this.#emitTelemetry())
+      );
+      const checkConnectorsTimer = (0, import_rxjs.timer)(0, 60 * 1e3).pipe(
+        (0, import_rxjs.map)((num) => `Check connectors tick ${num}`),
         (0, import_rxjs.catchError)((e) => {
           this.#logger.error(`Error while checking connectors ${e?.message}`, e);
           return (0, import_rxjs.of)(null);
@@ -241,9 +247,9 @@ class ClusterManager {
           } catch (error) {
             this.#logger.error("Error while checking connectors", error);
           }
-        }),
-        (0, import_rxjs.tap)(() => this.#emitTelemetry())
+        })
       );
+      return (0, import_rxjs.merge)(telemetryTimer, checkConnectorsTimer);
     };
     this.#node = node;
     this.#managementApiClient = managementApiClient;
@@ -252,6 +258,7 @@ class ClusterManager {
   #node;
   #managementApiClient;
   #logger;
+  #lastCheckTimestamp;
   #lastUpdatedTimestamp;
   #orchestratorConfig;
   #enabledConnectors;
@@ -260,6 +267,7 @@ class ClusterManager {
     this.#logger.info("cluster_manager.telemetry", {
       tenantIdentifier: process.env["TENANT_IDENTIFIER"] ?? null,
       lastUpdatedTimestamp: this.#lastUpdatedTimestamp,
+      lastCheckTimestamp: this.#lastCheckTimestamp,
       workers: this.#numberOfAliveWorkers(),
       connectors: this.#enabledConnectors.length,
       startedProcesses: this.#startedConnectorProcesses.length

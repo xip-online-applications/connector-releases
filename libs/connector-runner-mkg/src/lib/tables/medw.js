@@ -20,8 +20,8 @@ __export(medw_exports, {
   MKG_TABLE_MEDW: () => MKG_TABLE_MEDW
 });
 module.exports = __toCommonJS(medw_exports);
-var import_base = require("./_base");
-const MKG_TABLE_MEDW = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_MEDW = new import_table.MkgTable({
   identifier: "medw",
   fields: [
     "medw_pensioenpremie_werkn",

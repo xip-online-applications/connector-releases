@@ -68,7 +68,8 @@ class HttpClient {
       return {
         success: response.status >= 200 && response.status < 300,
         status: response.status,
-        data: response.data
+        data: response.data,
+        headers: response.headers
       };
     } catch (error) {
       const err = error;

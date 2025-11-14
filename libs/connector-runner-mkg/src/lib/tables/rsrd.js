@@ -20,8 +20,8 @@ __export(rsrd_exports, {
   MKG_TABLE_RSRD: () => MKG_TABLE_RSRD
 });
 module.exports = __toCommonJS(rsrd_exports);
-var import_base = require("./_base");
-const MKG_TABLE_RSRD = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_RSRD = new import_table.MkgTable({
   identifier: "rsrd",
   interval: 300,
   fields: [

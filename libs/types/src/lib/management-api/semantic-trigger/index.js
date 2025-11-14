@@ -14,6 +14,7 @@ var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "defau
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var semantic_trigger_exports = {};
 module.exports = __toCommonJS(semantic_trigger_exports);
+__reExport(semantic_trigger_exports, require("./custom-cron-trigger-record.interface"), module.exports);
 __reExport(semantic_trigger_exports, require("./semantic-trigger-filter.interface"), module.exports);
 __reExport(semantic_trigger_exports, require("./semantic-trigger-filters.interface"), module.exports);
 __reExport(semantic_trigger_exports, require("./semantic-trigger-record.interface"), module.exports);
@@ -21,6 +22,7 @@ __reExport(semantic_trigger_exports, require("./semantic-trigger.interface"), mo
 __reExport(semantic_trigger_exports, require("./semantic-triggers.interface"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ...require("./custom-cron-trigger-record.interface"),
   ...require("./semantic-trigger-filter.interface"),
   ...require("./semantic-trigger-filters.interface"),
   ...require("./semantic-trigger-record.interface"),

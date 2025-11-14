@@ -20,8 +20,8 @@ __export(rgrs_exports, {
   MKG_TABLE_RGRS: () => MKG_TABLE_RGRS
 });
 module.exports = __toCommonJS(rgrs_exports);
-var import_base = require("./_base");
-const MKG_TABLE_RGRS = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_RGRS = new import_table.MkgTable({
   identifier: "rgrs",
   interval: 60,
   fields: [

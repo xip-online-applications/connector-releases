@@ -24,6 +24,7 @@ var TriggerType = /* @__PURE__ */ ((TriggerType2) => {
   TriggerType2["DASHBOARD_VISUALIZATION"] = "dashboard_visualization";
   TriggerType2["FORM"] = "form";
   TriggerType2["SEMANTIC_TRIGGER"] = "semantic_trigger";
+  TriggerType2["CUSTOM_CRON"] = "custom_cron";
   return TriggerType2;
 })(TriggerType || {});
 // Annotate the CommonJS export names for ESM import in node:

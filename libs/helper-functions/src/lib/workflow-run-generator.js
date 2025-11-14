@@ -17,11 +17,38 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var workflow_run_generator_exports = {};
 __export(workflow_run_generator_exports, {
-  createRunFromDefinition: () => createRunFromDefinition
+  createRunFromDefinition: () => createRunFromDefinition,
+  migrateToNewMessageMapper: () => migrateToNewMessageMapper
 });
 module.exports = __toCommonJS(workflow_run_generator_exports);
 var import_uuid = require("uuid");
 var import_types = require("@xip-online-data/types");
+const migrateToNewMessageMapper = (oldWith) => {
+  const keys = Object.keys(oldWith);
+  const isConditionMapper = keys.includes("selector");
+  if (isConditionMapper) {
+    return oldWith;
+  }
+  const isOldFormat = keys.some((key) => typeof oldWith[key] === "string");
+  if (!isOldFormat) {
+    return oldWith;
+  }
+  const newMapper = {};
+  keys.forEach((key) => {
+    if (typeof oldWith[key] === "string") {
+      newMapper[key] = {
+        type: "string",
+        selector: oldWith[key],
+        required: true
+      };
+    } else {
+      newMapper[key] = {
+        ...oldWith[key]
+      };
+    }
+  });
+  return newMapper;
+};
 const createJobFromSteps = (step, testRun = false) => {
   return {
     id: (0, import_uuid.v4)(),
@@ -31,7 +58,7 @@ const createJobFromSteps = (step, testRun = false) => {
     type: step.type,
     operationIdentifier: step.operationIdentifier,
     operationVersion: step.operationVersion,
-    with: step.with,
+    with: migrateToNewMessageMapper(step.with),
     testRun,
     requires: [],
     updatedAt: /* @__PURE__ */ new Date(),
@@ -92,5 +119,6 @@ const createRunFromDefinition = (workflowDefinition, eventDetails, drawing, exis
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  createRunFromDefinition
+  createRunFromDefinition,
+  migrateToNewMessageMapper
 });

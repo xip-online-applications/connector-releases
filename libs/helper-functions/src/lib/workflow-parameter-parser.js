@@ -32,6 +32,9 @@ __export(workflow_parameter_parser_exports, {
 module.exports = __toCommonJS(workflow_parameter_parser_exports);
 var import_jsonata = __toESM(require("jsonata"));
 async function getValueFromMessage(message, selector) {
+  if (!selector || selector.trim() === "") {
+    return void 0;
+  }
   try {
     const expression = (0, import_jsonata.default)(selector);
     return expression.evaluate(message);
@@ -42,15 +45,22 @@ async function getValueFromMessage(message, selector) {
   }
 }
 async function parseMessageToInput(message, mapper) {
-  const requiredInputs = Object.keys(mapper);
+  const inputsToParse = Object.keys(mapper);
   const parsedInputs = {};
+  let allRequiredAreSet = true;
   await Promise.all(
-    requiredInputs.map(async (key) => {
-      const value = typeof mapper[key] === "string" ? mapper[key] : mapper[key].selector;
-      parsedInputs[key] = await getValueFromMessage(message, value);
+    inputsToParse.map(async (key) => {
+      const valueToSend = await getValueFromMessage(
+        message,
+        mapper[key].selector
+      );
+      parsedInputs[key] = valueToSend;
+      if (allRequiredAreSet && valueToSend === void 0 && mapper[key].required === true) {
+        allRequiredAreSet = false;
+      }
     })
   );
-  return parsedInputs;
+  return { jobPayload: parsedInputs, allRequiredAreSet };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

@@ -51,7 +51,7 @@ class ExtractorService {
         });
       }
       this.#sdk.logger.debug(
-        `Processed ${data.length} records from ${this.#tableIdentifier}`
+        `[MKG] Processed ${data.length} records from ${this.#tableIdentifier}`
       );
       this.#sdk.offsetStore.setOffset(
         {
@@ -65,7 +65,7 @@ class ExtractorService {
       );
     } catch (error) {
       this.#sdk.logger.error(
-        `Failed to retrieve and process data from OPC UA source service`,
+        `[MKG] Failed to retrieve and process data from OPC UA source service`,
         { error }
       );
     }
@@ -78,16 +78,16 @@ class ExtractorService {
       `${this.#table.dateField}>=${latestOffset.rawTimestamp}`
     );
     parameters.set("FieldList", `${this.#table.dateField},${this.#fieldsList}`);
-    const response = await this.#httpClient.get(
-      `/web/v3/MKG/Documents/${this.#tableIdentifier}?${parameters.toString()}`
-    );
-    if (!response.success) {
-      this.#sdk.logger.error(
-        `Failed to fetch data from table ${this.#tableIdentifier}: (${response.status}) ${response.error}`
+    try {
+      const response = await this.#httpClient.get(
+        `/web/v3/MKG/Documents/${this.#tableIdentifier}?${parameters.toString()}`
       );
-      return [];
+      return response.data?.response?.ResultData?.[0]?.[this.#tableIdentifier] ?? [];
+    } catch (error) {
+      const logMessage = `[MKG] Failed to fetch data from table "${this.#tableIdentifier}": (${error?.status}) ${error?.error ?? error?.message}`;
+      this.#sdk.logger.error(logMessage);
     }
-    return response.data?.response?.ResultData?.[0]?.[this.#tableIdentifier] ?? [];
+    return [];
   };
 }
 // Annotate the CommonJS export names for ESM import in node:

@@ -15,6 +15,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var sdk_exports = {};
 module.exports = __toCommonJS(sdk_exports);
 __reExport(sdk_exports, require("./sdk.interface"), module.exports);
+__reExport(sdk_exports, require("./http-client.interface"), module.exports);
 __reExport(sdk_exports, require("./logger.sdk.interface"), module.exports);
 __reExport(sdk_exports, require("./offset-store.sdk.interface"), module.exports);
 __reExport(sdk_exports, require("./processing.sdk.interface"), module.exports);
@@ -24,6 +25,7 @@ __reExport(sdk_exports, require("./templating.sdk.interface"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./sdk.interface"),
+  ...require("./http-client.interface"),
   ...require("./logger.sdk.interface"),
   ...require("./offset-store.sdk.interface"),
   ...require("./processing.sdk.interface"),

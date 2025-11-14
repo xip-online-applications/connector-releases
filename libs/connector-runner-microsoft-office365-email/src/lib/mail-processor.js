@@ -134,12 +134,12 @@ class MailProcessor {
     this.#logger.info(
       `Fetched ${preparedMessages.length} new messages for mailbox ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}, sent as ${this.#mailboxConfig.type}`
     );
-    const lastMessage = preparedMessages[preparedMessages.length - 1];
+    const lastMessageWithDeltaLink = preparedMessages.reverse().find((message) => message.deltaLink);
     this.#sdk.offsetStore.setOffset(
       {
         timestamp: Date.now(),
-        id: lastMessage.originalMessageId,
-        deltaLink: lastMessage.deltaLink
+        id: lastMessageWithDeltaLink?.originalMessageId ?? lastOffset?.originalMessageId,
+        deltaLink: lastMessageWithDeltaLink?.deltaLink ?? lastOffset?.deltaLink
       },
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );

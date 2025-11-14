@@ -20,8 +20,8 @@ __export(vrdg_exports, {
   MKG_TABLE_VRDG: () => MKG_TABLE_VRDG
 });
 module.exports = __toCommonJS(vrdg_exports);
-var import_base = require("./_base");
-const MKG_TABLE_VRDG = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_VRDG = new import_table.MkgTable({
   identifier: "vrdg",
   fields: [
     "vrdg_grbk_pv_grd_uitb",

@@ -20,8 +20,8 @@ __export(debi_exports, {
   MKG_TABLE_DEBI: () => MKG_TABLE_DEBI
 });
 module.exports = __toCommonJS(debi_exports);
-var import_base = require("./_base");
-const MKG_TABLE_DEBI = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_DEBI = new import_table.MkgTable({
   identifier: "debi",
   fields: [
     "debi_actief",

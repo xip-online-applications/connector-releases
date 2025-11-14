@@ -20,8 +20,8 @@ __export(stlh_exports, {
   MKG_TABLE_STLH: () => MKG_TABLE_STLH
 });
 module.exports = __toCommonJS(stlh_exports);
-var import_base = require("./_base");
-const MKG_TABLE_STLH = new import_base.MkgTable({
+var import_table = require("./base/table");
+const MKG_TABLE_STLH = new import_table.MkgTable({
   identifier: "stlh",
   interval: 600,
   fields: [

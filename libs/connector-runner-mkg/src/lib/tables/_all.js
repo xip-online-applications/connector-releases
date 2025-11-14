@@ -29,8 +29,12 @@ var import_debi = require("./debi");
 var import_magl = require("./magl");
 var import_magz = require("./magz");
 var import_medw = require("./medw");
+var import_parl = require("./parl");
 var import_plnb = require("./plnb");
+var import_prbv = require("./prbv");
 var import_prdh = require("./prdh");
+var import_prdr = require("./prdr");
+var import_prmv = require("./prmv");
 var import_rela = require("./rela");
 var import_rgrs = require("./rgrs");
 var import_rsrc = require("./rsrc");
@@ -40,28 +44,39 @@ var import_stlh = require("./stlh");
 var import_stlm = require("./stlm");
 var import_stlr = require("./stlr");
 var import_vrdg = require("./vrdg");
-const MKG_TABLES = {
-  [import_rela.MKG_TABLE_RELA.identifier]: import_rela.MKG_TABLE_RELA,
-  [import_debi.MKG_TABLE_DEBI.identifier]: import_debi.MKG_TABLE_DEBI,
-  [import_medw.MKG_TABLE_MEDW.identifier]: import_medw.MKG_TABLE_MEDW,
-  [import_arti.MKG_TABLE_ARTI.identifier]: import_arti.MKG_TABLE_ARTI,
-  [import_rsrc.MKG_TABLE_RSRC.identifier]: import_rsrc.MKG_TABLE_RSRC,
-  [import_rsrd.MKG_TABLE_RSRD.identifier]: import_rsrd.MKG_TABLE_RSRD,
-  [import_rsrg.MKG_TABLE_RSRG.identifier]: import_rsrg.MKG_TABLE_RSRG,
-  [import_magz.MKG_TABLE_MAGZ.identifier]: import_magz.MKG_TABLE_MAGZ,
-  [import_magl.MKG_TABLE_MAGL.identifier]: import_magl.MKG_TABLE_MAGL,
-  [import_stlh.MKG_TABLE_STLH.identifier]: import_stlh.MKG_TABLE_STLH,
-  [import_stlr.MKG_TABLE_STLR.identifier]: import_stlr.MKG_TABLE_STLR,
-  [import_stlm.MKG_TABLE_STLM.identifier]: import_stlm.MKG_TABLE_STLM,
-  [import_prdh.MKG_TABLE_PRDH.identifier]: import_prdh.MKG_TABLE_PRDH,
-  [import_bwrk.MKG_TABLE_BWRK.identifier]: import_bwrk.MKG_TABLE_BWRK,
-  [import_bwrg.MKG_TABLE_BWRG.identifier]: import_bwrg.MKG_TABLE_BWRG,
-  [import_clch.MKG_TABLE_CLCH.identifier]: import_clch.MKG_TABLE_CLCH,
-  [import_vrdg.MKG_TABLE_VRDG.identifier]: import_vrdg.MKG_TABLE_VRDG,
-  [import_rgrs.MKG_TABLE_RGRS.identifier]: import_rgrs.MKG_TABLE_RGRS,
-  [import_plnb.MKG_TABLE_PLNB.identifier]: import_plnb.MKG_TABLE_PLNB,
-  [import_artg.MKG_TABLE_ARTG.identifier]: import_artg.MKG_TABLE_ARTG
-};
+const tables = [
+  import_rela.MKG_TABLE_RELA,
+  import_debi.MKG_TABLE_DEBI,
+  import_medw.MKG_TABLE_MEDW,
+  import_arti.MKG_TABLE_ARTI,
+  import_rsrc.MKG_TABLE_RSRC,
+  import_rsrd.MKG_TABLE_RSRD,
+  import_rsrg.MKG_TABLE_RSRG,
+  import_magz.MKG_TABLE_MAGZ,
+  import_magl.MKG_TABLE_MAGL,
+  import_stlh.MKG_TABLE_STLH,
+  import_stlr.MKG_TABLE_STLR,
+  import_stlm.MKG_TABLE_STLM,
+  import_prdh.MKG_TABLE_PRDH,
+  import_bwrk.MKG_TABLE_BWRK,
+  import_bwrg.MKG_TABLE_BWRG,
+  import_clch.MKG_TABLE_CLCH,
+  import_vrdg.MKG_TABLE_VRDG,
+  import_rgrs.MKG_TABLE_RGRS,
+  import_plnb.MKG_TABLE_PLNB,
+  import_artg.MKG_TABLE_ARTG,
+  import_prdr.MKG_TABLE_PRDR,
+  import_prmv.MKG_TABLE_PRMV,
+  import_prbv.MKG_TABLE_PRBV,
+  import_parl.MKG_TABLE_PARL
+];
+const MKG_TABLES = tables.reduce(
+  (acc, table) => {
+    acc[table.identifier] = table;
+    return acc;
+  },
+  {}
+);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   MKG_TABLES

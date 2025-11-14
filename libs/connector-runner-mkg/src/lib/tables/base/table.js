@@ -15,21 +15,22 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var base_exports = {};
-__export(base_exports, {
+var table_exports = {};
+__export(table_exports, {
   MkgTable: () => MkgTable
 });
-module.exports = __toCommonJS(base_exports);
-var import_types = require("../types");
+module.exports = __toCommonJS(table_exports);
+var import_types = require("../../types");
 class MkgTable {
-  constructor(params) {
+  constructor(params, actions = []) {
     this.identifier = params.identifier;
     this.fields = params.fields;
     this.immediate = params.immediate !== false;
-    this.interval = params.interval ?? import_types.DEFAULT_INTERVAL;
+    this.interval = params.interval ?? (this.fields.length > 0 ? import_types.DEFAULT_INTERVAL : 0);
     this.identifierField = params.identifierField ?? import_types.DEFAULT_ROW_KEY_FIELD;
     this.dateField = params.dateField ?? import_types.DEFAULT_DATE_FIELD;
     this.rows = params.rows ?? import_types.DEFAULT_NUM_ROWS;
+    this.actions = actions.map((action) => action.withParentTable(this));
   }
   cloneFromTableConfig(tableConfig) {
     if (tableConfig === true || tableConfig.fields === void 0) {
@@ -41,6 +42,9 @@ class MkgTable {
         (field) => tableConfig.fields?.includes(field)
       )
     });
+  }
+  action(identifier) {
+    return this.actions.find((a) => a.identifier === identifier);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

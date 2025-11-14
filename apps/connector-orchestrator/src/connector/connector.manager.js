@@ -47,8 +47,7 @@ class ConnectorManager {
         this.#logger.warn(
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGINT signal. Start graceful shutdown`
         );
-        await connector.stop();
-        await sdk.stop();
+        await Promise.all([sdk.stop(), connector.stop()]);
         this.#logger.warn(
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGINT signal and finished graceful shutdown`
         );
@@ -58,8 +57,7 @@ class ConnectorManager {
         this.#logger.warn(
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGTERM. Start graceful shutdown`
         );
-        await connector.stop();
-        await sdk.stop();
+        await Promise.all([sdk.stop(), connector.stop()]);
         this.#logger.warn(
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received SIGTERM and finished graceful shutdown`
         );
@@ -70,8 +68,7 @@ class ConnectorManager {
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received uncaughtException signal. Start graceful shutdown`
         );
         this.#logger.error(error);
-        await connector.stop();
-        await sdk.stop();
+        await Promise.all([sdk.stop(), connector.stop()]);
         this.#logger.warn(
           `Worker ${connectorData.connectorType}, ${connectorData.identifier} ${this.#node.process.pid} received uncaughtException and finished graceful shutdown`
         );
