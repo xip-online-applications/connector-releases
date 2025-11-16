@@ -55,11 +55,11 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
             const inputParams = actionConfig.inputParameters.map(
               (input) => input.name
             );
-            const query = message.testRun ? `START TRANSACTION; ${trimTrailingSemicolon(config.query)}; ROLLBACK;` : `${trimTrailingSemicolon(config.query)};`;
+            const query = `${trimTrailingSemicolon(config.query)};`;
             const params = inputParams.map((param) => message.payload[param]);
             if (message.testRun) {
               this.log.info(
-                `Handle message ${message.eventId} with query ${query} and params ${params}`
+                `Handle message ${message.eventId} as testrun with query ${query} and params ${params}`
               );
             } else {
               this.log.debug(
@@ -68,7 +68,11 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
             }
             try {
               this.log.debug(`executing query, ${query}`);
-              const result = await this.dataSinkService.query(query, params);
+              const result = await this.dataSinkService.query(
+                query,
+                message.testRun,
+                params
+              );
               if (result === null) {
                 this.log.error(`Query failed, no result`);
                 return (0, import_kafka_base_service.InternalServerError)("Query failed, no result")(message);
