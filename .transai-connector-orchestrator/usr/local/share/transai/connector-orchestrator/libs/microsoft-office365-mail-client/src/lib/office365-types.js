@@ -1,0 +1,52 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var office365_types_exports = {};
+__export(office365_types_exports, {
+  EMAIL_SELECTABLE_FIELD: () => EMAIL_SELECTABLE_FIELD,
+  WELL_KNOWN_EMAIL_BOXES: () => WELL_KNOWN_EMAIL_BOXES
+});
+module.exports = __toCommonJS(office365_types_exports);
+const WELL_KNOWN_EMAIL_BOXES = [
+  "inbox",
+  "drafts",
+  "sent items",
+  "deleted items",
+  "archive",
+  "junk email"
+];
+const EMAIL_SELECTABLE_FIELD = [
+  "id",
+  "internetMessageId",
+  "subject",
+  "receivedDateTime",
+  "lastModifiedDateTime",
+  "body",
+  "bodyPreview",
+  "from",
+  "replyTo",
+  "toRecipients",
+  "ccRecipients",
+  "bccRecipients",
+  "internetMessageHeaders",
+  "categories"
+];
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  EMAIL_SELECTABLE_FIELD,
+  WELL_KNOWN_EMAIL_BOXES
+});

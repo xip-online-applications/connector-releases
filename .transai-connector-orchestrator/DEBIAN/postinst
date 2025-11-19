@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+# Re-install node modules
+cd /usr/local/share/transai/connector-orchestrator
+npm install --no-save
+
+# Create the needed user
+adduser --system "transai"
+
+# Reload the systemd manager configuration
+systemctl daemon-reload
+
+# Enable the transai service to start on boot
+systemctl enable transai.service
+
+# Start the transai service
+systemctl start transai.service
