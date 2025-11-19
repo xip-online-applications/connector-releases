@@ -25,7 +25,7 @@ cleanup:
 build-dep:
 	mkdir -p ".transai-connector-orchestrator" || true
 	cp -Rp -t ".transai-connector-orchestrator/" dep/*
-	cp -Rp -t ".transai-connector-orchestrator/usr/local/share/transai/connector-orchestrator/" apps libs main.js package*.json node_modules
+	cp -Rp -t ".transai-connector-orchestrator/usr/local/share/transai/connector-orchestrator/" apps libs main.js package*.json
 	dpkg-deb --build ".transai-connector-orchestrator"
 	mv ".transai-connector-orchestrator.deb" ./
 	rm -rf ".transai-connector-orchestrator*"
