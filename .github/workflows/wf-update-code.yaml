@@ -11,7 +11,7 @@ on:
         description: 'The source repository to download artifacts from.'
         required: true
         type: string
-        default: 'xip-online-applications'
+        default: '${{ github.repository_owner }}'
       repository:
         description: 'The source repository to download artifacts from.'
         required: true
@@ -23,10 +23,21 @@ on:
         type: string
         default: transai-connector-orchestrator
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   log-the-inputs:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Cleanup current code
+        run: make cleanup
+
       - name: Generate a token
         id: generate-token
         uses: actions/create-github-app-token@v2
@@ -44,8 +55,13 @@ jobs:
           repository: '${{ inputs.repository_owner }}/${{ inputs.repository }}'
           run-id: '${{ inputs.run_id }}'
 
-      - name: List downloaded files
-        run: ls -la
+      - name: Commit updated code
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add --all
+          git commit -m "chore: update connector orchestrator code to latest version from ${{ inputs.repository_owner }}/${{ inputs.repository }} run ID ${{ inputs.run_id }}" || echo "No changes to commit"
+          git push
 
 #  dep:
 #    name: Build installable deb
