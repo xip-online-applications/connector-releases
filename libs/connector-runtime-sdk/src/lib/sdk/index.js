@@ -21,7 +21,9 @@ __reExport(sdk_exports, require("./offset-store.sdk.interface"), module.exports)
 __reExport(sdk_exports, require("./processing.sdk.interface"), module.exports);
 __reExport(sdk_exports, require("./receiver.sdk.interface"), module.exports);
 __reExport(sdk_exports, require("./sender.sdk.interface"), module.exports);
+__reExport(sdk_exports, require("./telemetry.sdk.interface"), module.exports);
 __reExport(sdk_exports, require("./templating.sdk.interface"), module.exports);
+__reExport(sdk_exports, require("./files.sdk.interface"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./sdk.interface"),
@@ -31,5 +33,7 @@ __reExport(sdk_exports, require("./templating.sdk.interface"), module.exports);
   ...require("./processing.sdk.interface"),
   ...require("./receiver.sdk.interface"),
   ...require("./sender.sdk.interface"),
-  ...require("./templating.sdk.interface")
+  ...require("./telemetry.sdk.interface"),
+  ...require("./templating.sdk.interface"),
+  ...require("./files.sdk.interface")
 });

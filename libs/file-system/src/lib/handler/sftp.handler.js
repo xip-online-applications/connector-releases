@@ -30,9 +30,12 @@ __export(sftp_handler_exports, {
   SftpFileHandler: () => SftpFileHandler
 });
 module.exports = __toCommonJS(sftp_handler_exports);
+var fs = __toESM(require("node:fs"));
+var import_node_os = __toESM(require("node:os"));
 var import_node_path = __toESM(require("node:path"));
 var import_logger = require("@transai/logger");
-var import_active_file = require("../active-file.handle");
+var import_uuid = require("uuid");
+var import_active_referenced_file = require("../active-referenced-file.handle");
 var import_types = require("../types");
 const sftp = require("ssh2-sftp-client");
 const mapFileInfo = (fileInfo) => {
@@ -84,11 +87,19 @@ class SftpFileHandler {
   async readFile(filepath) {
     await this.init();
     const content = await this.sftpClient.get(this.#getFullPath(filepath));
+    const activeFileHandle = new import_active_referenced_file.ActiveReferencedFileHandle(
+      `${import_node_os.default.tmpdir()}/${(0, import_uuid.v4)()}.tmp`
+    );
     if (typeof content === "string") {
-      return new import_active_file.ActiveFileHandle(Buffer.from(content, "utf-8"));
+      fs.writeFileSync(activeFileHandle.filePath, content);
+      return activeFileHandle;
     }
     if (Buffer.isBuffer(content)) {
-      return new import_active_file.ActiveFileHandle(content);
+      fs.writeFileSync(
+        activeFileHandle.filePath,
+        Buffer.from(content).toString("utf-8")
+      );
+      return activeFileHandle;
     }
     throw new Error(
       `Unexpected content type received from SFTP: ${typeof content}`

@@ -74,7 +74,7 @@ var import_meta = require("./dataset/meta.interface");
 var import_pre_aggregations = require("./dataset/pre-aggregations.interface");
 var import_pre_aggregate = require("./dataset/pre-aggregate.interface");
 var import_template_implementation_overrides = require("./template-implementation-overrides.interface");
-__reExport(management_api_exports, require("./pagination"), module.exports);
+__reExport(management_api_exports, require("./web"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   DimensionInterface,
@@ -115,5 +115,5 @@ __reExport(management_api_exports, require("./pagination"), module.exports);
   ...require("./template.interface"),
   ...require("./template-implementation.interface"),
   ...require("./template-implementation-overrides.interface"),
-  ...require("./pagination")
+  ...require("./web")
 });

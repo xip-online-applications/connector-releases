@@ -27,16 +27,16 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var samba_handler_exports = {};
 __export(samba_handler_exports, {
-  SambaFile: () => SambaFile,
   SambaFileHandler: () => SambaFileHandler
 });
 module.exports = __toCommonJS(samba_handler_exports);
 var fs = __toESM(require("node:fs"));
+var os = __toESM(require("node:os"));
 var import_node_path = __toESM(require("node:path"));
 var import_logger = require("@transai/logger");
 var import_samba_client = require("@xip-online-data/samba-client");
 var import_uuid = require("uuid");
-var import_active_file = require("../active-file.handle");
+var import_active_referenced_file = require("../active-referenced-file.handle");
 var import_types = require("../types");
 const mapFileInfo = (fileInfo) => {
   return {
@@ -46,32 +46,14 @@ const mapFileInfo = (fileInfo) => {
     type: fileInfo.type === "D" ? import_types.FileInfoEnum.DIRECTORY : import_types.FileInfoEnum.FILE
   };
 };
-class SambaFile extends import_active_file.ActiveFileHandle {
-  #tempFile;
-  constructor(file, tempFile) {
-    super(file);
-    this.#tempFile = tempFile;
-  }
-  close() {
-    let success = false;
-    fs.unlink(this.#tempFile, (err) => {
-      success = err === null;
-    });
-    return success;
-  }
-}
 class SambaFileHandler {
   static {
     this.DEFAULT_PORT = "445";
-  }
-  static {
-    this.DEFAULT_TMP_DIR = "/tmp/transai/samba";
   }
   #sambaClient;
   #sambaConfig;
   constructor(sambaConfig) {
     this.#sambaConfig = sambaConfig;
-    fs.mkdirSync(this.#sambaConfig.tmpDirectory, { recursive: true });
     this.#sambaClient = new import_samba_client.SambaClient(
       // @ts-expect-error this is correct!
       Object.fromEntries(
@@ -96,7 +78,6 @@ class SambaFileHandler {
       password: decodeURIComponent(url.password),
       domain: domain ? decodeURIComponent(domain) : void 0,
       directory: decodeURIComponent(directory),
-      tmpDirectory: url.searchParams.get("tmpDirectory") ?? SambaFileHandler.DEFAULT_TMP_DIR,
       timeout: url.searchParams.get("timeout") ?? void 0,
       maskCmd: url.searchParams.get("mask") !== null,
       maxProtocol: url.searchParams.get("protocol") ?? void 0
@@ -114,11 +95,9 @@ class SambaFileHandler {
     return directories.map(mapFileInfo);
   }
   async readFile(remoteFile) {
-    const tempFilename = `${(0, import_uuid.v4)()}.tmp`;
-    const localFile = `${this.#sambaConfig.tmpDirectory}/${tempFilename}`;
+    const localFile = `${os.tmpdir()}/${(0, import_uuid.v4)()}.tmp`;
     await this.#sambaClient.getFile(this.#fullPath(remoteFile), localFile);
-    const buffer = fs.readFileSync(localFile);
-    return new SambaFile(buffer, localFile);
+    return new import_active_referenced_file.ActiveReferencedFileHandle(localFile);
   }
   async writeFile(remotePath, data) {
     let directoryExists = false;
@@ -134,10 +113,8 @@ class SambaFileHandler {
         });
       });
     }
-    const buffer = data.get();
-    const tempFilename = `${(0, import_uuid.v4)()}.tmp`;
-    const localFile = `${this.#sambaConfig.tmpDirectory}/${tempFilename}`;
-    fs.writeFileSync(localFile, new Uint8Array(buffer));
+    const localFile = `${os.tmpdir()}/${(0, import_uuid.v4)()}.tmp`;
+    fs.writeFileSync(localFile, new Uint8Array(data.get()));
     let success = false;
     try {
       await this.#sambaClient.sendFile(localFile, this.#fullPath(remotePath)).catch((error) => {
@@ -193,6 +170,5 @@ class SambaFileHandler {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  SambaFile,
   SambaFileHandler
 });

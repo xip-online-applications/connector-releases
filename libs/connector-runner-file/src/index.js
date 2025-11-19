@@ -2,10 +2,6 @@ var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -14,25 +10,14 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var active_file_handle_exports = {};
-__export(active_file_handle_exports, {
-  ActiveFileHandle: () => ActiveFileHandle
-});
-module.exports = __toCommonJS(active_file_handle_exports);
-class ActiveFileHandle {
-  #file;
-  constructor(file) {
-    this.#file = Buffer.isBuffer(file) ? file : Buffer.from(file);
-  }
-  get() {
-    return this.#file;
-  }
-  close() {
-    return true;
-  }
-}
+var src_exports = {};
+module.exports = __toCommonJS(src_exports);
+__reExport(src_exports, require("./lib/connector-runner-file"), module.exports);
+__reExport(src_exports, require("./lib/types"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ActiveFileHandle
+  ...require("./lib/connector-runner-file"),
+  ...require("./lib/types")
 });

@@ -26,7 +26,9 @@ class HttpClientSDK {
   #telemetryService;
   #requestOptionsFormatter = (options) => options;
   constructor(httpConfig, telemetry) {
-    this.#httpClient = new import_http_client.HttpClient(httpConfig);
+    this.#httpClient = new import_http_client.HttpClient(
+      httpConfig ?? {}
+    );
     this.#telemetryService = telemetry;
   }
   get(destination, options) {

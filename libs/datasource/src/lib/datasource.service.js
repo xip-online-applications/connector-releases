@@ -42,10 +42,12 @@ class DatasourceService {
   /**
    * Executes raw SQL query and returns raw database results.
    */
-  async query(query, parameters) {
+  async query(query, testRun = false, parameters) {
     const usedQueryRunner = this.createQueryRunner();
     let result = null;
     try {
+      if (testRun)
+        await usedQueryRunner.query("BEGIN");
       result = await usedQueryRunner.query(query, parameters).catch(async (error) => {
         await usedQueryRunner.release();
         throw error;
@@ -60,6 +62,8 @@ class DatasourceService {
         error: "Unknown error occurred while executing query"
       };
     } finally {
+      if (testRun)
+        await usedQueryRunner.query("ROLLBACK");
       await usedQueryRunner.release();
     }
     return result;

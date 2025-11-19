@@ -28,10 +28,12 @@ __export(types_exports, {
 });
 module.exports = __toCommonJS(types_exports);
 var ConfiguredConnectorTypes = /* @__PURE__ */ ((ConfiguredConnectorTypes2) => {
+  ConfiguredConnectorTypes2["API"] = "api";
   ConfiguredConnectorTypes2["API_SINK"] = "api-sink";
   ConfiguredConnectorTypes2["API_SOURCE"] = "api-source";
   ConfiguredConnectorTypes2["DUMMY_NODE"] = "dummy-node";
   ConfiguredConnectorTypes2["FILE_COPY"] = "file-copy";
+  ConfiguredConnectorTypes2["FILE"] = "file";
   ConfiguredConnectorTypes2["FILE_SINK"] = "file-sink";
   ConfiguredConnectorTypes2["FILE_SOURCE"] = "file-source";
   ConfiguredConnectorTypes2["SAMBA_SINK"] = "samba-sink";

@@ -12,10 +12,10 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "default"), secondTarget && __copyProps(secondTarget, mod, "default"));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var pagination_exports = {};
-module.exports = __toCommonJS(pagination_exports);
-__reExport(pagination_exports, require("./paginated-response.interface"), module.exports);
+var src_exports = {};
+module.exports = __toCommonJS(src_exports);
+__reExport(src_exports, require("./lib/connector-runner-api"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ...require("./paginated-response.interface")
+  ...require("./lib/connector-runner-api")
 });

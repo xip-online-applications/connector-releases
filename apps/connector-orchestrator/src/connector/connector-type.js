@@ -21,12 +21,14 @@ __export(connector_type_exports, {
 });
 module.exports = __toCommonJS(connector_type_exports);
 var import_connector_runner_ai_agent = require("@transai/connector-runner-ai-agent");
+var import_connector_runner_api = require("@transai/connector-runner-api");
 var import_connector_runner_api_sink = require("@transai/connector-runner-api-sink");
 var import_connector_runner_api_source = require("@transai/connector-runner-api-source");
 var import_connector_runner_bystronic = require("@transai/connector-runner-bystronic");
 var import_connector_runner_cube_query = require("@transai/connector-runner-cube-query");
 var import_connector_runner_dummy_node = require("@transai/connector-runner-dummy-node");
 var import_connector_runner_factorynebula_source = require("@transai/connector-runner-factorynebula-source");
+var import_connector_runner_file = require("@transai/connector-runner-file");
 var import_connector_runner_file_copy = require("@transai/connector-runner-file-copy");
 var import_connector_runner_file_sink = require("@transai/connector-runner-file-sink");
 var import_connector_runner_file_source = require("@transai/connector-runner-file-source");
@@ -58,6 +60,8 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig.config,
         connectorConfig.actions
       );
+    case import_types.ConfiguredConnectorTypes.FILE:
+      return new import_connector_runner_file.ConnectorRunnerFile(connectorConfig, connectorSDK);
     case import_types.ConfiguredConnectorTypes.FILE_SINK:
       return new import_connector_runner_file_sink.ConnectorRunnerFileSink(
         connectorConfig,
@@ -106,6 +110,8 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig.config,
         connectorConfig.actions
       );
+    case import_types.ConfiguredConnectorTypes.API:
+      return new import_connector_runner_api.ConnectorRunnerApi(connectorConfig, connectorSDK);
     case import_types.ConfiguredConnectorTypes.CUBE_QUERY_RUNNER:
       return new import_connector_runner_cube_query.ConnectorRunnerCubeQuery(
         connectorConfig,

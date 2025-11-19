@@ -20,8 +20,8 @@ __export(postgres_query_runner_exports, {
   PostgresQueryRunner: () => PostgresQueryRunner
 });
 module.exports = __toCommonJS(postgres_query_runner_exports);
-var import_query_result = require("../query-result");
 var import_error = require("../error");
+var import_query_result = require("../query-result");
 class PostgresQueryRunner {
   constructor(driver) {
     this.driver = driver;

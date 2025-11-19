@@ -1,6 +1,8 @@
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -14,18 +16,29 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var sdk_exports = {};
 __export(sdk_exports, {
   TransAIConnectorSDK: () => TransAIConnectorSDK
 });
 module.exports = __toCommonJS(sdk_exports);
+var os = __toESM(require("node:os"));
 var import_connector_runtime = require("@transai/connector-runtime");
+var import_file_system = require("@xip-online-data/file-system");
 var import_helper_functions = require("@xip-online-data/helper-functions");
 var import_kafka_base_service = require("@xip-online-data/kafka-base-service");
 var import_processing = require("./processing.sdk");
 var import_receiver = require("./receiver.sdk");
 var import_sender = require("./sender.sdk");
+var import_files = require("./service/files.sdk");
 var import_http_client = require("./service/http-client");
 var import_telemetry = require("./service/telemetry");
 var import_templating = require("./templating.sdk");
@@ -43,6 +56,7 @@ class TransAIConnectorSDK {
   constructor(connector, logger) {
     this.#logger = logger;
     this.#apiConfig = connector.config;
+    Object.freeze(this.#apiConfig);
     this.#telemetryService = new import_telemetry.TelemetryService(connector, logger);
     const connectorTopic = (0, import_helper_functions.buildConnectorTopic)({
       tenantIdentifier: connector.tenantIdentifier,
@@ -127,6 +141,14 @@ class TransAIConnectorSDK {
   }
   get offsetStore() {
     return this.#offsetStore;
+  }
+  get telemetry() {
+    return this.#telemetryService;
+  }
+  files(dsn) {
+    return new import_files.FilesSDKService(
+      import_file_system.FileSystem.fromDsn(dsn || `file://${os.tmpdir()}`)
+    );
   }
   httpClient(httpConfig) {
     return new import_http_client.HttpClientSDK(httpConfig, this.#telemetryService);

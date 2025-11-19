@@ -32,7 +32,7 @@ __export(disk_handler_exports, {
 module.exports = __toCommonJS(disk_handler_exports);
 var fs = __toESM(require("node:fs"));
 var import_node_path = __toESM(require("node:path"));
-var import_active_file = require("../active-file.handle");
+var import_active_referenced_file = require("../active-referenced-file.handle");
 var import_types = require("../types");
 class DiskFileHandler {
   #config;
@@ -73,14 +73,8 @@ class DiskFileHandler {
   }
   async readFile(filepath) {
     const fullPath = this.#getFullPath(filepath);
-    return new Promise((resolve, reject) => {
-      fs.readFile(fullPath, (err, files) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(new import_active_file.ActiveFileHandle(files));
-      });
-    });
+    fs.statSync(fullPath);
+    return new import_active_referenced_file.ActiveReferencedFileHandle(fullPath);
   }
   async writeFile(filepath, data) {
     const fullPath = this.#getFullPath(filepath);

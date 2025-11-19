@@ -15,24 +15,36 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var active_file_handle_exports = {};
-__export(active_file_handle_exports, {
-  ActiveFileHandle: () => ActiveFileHandle
+var generic_filter_dto_exports = {};
+__export(generic_filter_dto_exports, {
+  FilterOperator: () => FilterOperator,
+  SortDirection: () => SortDirection
 });
-module.exports = __toCommonJS(active_file_handle_exports);
-class ActiveFileHandle {
-  #file;
-  constructor(file) {
-    this.#file = Buffer.isBuffer(file) ? file : Buffer.from(file);
-  }
-  get() {
-    return this.#file;
-  }
-  close() {
-    return true;
-  }
-}
+module.exports = __toCommonJS(generic_filter_dto_exports);
+const FilterOperator = {
+  EQ: "eq",
+  NEQ: "neq",
+  CONTAINS: "ct",
+  NOT_CONTAINS: "nct",
+  STARTSWITH: "sw",
+  ENDSWITH: "ew",
+  NOT_STARTSWITH: "nsw",
+  NOT_ENDSWITH: "new",
+  BETWEEN: "bt",
+  LT: "lt",
+  LTE: "lte",
+  GT: "gt",
+  GTE: "gte",
+  IN: "in",
+  NOT_IN: "nin",
+  LIKE: "like"
+};
+const SortDirection = {
+  ASC: "asc",
+  DESC: "desc"
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ActiveFileHandle
+  FilterOperator,
+  SortDirection
 });

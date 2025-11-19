@@ -20,7 +20,6 @@ __export(mail_processor_exports, {
   MailProcessor: () => MailProcessor
 });
 module.exports = __toCommonJS(mail_processor_exports);
-var import_file_system = require("@xip-online-data/file-system");
 class MailProcessor {
   constructor(sdk, config, mailClient) {
     this.DEFAULT_EVENT_TTL = 36e5;
@@ -33,7 +32,7 @@ class MailProcessor {
     this.#mailboxConfig = config;
     this.#logger = this.#sdk.logger;
     const attachmentDestination = this.#mailboxConfig.attachmentDestination ?? this.#sdk.config.attachmentDestination;
-    this.#fileHandler = attachmentDestination ? import_file_system.FileSystem.fromDsn(attachmentDestination) : void 0;
+    this.#fileHandler = attachmentDestination ? this.#sdk.files(attachmentDestination) : void 0;
   }
   #sdk;
   #mailClient;
@@ -183,14 +182,11 @@ class MailProcessor {
             if (!attachment.contentBytes && !attachment.content) {
               return;
             }
-            const file = new import_file_system.ActiveFileHandle(
-              attachment.contentBytes ?? Buffer.from(attachment.content)
-            );
             const path = `${mailbox}/${encodeURIComponent(message.id)}/${attachment.filename}`;
             this.#logger.verbose(
               `Storing mail ${this.#mailboxConfig.mailboxIdentifier}/${mailbox}/${message.id} attachment "${path}"...`
             );
-            const success = await this.#fileHandler.writeFile(path, file).catch((err) => {
+            const success = await this.#fileHandler.write(path, attachment.contentBytes ?? attachment.content).catch((err) => {
               this.#logger.error(
                 `Failed to store attachment to ${path} due to: ${err.message}`,
                 err
