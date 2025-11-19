@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+# Start the Node.js application
+npx node "/usr/local/share/transai/connector-orchestrator/main.js"

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Stop systemctl
+systemctl stop transai.service
+systemctl disable transai.service
+
+# Remove user
+deluser "transai"
+
+# Remove symlink
+rm /usr/local/bin/transai-connector-orchestrator

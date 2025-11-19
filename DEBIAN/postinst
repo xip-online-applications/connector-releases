@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+# Set the correct symlink for the executable
+ln -s ../share/transai/connector-orchestrator/transai-connector-orchestrator ./usr/local/bin/transai-connector-orchestrator
+
+# Create the needed user
+adduser --system "transai"
+
+# Reload the systemd manager configuration
+systemctl daemon-reload
+
+# Enable the transai service to start on boot
+systemctl enable transai.service
+
+# Start the transai service
+systemctl start transai.service

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+NODEJS_VERSION="24.11"
+NVM_VERSION="0.40.3"
+
+# Install NVM (Node Version Manager)
+curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" | bash
+
+# in lieu of restarting the shell
+\. "$HOME/.nvm/nvm.sh"
+
+# Install Node.js using NVM
+nvm install "$NODEJS_VERSION"

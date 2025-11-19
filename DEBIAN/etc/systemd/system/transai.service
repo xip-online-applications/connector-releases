@@ -1,0 +1,16 @@
+[Unit]
+Description=transAI Connector Orchestrator Service
+Documentation=https://transai.com
+
+[Service]
+User=transai
+Type=simple
+Restart=on-failure
+RestartSec=30s
+ExecStart="/bin/sh -c "transai-connector-orchestrator | split -d -b 100000 -"
+EnvironmentFile=/etc/environment
+StandardOutput=append:/var/log/transai.log
+StandardError=append:/var/log/transai.error.log
+
+[Install]
+WantedBy=multi-user.target

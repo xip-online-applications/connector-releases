@@ -7,9 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save Last Deployment Info
-        run: |
-          echo "Succesfully deployed ${{ github.sha }}"
+  build-dep:
+    uses: './.github/workflows/wf-build-dep.yaml'
+    if: github.
+    secrets: inherit

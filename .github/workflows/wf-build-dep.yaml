@@ -1,0 +1,40 @@
+name: Build installable deb package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  dep:
+    name: Build installable deb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install --no-save --omit=dev
+
+      - name: Compile deb package
+        run: |
+          mkdir -p /tmp/build || true
+          cp -Rp -t /tmp/build/ DEBIAN
+          cp -Rp -t /tmp/build/DEBIAN/usr/local/share/transai/connector-orchestrator/ apps libs main.js* package* node_modules
+          dpkg-deb --build /tmp/build
+          mv /tmp/build.deb transai-connector-orchestrator.deb
+
+      - name: Commit updated package
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add --all
+          git commit -m "chore: compiled new installable deb [skip ci]" || echo "No changes to commit"
+          git push
