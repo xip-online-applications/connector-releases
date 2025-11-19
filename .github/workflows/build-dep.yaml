@@ -1,5 +1,8 @@
 on:
   repository_dispatch:
+    types:
+      - trigger-workflow
+      - download-artifact
     inputs:
       run_id:
         description: 'The run ID to download artifacts from.'
