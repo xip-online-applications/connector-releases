@@ -2,8 +2,9 @@
 
 set -e
 
-# Set the correct symlink for the executable
-ln -s ../share/transai/connector-orchestrator/transai-connector-orchestrator ./usr/local/bin/transai-connector-orchestrator
+# Re-install node modules
+cd /usr/local/share/transai/connector-orchestrator/transai-connector-orchestrator
+npm install --no-save
 
 # Create the needed user
 adduser --system "transai"
