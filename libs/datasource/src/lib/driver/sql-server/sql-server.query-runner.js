@@ -40,8 +40,7 @@ class SqlServerQueryRunner {
    * Executes a given SQL query.
    */
   async query(query, parameters) {
-    if (this.isReleased)
-      throw new import_error.QueryRunnerAlreadyReleasedError();
+    if (this.isReleased) throw new import_error.QueryRunnerAlreadyReleasedError();
     try {
       const pool = await this.driver.obtainMasterConnection();
       const request = new this.driver.mssql.Request(pool);

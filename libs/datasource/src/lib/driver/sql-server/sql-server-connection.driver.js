@@ -104,8 +104,7 @@ class SqlServerConnectionDriver {
       const poolErrorHandler = options.pool && options.pool.errorHandler || ((error) => import_logger.Logger.getInstance().warn(`MSSQL pool raised an error. ${error}`));
       pool.on("error", poolErrorHandler);
       const connection = pool.connect((err) => {
-        if (err)
-          return fail(err);
+        if (err) return fail(err);
         ok(connection);
       });
     });

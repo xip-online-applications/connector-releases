@@ -107,8 +107,7 @@ class CloudOffsetStoreService extends import_node_events.EventEmitter {
         return (0, import_rxjs.of)(null);
       })
     ).subscribe((v) => {
-      if (v !== null)
-        this.#log.verbose("Offsets sync completed.");
+      if (v !== null) this.#log.verbose("Offsets sync completed.");
     });
   }
   async #syncAllOffsets() {

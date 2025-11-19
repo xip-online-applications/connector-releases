@@ -110,6 +110,7 @@ const getConnectorType = (connectorConfig, connectorSDK) => {
         connectorConfig.config,
         connectorConfig.actions
       );
+    // SDK CONNECTORS
     case import_types.ConfiguredConnectorTypes.API:
       return new import_connector_runner_api.ConnectorRunnerApi(connectorConfig, connectorSDK);
     case import_types.ConfiguredConnectorTypes.CUBE_QUERY_RUNNER:

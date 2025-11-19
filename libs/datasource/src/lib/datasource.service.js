@@ -32,8 +32,7 @@ class DatasourceService {
     return `${this.options.type} : ${this.driver.version}`;
   }
   async initialize() {
-    if (this.isInitialized)
-      throw new Error(this.name);
+    if (this.isInitialized) throw new Error(this.name);
     await this.driver.connect();
     await this.driver.afterConnect();
     this.isInitialized = true;
@@ -46,8 +45,7 @@ class DatasourceService {
     const usedQueryRunner = this.createQueryRunner();
     let result = null;
     try {
-      if (testRun)
-        await usedQueryRunner.query("BEGIN");
+      if (testRun) await usedQueryRunner.query("BEGIN");
       result = await usedQueryRunner.query(query, parameters).catch(async (error) => {
         await usedQueryRunner.release();
         throw error;
@@ -62,8 +60,7 @@ class DatasourceService {
         error: "Unknown error occurred while executing query"
       };
     } finally {
-      if (testRun)
-        await usedQueryRunner.query("ROLLBACK");
+      if (testRun) await usedQueryRunner.query("ROLLBACK");
       await usedQueryRunner.release();
     }
     return result;

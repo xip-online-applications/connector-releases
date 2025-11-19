@@ -265,8 +265,7 @@ class Office365Client {
             chunks
           ).toString("utf-8");
           if (status >= 200 && status < 300) {
-            if (!raw)
-              return resolve(void 0);
+            if (!raw) return resolve(void 0);
             const ct = (res.headers["content-type"] || "").toString().split(";")[0].trim();
             if (ct === "application/json") {
               try {
@@ -289,8 +288,7 @@ class Office365Client {
         });
       });
       req.on("error", reject);
-      if (payload)
-        req.write(payload);
+      if (payload) req.write(payload);
       req.end();
     });
   }

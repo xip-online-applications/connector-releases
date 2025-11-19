@@ -32,8 +32,7 @@ class MySqlQueryRunner {
   connect() {
     if (this.databaseConnection)
       return Promise.resolve(this.databaseConnection);
-    if (this.databaseConnectionPromise)
-      return this.databaseConnectionPromise;
+    if (this.databaseConnectionPromise) return this.databaseConnectionPromise;
     this.databaseConnectionPromise = this.driver.obtainConnection().then((connection) => {
       this.databaseConnection = connection;
       return this.databaseConnection;
@@ -66,8 +65,7 @@ class MySqlQueryRunner {
   }
   release() {
     this.isReleased = true;
-    if (this.databaseConnection)
-      this.databaseConnection.release();
+    if (this.databaseConnection) this.databaseConnection.release();
     return Promise.resolve();
   }
 }

@@ -32,8 +32,7 @@ class PostgresQueryRunner {
   connect() {
     if (this.databaseConnection)
       return Promise.resolve(this.databaseConnection);
-    if (this.databaseConnectionPromise)
-      return this.databaseConnectionPromise;
+    if (this.databaseConnectionPromise) return this.databaseConnectionPromise;
     this.databaseConnectionPromise = this.driver.obtainMasterConnection().then(([connection, release]) => {
       this.driver.connectedQueryRunners.push(this);
       this.databaseConnection = connection;
@@ -48,8 +47,7 @@ class PostgresQueryRunner {
     return this.databaseConnectionPromise;
   }
   async query(query, parameters) {
-    if (this.isReleased)
-      throw new import_error.QueryRunnerAlreadyReleasedError();
+    if (this.isReleased) throw new import_error.QueryRunnerAlreadyReleasedError();
     const databaseConnection = await this.connect();
     try {
       const queryStartTime = +/* @__PURE__ */ new Date();

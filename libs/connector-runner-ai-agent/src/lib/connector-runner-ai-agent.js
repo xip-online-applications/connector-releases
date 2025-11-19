@@ -78,7 +78,6 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
           const returnPayload = {
             ...message,
             payload: {
-              openAiMessages: response.messages,
               ...response.structuredResponse
             }
           };

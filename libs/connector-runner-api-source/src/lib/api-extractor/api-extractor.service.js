@@ -203,8 +203,7 @@ class ApiExtractorService {
   }
   async getAccessToken() {
     const { tokenUrl, clientId, clientSecret } = this.#apiConfig;
-    if (!tokenUrl || !clientId || !clientSecret)
-      return void 0;
+    if (!tokenUrl || !clientId || !clientSecret) return void 0;
     const now = Date.now();
     if (this.#token && this.#tokenExpiresAt && now < this.#tokenExpiresAt) {
       return this.#token;

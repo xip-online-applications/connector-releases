@@ -110,8 +110,7 @@ class PostgresConnectionDriver {
     const pool = new this.postgres.Pool(connectionOptions);
     return new Promise((ok, fail) => {
       pool.connect((err, connection, release) => {
-        if (err)
-          return fail(err);
+        if (err) return fail(err);
         release();
         ok(pool);
       });
