@@ -141,13 +141,15 @@ const createZodFieldFromSchema = (propertySchema) => {
   } else if (propertySchema.type === "object") {
     if (propertySchema.properties) {
       const nestedSchema = {};
-      Object.entries(propertySchema.properties).forEach(([nestedKey, nestedProperty]) => {
-        const camelNestedKey = toCamelCase(nestedKey);
-        nestedSchema[camelNestedKey] = createZodFieldFromSchema(nestedProperty);
-        if (nestedProperty.description) {
-          nestedSchema[camelNestedKey] = nestedSchema[camelNestedKey].describe(nestedProperty.description);
+      Object.entries(propertySchema.properties).forEach(
+        ([nestedKey, nestedProperty]) => {
+          const camelNestedKey = toCamelCase(nestedKey);
+          nestedSchema[camelNestedKey] = createZodFieldFromSchema(nestedProperty);
+          if (nestedProperty.description) {
+            nestedSchema[camelNestedKey] = nestedSchema[camelNestedKey].describe(nestedProperty.description);
+          }
         }
-      });
+      );
       zodField = import_zod.z.object(nestedSchema);
     } else {
       zodField = import_zod.z.object({});
@@ -181,7 +183,7 @@ const parseParametersToZod = (parametersObject) => {
       zodField = zodField.describe(propertySchema.description);
     }
     if (isRequired !== true) {
-      zodField = zodField.optional();
+      zodField = zodField.nullable();
     }
     zodSchema[camelKey] = zodField;
   });

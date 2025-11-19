@@ -1,6 +1,17 @@
 {
-  "name": "connector-orchestrator",
-  "version": "0.0.1",
+  "name": "@transai/connector-orchestrator",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "private"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": {
+    "name": "transAI",
+    "email": "samen@transai.com",
+    "url": "https://transai.com"
+  },
+  "main": "./main.js",
+  "type": "commonjs",
   "dependencies": {
     "@confluentinc/kafka-javascript": "1.6.0",
     "@cubejs-client/core": "1.5.4",
@@ -54,7 +65,5 @@
   },
   "overrides": {
     "stylus": "npm:empty-npm-package@1.0.0"
-  },
-  "main": "./main.js",
-  "type": "commonjs"
+  }
 }

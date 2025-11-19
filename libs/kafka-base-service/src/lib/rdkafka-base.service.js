@@ -101,7 +101,7 @@ class RdKafkaBaseService extends import_abstract_rdkafka_service.AbstractRdKafka
         try {
           let callbackIdentifier = `${message.tenantIdentifier}_${message.eventType}`;
           import_logger.Logger.getInstance().debug(
-            `Received message from topic ${callbackIdentifier}: ${JSON.stringify(message)}`
+            `${`Received message from topic ${callbackIdentifier}: ${JSON.stringify(message)}`.slice(0, 100)}...`
           );
           if (!this.callbackWrappers.has(callbackIdentifier)) {
             callbackIdentifier = RdKafkaBaseService.DEFAULT_CALLBACK_EVENT_TYPE;

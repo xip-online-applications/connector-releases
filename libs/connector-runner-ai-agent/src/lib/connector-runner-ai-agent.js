@@ -64,7 +64,7 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
         );
         const llm = (0, import_langchain.createAgent)({
           model: this.langchain,
-          responseFormat: (0, import_langchain.toolStrategy)(outputSchema),
+          responseFormat: outputSchema,
           systemPrompt: processedSystemPrompt,
           tools: [],
           middleware: [this.#langchainLoggingMiddleware]
