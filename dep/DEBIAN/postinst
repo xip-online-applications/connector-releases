@@ -3,7 +3,7 @@
 set -e
 
 # Re-install node modules
-cd /usr/local/share/transai/connector-orchestrator/transai-connector-orchestrator
+cd /usr/local/share/transai/connector-orchestrator
 npm install --no-save
 
 # Create the needed user
