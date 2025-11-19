@@ -1,4 +1,4 @@
-name: Master check
+name: Master Workflow
 
 on:
   push:
@@ -8,5 +8,6 @@ on:
 
 jobs:
   build-dep:
+    name: Build installable deb package
     uses: './.github/workflows/wf-build-dep.yaml'
     secrets: inherit

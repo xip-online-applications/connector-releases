@@ -26,7 +26,8 @@ on:
         default: transai-connector-orchestrator
 
 jobs:
-  log-the-inputs:
+  update-code:
+    name: Update Connector Orchestrator code
     uses: './.github/workflows/wf-update-code.yaml'
     secrets: inherit
     with:

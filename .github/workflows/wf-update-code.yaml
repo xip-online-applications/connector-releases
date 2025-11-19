@@ -28,7 +28,8 @@ permissions:
   id-token: write
 
 jobs:
-  log-the-inputs:
+  update-code:
+    name: Update Connector Orchestrator code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -47,7 +48,7 @@ jobs:
           permission-actions: read
           repositories: '${{ inputs.repository }}'
 
-      - name: Download math result for job 1
+      - name: Download code artifact
         uses: actions/download-artifact@v5
         with:
           github-token: '${{ steps.generate-token.outputs.token }}'
