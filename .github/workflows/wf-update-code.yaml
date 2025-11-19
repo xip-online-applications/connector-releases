@@ -7,11 +7,16 @@ on:
         description: 'The run ID to download artifacts from.'
         required: true
         type: string
+      repository_owner:
+        description: 'The source repository to download artifacts from.'
+        required: true
+        type: string
+        default: 'xip-online-applications'
       repository:
         description: 'The source repository to download artifacts from.'
         required: true
         type: string
-        default: 'xip-online-applications/xod-core'
+        default: 'xod-core'
       artifact_name:
         description: 'The name of the artifact to download.'
         required: true
@@ -29,14 +34,14 @@ jobs:
           app-id: ${{ vars.XOD_CORE_APP_ID }}
           private-key: ${{ secrets.XOD_CORE_APP_PRIVATE_KEY }}
           permission-actions: read
-          repositories: ${{ inputs.repository }}
+          repositories: '${{ inputs.repository }}'
 
       - name: Download math result for job 1
         uses: actions/download-artifact@v5
         with:
           github-token: '${{ steps.generate-token.outputs.token }}'
           name: '${{ inputs.artifact_name }}'
-          repository: '${{ inputs.repository }}'
+          repository: '${{ inputs.repository_owner }}/${{ inputs.repository }}'
           run-id: '${{ inputs.run_id }}'
 
       - name: List downloaded files
