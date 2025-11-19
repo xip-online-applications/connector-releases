@@ -11,7 +11,7 @@ on:
         description: 'The source repository to download artifacts from.'
         required: true
         type: string
-        default: '${{ github.repository_owner }}'
+        default: 'xip-online-applications'
       repository:
         description: 'The source repository to download artifacts from.'
         required: true

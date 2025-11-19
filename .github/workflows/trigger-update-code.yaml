@@ -9,11 +9,16 @@ on:
         description: 'The run ID to download artifacts from.'
         required: true
         type: string
-      repository:
-        description: 'The source repository to download artifacts from.'
+      repository_owner:
+        description: 'The source repository owner account to download artifacts from.'
         required: true
         type: string
-        default: 'xip-online-applications/xod-core'
+        default: 'xip-online-applications'
+      repository:
+        description: 'The source repository name to download artifacts from.'
+        required: true
+        type: string
+        default: 'xod-core'
       artifact_name:
         description: 'The name of the artifact to download.'
         required: true
@@ -26,5 +31,6 @@ jobs:
     secrets: inherit
     with:
       run_id: '${{ github.event.client_payload.run_id }}'
+      repository_owner: '${{ github.event.client_payload.repository_owner }}'
       repository: '${{ github.event.client_payload.repository }}'
       artifact_name: '${{ github.event.client_payload.artifact_name }}'
