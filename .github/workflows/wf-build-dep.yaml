@@ -25,11 +25,11 @@ jobs:
 
       - name: Compile deb package
         run: |
-          mkdir -p /tmp/build || true
-          cp -Rp -t /tmp/build/ DEBIAN
-          cp -Rp -t /tmp/build/DEBIAN/usr/local/share/transai/connector-orchestrator/ apps libs main.js* package* node_modules
-          dpkg-deb --build /tmp/build
-          mv /tmp/build.deb transai-connector-orchestrator.deb
+          mkdir -p /tmp/transai-connector-orchestrator || true
+          cp -Rp -t /tmp/transai-connector-orchestrator/ DEBIAN
+          cp -Rp -t /tmp/transai-connector-orchestrator/DEBIAN/usr/local/share/transai/connector-orchestrator/ apps libs main.js* package* node_modules
+          dpkg-deb --build /tmp/transai-connector-orchestrator
+          mv /tmp/transai-connector-orchestrator.deb ./
 
       - name: Commit updated package
         run: |
