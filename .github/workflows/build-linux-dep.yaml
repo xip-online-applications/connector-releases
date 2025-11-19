@@ -1,3 +1,5 @@
+name: Build .dep package from artifact
+
 on:
   push:
     branches:
