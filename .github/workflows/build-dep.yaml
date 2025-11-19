@@ -1,0 +1,61 @@
+on:
+  repository_dispatch:
+    inputs:
+      run_id:
+        description: 'The run ID to download artifacts from.'
+        required: true
+        type: string
+      repository:
+        description: 'The source repository to download artifacts from.'
+        required: true
+        type: string
+        default: 'xip-online-applications/xod-core'
+      artifact_name:
+        description: 'The name of the artifact to download.'
+        required: true
+        type: string
+        default: transai-connector-orchestrator
+
+jobs:
+  log-the-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.XOD_CORE_APP_ID }}
+          private-key: ${{ secrets.XOD_CORE_APP_PRIVATE_KEY }}
+
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v5
+        with:
+          name: '${{ inputs.artifact_name }}'
+          github-token: '${{ steps.generate-token.outputs.token }}'
+          repository: '${{ inputs.repository }}'
+          run-id: '${{ inputs.run_id }}'
+
+      - name: List downloaded files
+        run: ls -la
+
+#  dep:
+#    name: Build installable deb
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v5
+#        with:
+#          fetch-depth: 0
+#      - uses: actions/setup-node@v6
+#        with:
+#          node-version-file: '.nvmrc'
+#          cache: 'npm'
+#
+#      - name: Install Dependencies
+#        run: |
+#          git config user.name "${{ github.actor }}"
+#          git config user.email "${{ github.actor }}@users.noreply.github.com"
+#          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+#          npm install --no-save
+#
+#      - name: Compile deb package
+#        run: npm run build:connector-runners:deb
