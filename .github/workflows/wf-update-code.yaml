@@ -1,7 +1,7 @@
 name: Update Connector Orchestrator code
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       run_id:
         description: 'The run ID to download artifacts from.'
@@ -62,25 +62,3 @@ jobs:
           git add --all
           git commit -m "chore: update connector orchestrator code to latest version from ${{ inputs.repository_owner }}/${{ inputs.repository }} run ID ${{ inputs.run_id }}" || echo "No changes to commit"
           git push
-
-#  dep:
-#    name: Build installable deb
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v5
-#        with:
-#          fetch-depth: 0
-#      - uses: actions/setup-node@v6
-#        with:
-#          node-version-file: '.nvmrc'
-#          cache: 'npm'
-#
-#      - name: Install Dependencies
-#        run: |
-#          git config user.name "${{ github.actor }}"
-#          git config user.email "${{ github.actor }}@users.noreply.github.com"
-#          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-#          npm install --no-save
-#
-#      - name: Compile deb package
-#        run: npm run build:connector-runners:deb
