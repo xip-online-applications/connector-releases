@@ -1,0 +1,30 @@
+name: Updated repository code trigger
+
+on:
+  repository_dispatch:
+    types:
+      - download-latest-connector-orchestrator
+    inputs:
+      run_id:
+        description: 'The run ID to download artifacts from.'
+        required: true
+        type: string
+      repository:
+        description: 'The source repository to download artifacts from.'
+        required: true
+        type: string
+        default: 'xip-online-applications/xod-core'
+      artifact_name:
+        description: 'The name of the artifact to download.'
+        required: true
+        type: string
+        default: transai-connector-orchestrator
+
+jobs:
+  log-the-inputs:
+    uses: './.github/workflows/wf-update-code.yaml'
+    secrets: inherit
+    with:
+      run_id: '${{ github.event.client_payload.run_id }}'
+      repository: '${{ github.event.client_payload.repository }}'
+      artifact_name: '${{ github.event.client_payload.artifact_name }}'
