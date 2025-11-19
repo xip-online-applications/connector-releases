@@ -9,5 +9,4 @@ on:
 jobs:
   build-dep:
     uses: './.github/workflows/wf-build-dep.yaml'
-    if: github.
     secrets: inherit
