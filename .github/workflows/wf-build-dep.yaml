@@ -8,13 +8,14 @@ permissions:
   id-token: write
 
 jobs:
-  dep:
+  build:
     name: Build installable deb
     strategy:
-      max-parallel: 1
       matrix:
-        runs-on: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runs-on }}
+        architectures:
+          - { name: amd64, runs-on: ubuntu-24.04 }
+          - { name: arm64, runs-on: ubuntu-24.04-arm }
+    runs-on: ${{ matrix.architectures.runs-on }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -29,6 +30,29 @@ jobs:
 
       - name: Compile deb package
         run: make build-dep
+
+      - name: Upload connector orchestrator artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: transai-connector-orchestrator-${{ matrix.architectures.name }}.deb
+          path: dist/transai-connector-orchestrator-${{ matrix.architectures.name }}.deb
+          retention-days: 1
+          overwrite: true
+
+  push:
+    name: Push installable deb changes
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: dist/
+          pattern: transai-connector-orchestrator-*.deb
 
       - name: Commit updated package
         run: |
