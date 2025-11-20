@@ -15,8 +15,8 @@ Description: The base url for the management API.
 
 Template: transai-connector-orchestrator/authentication-domain
 Type: string
-Default: https://platform-test.xip-onlinedata.nl/management
-Description: The base url for the management API.
+Default: https://xiponlinedata-test.eu.auth0.com
+Description: The authentication domain URL.e
 
 Template: transai-connector-orchestrator/authentication-audience
 Type: string
