@@ -6,6 +6,10 @@ on:
       - master
   workflow_dispatch:
 
+concurrency:
+  group: master-workflow
+  cancel-in-progress: true
+
 jobs:
   build-dep:
     name: Build installable deb package
