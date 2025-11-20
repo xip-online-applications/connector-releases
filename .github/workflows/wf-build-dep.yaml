@@ -48,6 +48,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cleanup dist dir
+        run: rm dist/*
+
       - name: Download artifacts
         uses: actions/download-artifact@v5
         with:
