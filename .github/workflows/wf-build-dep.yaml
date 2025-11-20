@@ -10,7 +10,10 @@ permissions:
 jobs:
   dep:
     name: Build installable deb
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runs-on: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v5
         with:
