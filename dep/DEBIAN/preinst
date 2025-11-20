@@ -2,14 +2,14 @@
 
 set -e
 
-NODEJS_VERSION="24.11"
-NVM_VERSION="0.40.3"
-
-# Install NVM (Node Version Manager)
-curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" | bash
-
-# in lieu of restarting the shell
-\. "$HOME/.nvm/nvm.sh"
-
-# Install Node.js using NVM
-nvm install "$NODEJS_VERSION"
+# Create the needed user, if it doesn't already exist
+if ! id "transai" >/dev/null 2>&1; then
+    if command -v adduser >/dev/null 2>&1; then
+        adduser --system --home-dir /usr/local/share/transai --user-group "transai"
+    elif command -v useradd >/dev/null 2>&1; then
+        useradd --system --home-dir /usr/local/share/transai --base-dir /usr/local/share/transai --user-group --shell /usr/bin/sh "transai"
+    else
+        echo "Neither adduser nor useradd found. Cannot create user." >&2
+        exit 1
+    fi
+fi

@@ -7,8 +7,7 @@ User=transai
 Type=simple
 Restart=on-failure
 RestartSec=30s
-ExecStart="/bin/sh -c "transai-connector-orchestrator"
-EnvironmentFile=/etc/environment
+ExecStart=/usr/local/bin/transai-connector-orchestrator
 StandardOutput=append:/var/log/transai.log
 StandardError=append:/var/log/transai.error.log
 

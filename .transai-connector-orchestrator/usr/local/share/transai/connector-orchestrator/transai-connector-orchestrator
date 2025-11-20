@@ -2,5 +2,11 @@
 
 set -e
 
+NVM_DIR=/usr/local/nvm
+. "$NVM_DIR/nvm.sh"
+
+# Read env file
+. "/etc/transai/connector-orchestrator.conf"
+
 # Start the Node.js application
 npx node "/usr/local/share/transai/connector-orchestrator/main.js"
