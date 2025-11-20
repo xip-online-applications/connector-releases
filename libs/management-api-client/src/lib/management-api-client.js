@@ -28,7 +28,6 @@ class AbstractManagementApiClient {
   #managementApiUrl;
   #audience;
   #identityProviderUrl;
-  #auth0_orgIdentifier;
   #client;
   constructor() {
     this.#clientId = process.env["MANAGEMENT_API_CLIENT_ID"] ?? "";
@@ -36,10 +35,18 @@ class AbstractManagementApiClient {
     this.#managementApiUrl = process.env["MANAGEMENT_API_URL"] ?? "";
     this.#audience = process.env["AUDIENCE"] ?? "";
     this.#identityProviderUrl = process.env["IDENTITY_PROVIDER_URL"] ?? "";
-    this.#auth0_orgIdentifier = process.env["AUTH0_ORG_IDENTIFIER"] ?? "";
     this.#tenantIdentifier = process.env["TENANT_IDENTIFIER"] ?? "";
-    if (!this.#clientId || !this.#clientSecret || !this.#managementApiUrl || !this.#audience || !this.#identityProviderUrl || !this.#auth0_orgIdentifier || !this.#tenantIdentifier) {
-      throw new Error("Missing required environment variables");
+    if (!this.#clientId || !this.#clientSecret || !this.#managementApiUrl || !this.#audience || !this.#identityProviderUrl || !this.#tenantIdentifier) {
+      throw new Error(
+        `Missing required environment variables: ${JSON.stringify({
+          clientId: process.env["MANAGEMENT_API_CLIENT_ID"] ?? "",
+          clientSecret: process.env["MANAGEMENT_API_CLIENT_SECRET"] ?? "",
+          managementApiUrl: process.env["MANAGEMENT_API_URL"] ?? "",
+          audience: process.env["AUDIENCE"] ?? "",
+          identityProviderUrl: process.env["IDENTITY_PROVIDER_URL"] ?? "",
+          tenantIdentifier: process.env["TENANT_IDENTIFIER"] ?? ""
+        })}`
+      );
     }
     this.#client = import_httpclient.HttpServiceBuilder.build({
       baseUrl: this.#managementApiUrl,
