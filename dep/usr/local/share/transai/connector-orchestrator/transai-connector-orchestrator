@@ -2,11 +2,15 @@
 
 set -e
 
-NVM_DIR=/usr/local/nvm
-. "$NVM_DIR/nvm.sh"
+export NVM_DIR=/usr/local/nvm
+
+# Include nvm
+. "/usr/local/nvm/nvm.sh"
 
 # Read env file
-source "/etc/transai/connector-orchestrator.conf"
+export $(grep -v '^#' "/etc/transai/connector-orchestrator.conf" | xargs -d '\n')
 
 # Start the Node.js application
-node "/usr/local/share/transai/connector-orchestrator/main.js"
+bash -c 'npx node "/usr/local/share/transai/connector-orchestrator/main.js" \
+    > >(tee -a /var/log/transai/connector-orchestrator.log) \
+    2> >(tee -a /var/log/transai/connector-orchestrator.error.log >&2)'

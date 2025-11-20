@@ -11,7 +11,6 @@ db_input high transai-connector-orchestrator/management-api-client-secret || tru
 db_input medium transai-connector-orchestrator/management-api-url || true
 db_input medium transai-connector-orchestrator/authentication-domain || true
 db_input medium transai-connector-orchestrator/authentication-audience || true
-db_input high transai-connector-orchestrator/authentication-org-id || true
 db_input high transai-connector-orchestrator/tenant-id || true
 
 db_go || true

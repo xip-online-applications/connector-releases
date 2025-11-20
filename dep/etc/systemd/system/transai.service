@@ -1,15 +1,19 @@
 [Unit]
 Description=transAI Connector Orchestrator Service
 Documentation=https://transai.com
+After=network.target
 
 [Service]
 User=transai
+Group=transai
 Type=simple
 Restart=on-failure
 RestartSec=30s
-ExecStart=/usr/local/bin/transai-connector-orchestrator
-StandardOutput=append:/var/log/transai.log
-StandardError=append:/var/log/transai.error.log
+WorkingDirectory=/usr/local/share/transai/connector-orchestrator
+ExecStartPre=/bin/mkdir -p /var/log/transai
+ExecStart=/usr/local/share/transai/connector-orchestrator/transai-connector-orchestrator
+StandardOutput=journal+console
+StandardError=journal+console
 
 [Install]
 WantedBy=multi-user.target
