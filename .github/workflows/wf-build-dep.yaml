@@ -56,6 +56,7 @@ jobs:
         with:
           path: dist/
           pattern: transai-connector-orchestrator-*.deb
+          merge-multiple: true
 
       - name: Commit updated package
         run: |
