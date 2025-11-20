@@ -56,10 +56,17 @@ jobs:
           repository: '${{ inputs.repository_owner }}/${{ inputs.repository }}'
           run-id: '${{ inputs.run_id }}'
 
-      - name: Commit updated code
+      - name: Configure git
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Add changed files to git
+        run: |
           git add --all
+          git status
+
+      - name: Git commit and push updated code
+        run: |
           git commit -m "chore: update connector orchestrator code to latest version from ${{ inputs.repository_owner }}/${{ inputs.repository }} run ID ${{ inputs.run_id }}" || echo "No changes to commit"
           git push
