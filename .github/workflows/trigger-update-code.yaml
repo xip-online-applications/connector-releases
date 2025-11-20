@@ -32,6 +32,6 @@ jobs:
     secrets: inherit
     with:
       run_id: ${{ github.event.client_payload.run_id }}
-      artifact_name: ${{ github.event.client_payload.artifact_name }}
-      repository_owner: ${{ github.event.client_payload.repository_owner }}
-      repository: ${{ github.event.client_payload.repository }}
+      artifact_name: ${{ github.event.client_payload.artifact_name || 'transai-connector-orchestrator' }}
+      repository_owner: ${{ github.event.client_payload.repository_owner || 'xip-online-applications' }}
+      repository: ${{ github.event.client_payload.repository || 'xod-core' }}
