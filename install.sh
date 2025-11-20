@@ -8,7 +8,7 @@ check_user_is_root() {
   fi
 }
 
-do_instal() {
+do_install() {
   check_user_is_root
 
   TMP_DOWNLOAD_DIR=$(mktemp -d)
@@ -18,4 +18,4 @@ do_instal() {
   apt install -y "$TMP_DOWNLOAD_DIR/transai-connector-orchestrator.deb"
 }
 
-do_instal
+do_install
