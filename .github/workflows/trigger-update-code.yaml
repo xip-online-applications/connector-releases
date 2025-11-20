@@ -31,7 +31,7 @@ jobs:
     uses: './.github/workflows/wf-update-code.yaml'
     secrets: inherit
     with:
-      run_id: '${{ github.event.client_payload.run_id }}'
-      repository_owner: '${{ github.event.client_payload.repository_owner }}'
-      repository: '${{ github.event.client_payload.repository }}'
-      artifact_name: '${{ github.event.client_payload.artifact_name }}'
+      run_id: ${{ github.event.client_payload.run_id }}
+      artifact_name: ${{ github.event.client_payload.artifact_name }}
+      repository_owner: ${{ github.event.client_payload.repository_owner }}
+      repository: ${{ github.event.client_payload.repository }}
