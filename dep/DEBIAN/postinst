@@ -3,10 +3,11 @@
 set -e
 
 export NVM_DIR=/usr/local/nvm
+export TRANSAI_HOME=/usr/local/share/transai
 
 # Make transai user owner of the files
 mkdir -p /var/log/transai /var/transai
-chown -R transai:transai /usr/local/share/transai /var/log/transai /var/transai
+chown -R transai:transai "$TRANSAI_HOME" /var/log/transai /var/transai
 
 . /usr/share/debconf/confmodule
 
@@ -56,7 +57,7 @@ curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh" | bas
 . "$NVM_DIR/nvm.sh"
 
 # Install Node.js using NVM
-nvm install "$(cat "$HOME/connector-orchestrator/.nvmrc")"
+nvm install "$(cat "$TRANSAI_HOME/connector-orchestrator/.nvmrc")"
 
 # Re-install node modules
 su transai -c 'cd $HOME/connector-orchestrator; npm install --no-save'

@@ -15,6 +15,7 @@ do_install() {
   trap 'rm -rf $TMP_DOWNLOAD_DIR' EXIT
 
   curl -L -s -o "$TMP_DOWNLOAD_DIR/transai-connector-orchestrator.deb" "https://raw.githubusercontent.com/xip-online-applications/connector-releases/master/dist/transai-connector-orchestrator-$(dpkg --print-architecture).deb"
+  chmod +r "$TMP_DOWNLOAD_DIR/transai-connector-orchestrator.deb"
   apt install -y "$TMP_DOWNLOAD_DIR/transai-connector-orchestrator.deb"
 }
 
