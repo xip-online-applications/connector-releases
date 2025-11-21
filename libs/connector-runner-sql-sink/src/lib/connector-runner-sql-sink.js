@@ -56,7 +56,7 @@ class ConnectorRunnerSqlSink extends import_connector_runtime.ConnectorRuntime {
               (input) => input.name
             );
             const query = `${trimTrailingSemicolon(config.query)};`;
-            const params = inputParams.map((param) => message.payload[param]);
+            const params = inputParams.map((param) => message.payload[param]).map((v) => typeof v === "object" ? JSON.stringify(v) : v);
             if (message.testRun) {
               this.log.info(
                 `Handle message ${message.eventId} as testrun with query ${query} and params ${params}`
