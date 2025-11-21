@@ -68,6 +68,7 @@ class ExtractorService {
         `[MKG] Failed to retrieve and process data from OPC UA source service`,
         { error }
       );
+      throw error;
     }
   }
   #fetchData = async (latestOffset) => {

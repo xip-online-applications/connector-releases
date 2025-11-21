@@ -40,6 +40,7 @@ class ExtractorService {
   }
   async onInit() {
     await this.#opcUaClient.init().catch((error) => {
+      this.#sdk.telemetry.increment("bystronic.initialize.error");
       this.#sdk.logger.error(
         `[OPC UA] [${this.#opcUaCallConfig.name}] Failed to initialize client during onInit.`,
         { error }
@@ -48,6 +49,7 @@ class ExtractorService {
   }
   async onRun() {
     await this.#opcUaClient.init().catch((error) => {
+      this.#sdk.telemetry.increment("bystronic.initialize.error");
       this.#sdk.logger.error(
         `[OPC UA] [${this.#opcUaCallConfig.name}] Failed to initialize client.`,
         { error }
@@ -76,6 +78,7 @@ class ExtractorService {
   }
   async #performOpcUaCalls(latestOffset) {
     if (!await this.#opcUaClient.isConnected()) {
+      this.#sdk.telemetry.increment("bystronic.calls.not_connected");
       this.#sdk.logger.warn(
         `[OPC UA] [${this.#opcUaCallConfig.name}] Skipping run because client is not connected`
       );

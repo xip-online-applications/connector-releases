@@ -47,11 +47,17 @@ class MailProcessor {
   async onRun() {
     if (this.#processing) {
       if (this.#processingTries > this.MAX_PROCESSING_TRIES) {
+        this.#sdk.telemetry.increment(
+          "microsoft_office365_email.mailbox.exceeded_tries"
+        );
         this.#logger.error(
           `Exceeded processingTries for mailbox processor: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
         );
         process.exit(1);
       }
+      this.#sdk.telemetry.increment(
+        "microsoft_office365_email.mailbox.already_processing"
+      );
       this.#logger.debug(
         `Mailsource processor service is already processing: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
       );
@@ -60,15 +66,20 @@ class MailProcessor {
     }
     this.#processing = true;
     try {
-      await this.#processMailbox(this.#mailboxConfig);
+      const messages = await this.#processMailbox(this.#mailboxConfig);
+      this.#sdk.telemetry.increment(
+        "microsoft_office365_email.mailbox.processed",
+        messages
+      );
     } catch (error) {
+      this.#sdk.telemetry.increment("microsoft_office365_email.mailbox.error");
       this.#logger.warn(
         `Error processing mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`,
         JSON.stringify(error)
       );
       this.#processing = false;
       this.#processingTries += 1;
-      return;
+      throw error;
     }
     this.#processing = false;
     this.#processingTries = 0;
@@ -93,7 +104,7 @@ class MailProcessor {
       this.#logger.debug(
         `No new messages found for mailbox: ${this.#mailboxConfig.mailboxIdentifier}/${this.#mailboxConfig.mailbox}`
       );
-      return;
+      return 0;
     }
     await this.#storeAttachments(config.mailbox, ...messages);
     const preparedMessages = messages.map((message) => ({
@@ -142,6 +153,7 @@ class MailProcessor {
       },
       `${this.#mailboxConfig.offsetFilePrefix ?? "offset"}_${this.#mailboxConfig.mailboxIdentifier}`
     );
+    return preparedMessages.length;
   }
   async #storeAttachments(mailbox, ...messages) {
     if (!this.#fileHandler) {
