@@ -50,6 +50,9 @@ class TelemetryService {
     this.#incrementQueue[key] = // eslint-disable-next-line security/detect-object-injection
     (this.#incrementQueue[key] ?? 0) + value;
   }
+  gauge(key, value) {
+    this.#gaugeQueue.push({ [key]: value });
+  }
   #emitTelemetry() {
     const allGaugesToFlush = this.#gaugeQueue.slice();
     const allIncrementsToFlush = { ...this.#incrementQueue };

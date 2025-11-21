@@ -39,12 +39,14 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
         const clearDebugInterval = () => clearInterval(debugMessageInterval);
         const systemPrompt = action.config["systemPrompt"];
         if (!systemPrompt || systemPrompt.trim() === "") {
+          clearDebugInterval();
           return this.connectorSDK.receiver.responses.unprocessableEntity(
             "System prompt not found"
           )(message);
         }
         const userPrompt = action.config["userPrompt"];
         if (!userPrompt || userPrompt.trim() === "") {
+          clearDebugInterval();
           return this.connectorSDK.receiver.responses.unprocessableEntity(
             "Prompt not found"
           )(message);
@@ -62,6 +64,14 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
         const outputSchema = (0, import_output_parsers.parseParametersToZod)(
           action.outputParameters
         );
+        this.connectorSDK.telemetry.gauge(
+          "ai_agent.invocation.system_prompt_length",
+          processedSystemPrompt.length
+        );
+        this.connectorSDK.telemetry.gauge(
+          "ai_agent.invocation.user_prompt_length",
+          processedUserPrompt.length
+        );
         const llm = (0, import_langchain.createAgent)({
           model: this.langchain,
           responseFormat: outputSchema,
@@ -70,10 +80,15 @@ class ConnectorRunnerAiAgent extends import_connector_runtime_sdk.ConnectorRunti
           middleware: [this.#langchainLoggingMiddleware]
         });
         try {
-          this.#logger.info("Invoking AI agent...");
+          this.#logger.debug("Invoking AI agent...");
           const response = await llm.invoke({
             messages: [new import_langchain.HumanMessage(processedUserPrompt)]
           });
+          this.connectorSDK.telemetry.increment("ai_agent.invocation.success");
+          this.connectorSDK.telemetry.gauge(
+            "ai_agent.invocation.response_messages_length",
+            response.messages.length
+          );
           this.#logger.info("AI agent invoked successfully.");
           const returnPayload = {
             ...message,
