@@ -31,7 +31,7 @@ build-dep: _cleanup_build_dep
 _prepare_build_dep:
 	mkdir -p ".transai-connector-orchestrator" || true
 	cp -Rp -t ".transai-connector-orchestrator/" dep/*
-	cp -Rp -t ".transai-connector-orchestrator/usr/local/share/transai/connector-orchestrator/" .nvmrc apps libs main.js package*.json
+	cp -Rp -t ".transai-connector-orchestrator/usr/local/share/transai/connector-orchestrator/" .nvmrc apps libs main.js package*.json node_modules
 
 _prepare_versioning_dep:
 	sed -i "s/:version:/$(shell cat package.json | jq -r '.version')-$(shell date +%s)/g" .transai-connector-orchestrator/DEBIAN/control
