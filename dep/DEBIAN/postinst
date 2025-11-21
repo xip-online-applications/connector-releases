@@ -56,7 +56,7 @@ curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh" | bas
 . "$NVM_DIR/nvm.sh"
 
 # Install Node.js using NVM
-nvm install "24.11"
+nvm install "$(cat "$HOME/connector-orchestrator/.nvmrc")"
 
 # Re-install node modules
 su transai -c 'cd $HOME/connector-orchestrator; npm install --no-save'
