@@ -1,0 +1,9 @@
+/var/log/transai/*.log {
+  rotate 6
+  weekly
+  nomail
+  compress
+  missingok
+  notifempty
+  copytruncate
+}
