@@ -23,10 +23,6 @@ on:
         type: string
         default: transai-connector-orchestrator
 
-permissions:
-  contents: write
-  id-token: write
-
 jobs:
   update-code:
     name: Update Connector Orchestrator code
@@ -39,34 +35,38 @@ jobs:
       - name: Cleanup current code
         run: make cleanup
 
-      - name: Generate a token
-        id: generate-token
+      - name: Generate download artifact token
+        id: token-download-artifact
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.XOD_CORE_APP_ID }}
           private-key: ${{ secrets.XOD_CORE_APP_PRIVATE_KEY }}
           permission-actions: read
-          repositories: '${{ inputs.repository }}'
+          repositories: ${{ inputs.repository }}
 
       - name: Download code artifact
         uses: actions/download-artifact@v5
         with:
-          github-token: '${{ steps.generate-token.outputs.token }}'
-          name: '${{ inputs.artifact_name }}'
-          repository: '${{ inputs.repository_owner }}/${{ inputs.repository }}'
-          run-id: '${{ inputs.run_id }}'
+          github-token: ${{ steps.token-download-artifact.outputs.token }}
+          name: ${{ inputs.artifact_name }}
+          repository: ${{ inputs.repository_owner }}/${{ inputs.repository }}
+          run-id: ${{ inputs.run_id }}
 
-      - name: Configure git
+      - name: Generate command and push token
+        id: token-commit-push
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.XOD_CORE_APP_ID }}
+          private-key: ${{ secrets.XOD_CORE_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Git commit and push updated code
+        env:
+          GITHUB_TOKEN: ${{ steps.token-commit-push.outputs.token }}
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Add changed files to git
-        run: |
           git add --all
           git status
-
-      - name: Git commit and push updated code
-        run: |
           git commit -m "chore: update connector orchestrator code to latest version from ${{ inputs.repository_owner }}/${{ inputs.repository }} run ID ${{ inputs.run_id }}" || echo "No changes to commit"
           git push

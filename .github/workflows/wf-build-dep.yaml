@@ -2,10 +2,7 @@ name: Build installable deb package
 
 on:
   workflow_call:
-
-permissions:
-  contents: write
-  id-token: write
+  workflow_dispatch:
 
 jobs:
   build:
@@ -58,7 +55,17 @@ jobs:
           pattern: transai-connector-orchestrator-*.deb
           merge-multiple: true
 
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.XOD_CORE_APP_ID }}
+          private-key: ${{ secrets.XOD_CORE_APP_PRIVATE_KEY }}
+          permission-contents: write
+
       - name: Commit updated package
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
