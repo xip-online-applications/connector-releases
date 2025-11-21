@@ -21,7 +21,28 @@ on:
         description: 'The name of the artifact to download.'
         required: true
         type: string
-        default: transai-connector-orchestrator
+        default: 'transai-connector-orchestrator'
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'The run ID to download artifacts from.'
+        required: true
+        type: string
+      repository_owner:
+        description: 'The source repository to download artifacts from.'
+        required: true
+        type: string
+        default: 'xip-online-applications'
+      repository:
+        description: 'The source repository to download artifacts from.'
+        required: true
+        type: string
+        default: 'xod-core'
+      artifact_name:
+        description: 'The name of the artifact to download.'
+        required: true
+        type: string
+        default: 'transai-connector-orchestrator'
 
 jobs:
   update-code:
