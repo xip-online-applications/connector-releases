@@ -3,5 +3,5 @@ Version: :version:
 Maintainer: transAI <samen@transai.com>
 Architecture: all
 Description: This package contains the connector orchestrator for transAI platform. It manages and coordinates various connectors within the transAI ecosystem.
-Pre-Depends: curl, systemctl
+Pre-Depends: curl, systemctl | systemd
 Depends: debconf
