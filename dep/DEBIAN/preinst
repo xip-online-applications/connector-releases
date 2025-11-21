@@ -5,7 +5,7 @@ set -e
 # Create the needed user, if it doesn't already exist
 if ! id "transai" >/dev/null 2>&1; then
     if command -v adduser >/dev/null 2>&1; then
-        adduser --system --home /usr/local/share/transai --group "transai"
+        adduser --system --home /usr/local/share/transai --group --shell /usr/bin/sh "transai"
     elif command -v useradd >/dev/null 2>&1; then
         useradd --system --home-dir /usr/local/share/transai --base-dir /usr/local/share/transai --user-group --shell /usr/bin/sh "transai"
     else

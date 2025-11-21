@@ -5,7 +5,7 @@ set -e
 export NVM_DIR=/usr/local/nvm
 
 # Include nvm
-. "/usr/local/nvm/nvm.sh"
+. "${NVM_DIR}/nvm.sh"
 
 # Read env file
 export $(grep -v '^#' "/etc/transai/connector-orchestrator.conf" | xargs -d '\n')

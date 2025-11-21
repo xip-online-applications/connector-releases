@@ -60,7 +60,7 @@ curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh" | bas
 nvm install "$(cat "$TRANSAI_HOME/connector-orchestrator/.nvmrc")"
 
 # Re-install node modules
-su transai -c 'cd $HOME/connector-orchestrator; npm install --no-save'
+su transai -c 'export NVM_DIR=/usr/local/nvm; cd ${HOME}/connector-orchestrator; . "/usr/local/nvm/nvm.sh"; npm install --no-save'
 
 # Reload the systemd manager configuration, enable and start service
 if command -v systemctl >/dev/null 2>&1; then
